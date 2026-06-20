@@ -37,15 +37,8 @@ body{font-family:var(--font-mono);background:var(--bg);color:var(--text);min-hei
 .stat-value{font-size:28px;font-weight:800;color:var(--accent);font-family:'Playfair Display',serif}
 .stat-label{font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.1em;margin-top:4px}
 
-/* Tabs */
-.tab-row{display:flex;justify-content:center;gap:4px;margin-bottom:40px;padding:4px;background:var(--surface);border:1px solid var(--border);border-radius:16px;width:fit-content;margin-left:auto;margin-right:auto}
-.tab-btn{padding:10px 24px;border-radius:12px;border:none;background:transparent;color:var(--text-muted);font-family:'Inter',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .3s}
-.tab-btn:hover{color:var(--text)}
-.tab-btn.active{background:var(--accent);color:#fff}
-
 /* Browse section */
 #browseSection{display:block}
-#playSection{display:none}
 .filter-tabs{display:flex;justify-content:center;gap:8px;margin-bottom:40px;flex-wrap:wrap}
 .filter-tab{padding:12px 24px;border-radius:14px;border:1px solid var(--border);background:transparent;color:var(--text-secondary);font-family:'Inter',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:all .3s}
 .filter-tab:hover{border-color:var(--accent);color:var(--text)}
@@ -91,39 +84,7 @@ body{font-family:var(--font-mono);background:var(--bg);color:var(--text);min-hei
 .box-item:hover{border-color:var(--accent);box-shadow:0 8px 30px rgba(139,92,246,0.15)}
 .box-item img{width:100%;display:block}
 
-/* Blackjack table — dark escrow style */
-.game-table{background:radial-gradient(ellipse at 50% 40%,#1e1a24,#0e0c12);border-radius:20px;padding:36px 28px;max-width:840px;margin:0 auto;border:1px solid rgba(180,150,80,0.25);box-shadow:inset 0 0 120px rgba(0,0,0,0.7),0 8px 48px rgba(0,0,0,0.6);position:relative;overflow:hidden}
-.game-table::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='120' height='120' viewBox='0 0 120 120' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:0}
-.game-table::after{content:'';position:absolute;top:0;left:10%;right:10%;height:1px;background:linear-gradient(90deg,transparent,rgba(180,150,80,0.4),transparent);pointer-events:none;z-index:0}
-.game-table>*{position:relative;z-index:1}
-.game-variant{text-align:center;margin-bottom:20px}
-.game-variant .filter-tab{font-size:12px;padding:8px 18px;background:rgba(255,255,255,0.04);border-color:rgba(180,150,80,0.2);color:rgba(255,255,255,0.5)}
-.game-variant .filter-tab.active{background:rgba(180,150,80,0.15);border-color:rgba(180,150,80,0.5);color:#d4af37}
-.game-section-label{text-align:center;font-size:10px;color:rgba(180,150,80,0.5);text-transform:uppercase;letter-spacing:.25em;margin-bottom:6px;font-weight:600}
-.game-hand{display:flex;gap:10px;justify-content:center;min-height:150px;padding:10px 0;flex-wrap:wrap;align-items:center}
-.game-hand-center{justify-content:center}
-.game-card{width:90px;aspect-ratio:5/7;border-radius:6px;overflow:hidden;border:1px solid rgba(180,150,80,0.2);animation:dealFly .45s cubic-bezier(.34,1.56,.64,1) forwards;box-shadow:0 4px 16px rgba(0,0,0,0.5),0 0 0 1px rgba(180,150,80,0.08)}
-.game-card.bounce{animation:bounceIn .4s cubic-bezier(.34,1.56,.64,1) forwards}
-.game-card img{width:100%;height:100%;display:block;object-fit:cover}
-.game-card.facedown img{filter:brightness(0.6) saturate(0.8)}
-@keyframes dealFly{0%{transform:translateY(-80px) translateX(60px) rotate(-12deg) scale(0.6);opacity:0}50%{transform:translateY(4px) translateX(-3px) rotate(2deg) scale(1.03);opacity:1}100%{transform:translateY(0) translateX(0) rotate(0deg) scale(1);opacity:1}}
-@keyframes bounceIn{0%{transform:scale(0.3) rotate(-8deg);opacity:0}50%{transform:scale(1.08) rotate(1deg)}100%{transform:scale(1) rotate(0deg);opacity:1}}
-.game-controls{display:flex;gap:12px;justify-content:center;padding:18px 0 8px;flex-wrap:wrap}
-.game-btn{padding:10px 28px;border-radius:6px;border:1px solid rgba(180,150,80,0.2);font-size:12px;font-weight:700;cursor:pointer;transition:all .25s;text-transform:uppercase;letter-spacing:.12em;font-family:var(--font-mono);background:rgba(255,255,255,0.03);color:rgba(255,255,255,0.6)}
-.game-btn:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 4px 20px rgba(0,0,0,0.4);border-color:rgba(180,150,80,0.4)}
-.game-btn:disabled{opacity:0.15;cursor:not-allowed;transform:none;box-shadow:none;border-color:transparent}
-.game-btn.deal{background:rgba(180,150,80,0.12);color:#d4af37;border-color:rgba(180,150,80,0.3)}
-.game-btn.deal:hover:not(:disabled){background:rgba(180,150,80,0.2);border-color:#d4af37}
-.game-btn.hit{background:rgba(34,197,94,0.08);color:#4ade80;border-color:rgba(34,197,94,0.25)}
-.game-btn.hit:hover:not(:disabled){background:rgba(34,197,94,0.15);border-color:#4ade80}
-.game-btn.stand{background:rgba(239,68,68,0.08);color:#f87171;border-color:rgba(239,68,68,0.25)}
-.game-btn.stand:hover:not(:disabled){background:rgba(239,68,68,0.15);border-color:#f87171}
-.game-btn.double{background:rgba(245,158,11,0.08);color:#fbbf24;border-color:rgba(245,158,11,0.25)}
-.game-hand-info{text-align:center;font-size:12px;color:rgba(255,255,255,0.5);font-weight:500;padding:4px 0;min-height:22px;letter-spacing:.05em}
-.game-result{text-align:center;font-size:20px;font-weight:800;color:#d4af37;padding:10px 0;min-height:46px;text-shadow:0 2px 12px rgba(0,0,0,0.6);letter-spacing:.03em}
-.game-stats{display:flex;justify-content:center;gap:40px;padding:10px 0 4px;color:rgba(180,150,80,0.4);font-size:11px;letter-spacing:.06em}
-.game-stats span{display:flex;align-items:center;gap:6px}
-.game-stats .val{color:#d4af37;font-weight:600}
+
 .back-link{display:inline-flex;align-items:center;gap:8px;font-size:13px;color:var(--text-muted);text-decoration:none;transition:color .2s;margin-top:60px;padding-top:24px;border-top:1px solid var(--border)}
 .back-link:hover{color:var(--accent)}
 .footer-section{margin-top:80px;text-align:center;padding:40px 0;border-top:1px solid var(--border)}
@@ -136,7 +97,7 @@ body{font-family:var(--font-mono);background:var(--bg);color:var(--text);min-hei
   <header class="page-header">
     <div class="page-label">Playing Cards</div>
     <h1 class="page-title">NNIИ <span class="accent">Deck</span></h1>
-    <p class="page-sub">A custom 52-card deck with original occult-eye artwork. Browse the full collection or play a round of Blackjack.</p>
+    <p class="page-sub">A custom 52-card deck with original occult-eye artwork. Browse the full collection — 2 colorways, all suits.</p>
     <div class="stats-bar">
       <div class="stat"><div class="stat-value">54</div><div class="stat-label">Cards</div></div>
       <div class="stat"><div class="stat-value">2</div><div class="stat-label">Colorways</div></div>
@@ -144,11 +105,6 @@ body{font-family:var(--font-mono);background:var(--bg);color:var(--text);min-hei
       <div class="stat"><div class="stat-value">&infin;</div><div class="stat-label">Details</div></div>
     </div>
   </header>
-
-  <div class="tab-row">
-    <div class="tab-btn active" data-tab="browse" onclick="switchTab('browse')">Browse</div>
-    <div class="tab-btn" data-tab="play" onclick="switchTab('play')">Play Blackjack</div>
-  </div>
 
   <div id="browseSection">
     <div class="filter-tabs" id="filterTabs">
@@ -171,51 +127,6 @@ body{font-family:var(--font-mono);background:var(--bg);color:var(--text);min-hei
       </div>
     </div>
 
-    <div class="box-section">
-      <div class="box-label">Drawings</div>
-      <div class="box-sub">Animated sketches and character studies.</div>
-      <div class="box-grid" id="drawingsGrid"></div>
-    </div>
-  </div>
-
-  <div id="playSection">
-    <div class="game-table" id="gameTable">
-      <div class="game-variant">
-        <div class="filter-tab active" style="display:inline-flex" onclick="toggleGameVariant()"><span id="gameVariantLabel">Dark</span></div>
-      </div>
-
-      <details class="how-to-play" style="margin-bottom:20px;max-width:500px;margin-left:auto;margin-right:auto;background:rgba(0,0,0,0.3);border:1px solid rgba(180,150,80,0.15);border-radius:10px;padding:12px 16px;font-size:11px;color:rgba(255,255,255,0.5)">
-        <summary style="cursor:pointer;color:rgba(180,150,80,0.7);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;list-style:none;display:flex;align-items:center;gap:8px;user-select:none">📖 How to Play</summary>
-        <div style="margin-top:10px;line-height:1.8">
-          <strong style="color:rgba(255,255,255,0.7)">Goal:</strong> Get closer to 21 than the dealer without going over.<br>
-          <strong style="color:rgba(255,255,255,0.7)">Cards:</strong> A = 1 or 11 · J/Q/K = 10 · rest = face value.
-          Only <strong style="color:#d4af37">♣ Clubs</strong> — 13 unique cards (A–K), no repeats (RE7 style).<br>
-          <strong style="color:rgba(255,255,255,0.7)">Play:</strong> <span style="color:#d4af37">Deal</span> → see your hand. <span style="color:#4ade80">Hit</span> for another card. <span style="color:#f87171">Stand</span> to lock. Dealer auto-plays at 17+.
-        </div>
-      </details>
-
-      <div class="game-section-label">Dealer</div>
-      <div class="game-hand" id="dealerHand"></div>
-      <div class="game-hand-info" id="dealerInfo"></div>
-
-      <div class="game-result" id="gameResult">Place your bet &amp; deal</div>
-
-      <div class="game-section-label">Player</div>
-      <div class="game-hand" id="playerHand"></div>
-      <div class="game-hand-info" id="playerInfo"></div>
-
-      <div class="game-controls" id="gameControls">
-        <button class="game-btn deal" id="btnDeal" onclick="deal()">Deal</button>
-        <button class="game-btn hit" id="btnHit" onclick="hit()" disabled>Hit</button>
-        <button class="game-btn stand" id="btnStand" onclick="stand()" disabled>Stand</button>
-      </div>
-
-      <div class="game-stats">
-        <span>Wins: <span class="val" id="statWins">0</span></span>
-        <span>Losses: <span class="val" id="statLosses">0</span></span>
-        <span>Draws: <span class="val" id="statDraws">0</span></span>
-      </div>
-    </div>
   </div>
 
   <a href="projects.html" class="back-link">&larr; Back to Projects</a>
@@ -261,15 +172,6 @@ function cardData(i){
            front: 'Joker_'+variant+'_'+jn+'.png' };
 }
 
-// ── Tab switching ──
-function switchTab(tab){
-  document.querySelectorAll('.tab-btn').forEach(function(t){
-    t.classList.toggle('active', t.dataset.tab === tab);
-  });
-  document.getElementById('browseSection').style.display = tab === 'browse' ? 'block' : 'none';
-  document.getElementById('playSection').style.display = tab === 'play' ? 'block' : 'none';
-}
-
 // ── Browse gallery ──
 function makeCard(i){
   var d = cardData(i);
@@ -313,40 +215,6 @@ function buildGallery(){
   }
 }
 
-function buildDrawings(){
-  var grid = document.getElementById('drawingsGrid');
-  if(!grid) return;
-  var drawings = [
-    'Drawings/yin and yang 2.gif',
-    'Drawings/TEARS.gif',
-    'Drawings/OVERCOAT.gif',
-    'Drawings/My Hand.gif',
-    'Drawings/Male 2.gif',
-    'Drawings/Male 1.gif',
-    'Drawings/HATCH.gif',
-    'Drawings/HALF ELF.gif',
-    'Drawings/for fun.gif',
-    'Drawings/FOR FUN 2.gif',
-    'Drawings/EYES BLINK 2.gif',
-    'Drawings/CREEPY SKULL ANIMATION.gif',
-    'Drawings/CREEPY SKULL ANIMATION (1).gif',
-    'Drawings/CHARACTERS FEMALE 4 .gif',
-    'Drawings/CHARACTERS FEMALE 3 .gif',
-    'Drawings/CHARACTERS FEMALE 1 .gif',
-    'Drawings/Candle (fix it).gif',
-    'Drawings/BUILDING.gif',
-    'Drawings/BOSS MAN.gif',
-    'Drawings/ABSTRACT.gif'
-  ];
-  drawings.forEach(function(src){
-    var item = document.createElement('div');
-    item.className = 'box-item';
-    var name = src.split('/').pop().replace('.gif','').replace(/\s*\(.*\)$/,'');
-    item.innerHTML = '<img src="'+src+'" alt="'+name+'" loading="lazy">';
-    grid.appendChild(item);
-  });
-}
-
 function setVariant(v){
   variant = v;
   document.querySelectorAll('.filter-tab').forEach(function(t){
@@ -359,11 +227,6 @@ function setVariant(v){
     cards[i].querySelector('.card-back img').src = 'Cards/BACK_'+variant+'.png';
     cards[i].querySelector('.card-label').textContent = d.label;
   }
-  document.getElementById('gameVariantLabel').textContent = v;
-}
-
-function toggleGameVariant(){
-  setVariant(variant === 'Dark' ? 'Light' : 'Dark');
 }
 
 // ── Lightbox ──
@@ -396,182 +259,6 @@ document.addEventListener('keydown', function(e){
   if(e.key === 'ArrowRight') openLightbox((lbIdx+1)%54);
 });
 
-// ── Blackjack ──
-var deck = [];
-var playerHand = [];
-var dealerHand = [];
-var gameState = 'idle'; // idle | playing | dealer | over
-var stats = { wins:0, losses:0, draws:0 };
-
-function cardValue(rank){
-  if(rank === 'A') return [1,11];
-  if(['J','Q','K'].indexOf(rank) >= 0) return [10];
-  return [parseInt(rank)];
-}
-
-function buildDeck(){
-  deck = [];
-  for(var r=0;r<ranks.length;r++){
-    deck.push({ rank: ranks[r], suit: suits[0] });
-  }
-}
-
-function shuffle(a){
-  for(var i=a.length-1;i>0;i--){
-    var j = Math.floor(Math.random()*(i+1));
-    var t = a[i]; a[i] = a[j]; a[j] = t;
-  }
-}
-
-function calcScore(hand){
-  var total = 0; var aces = 0;
-  for(var i=0;i<hand.length;i++){
-    var v = cardValue(hand[i].rank);
-    if(hand[i].rank === 'A'){ aces++; total += 11; }
-    else total += v[0];
-  }
-  while(total > 21 && aces > 0){ total -= 10; aces--; }
-  return total;
-}
-
-function cardFileName(card){
-  return card.rank+'_'+card.suit+'_'+variant+'.png';
-}
-
-function renderCard(card, facedown, delay, bounce){
-  var el = document.createElement('div');
-  el.className = 'game-card'+(facedown?' facedown':'')+(bounce?' bounce':'');
-  if(delay) el.style.animationDelay = delay+'ms';
-  var src = facedown ? 'Cards/BACK_'+variant+'.png' : 'Cards/'+cardFileName(card);
-  el.innerHTML = '<img src="'+src+'" alt="">';
-  return el;
-}
-
-function renderHand(handId, cards, facedowns, baseDelay){
-  var container = document.getElementById(handId);
-  container.innerHTML = '';
-  for(var i=0;i<cards.length;i++){
-    container.appendChild(renderCard(cards[i], facedowns && facedowns[i], baseDelay != null ? baseDelay + i*80 : null));
-  }
-}
-
-function updateUI(){
-  renderHand('dealerHand', dealerHand, [gameState === 'playing' || gameState === 'idle' ? true : false, false]);
-  renderHand('playerHand', playerHand, []);
-  updateScoreDisplay();
-}
-
-function updateScoreDisplay(){
-  var pScore = calcScore(playerHand);
-  var dScore = calcScore(dealerHand);
-  document.getElementById('playerInfo').textContent = playerHand.length ? 'Score: '+pScore : '';
-  var dInfo = '';
-  if(dealerHand.length){
-    if(gameState === 'playing') dInfo = 'Showing: '+cardValue(dealerHand[1].rank)[0];
-    else dInfo = 'Score: '+dScore;
-  }
-  document.getElementById('dealerInfo').textContent = dInfo;
-}
-
-function addCardToHand(handId, card, facedown, delay, cb){
-  setTimeout(function(){
-    var el = renderCard(card, facedown, 0, true);
-    document.getElementById(handId).appendChild(el);
-    if(cb) cb();
-  }, delay || 0);
-}
-
-function endGame(msg){
-  gameState = 'over';
-  document.getElementById('gameResult').textContent = msg;
-  document.getElementById('btnDeal').disabled = false;
-  document.getElementById('btnHit').disabled = true;
-  document.getElementById('btnStand').disabled = true;
-  updateUI();
-}
-
-function dealerPlay(){
-  gameState = 'dealer';
-  renderHand('dealerHand', dealerHand, [false, false]);
-  updateScoreDisplay();
-  var timer = setInterval(function(){
-    if(calcScore(dealerHand) < 17 && calcScore(playerHand) <= 21){
-      var card = deck.pop();
-      dealerHand.push(card);
-      addCardToHand('dealerHand', card, false, 0, function(){
-        updateScoreDisplay();
-      });
-    } else {
-      clearInterval(timer);
-      var p = calcScore(playerHand);
-      var d = calcScore(dealerHand);
-      if(p > 21){ endGame('Bust! Dealer wins.'); stats.losses++; }
-      else if(d > 21){ endGame('Dealer busts! You win!'); stats.wins++; }
-      else if(p > d){ endGame('You win!'); stats.wins++; }
-      else if(p < d){ endGame('Dealer wins.'); stats.losses++; }
-      else { endGame('Push!'); stats.draws++; }
-      document.getElementById('statWins').textContent = stats.wins;
-      document.getElementById('statLosses').textContent = stats.losses;
-      document.getElementById('statDraws').textContent = stats.draws;
-    }
-  }, 550);
-}
-
-function deal(){
-  buildDeck(); shuffle(deck);
-  playerHand = [deck.pop(), deck.pop()];
-  dealerHand = [deck.pop(), deck.pop()];
-  gameState = 'playing';
-  document.getElementById('gameResult').textContent = '';
-  document.getElementById('btnDeal').disabled = true;
-  document.getElementById('btnHit').disabled = true;
-  document.getElementById('btnStand').disabled = true;
-  document.getElementById('playerHand').innerHTML = '';
-  document.getElementById('dealerHand').innerHTML = '';
-  document.getElementById('playerInfo').textContent = '';
-  document.getElementById('dealerInfo').textContent = '';
-
-  var seq = [
-    { hand:'playerHand', card:playerHand[0], fd:false, d:0 },
-    { hand:'dealerHand', card:dealerHand[0], fd:true, d:220 },
-    { hand:'playerHand', card:playerHand[1], fd:false, d:440 },
-    { hand:'dealerHand', card:dealerHand[1], fd:false, d:660 },
-  ];
-  seq.forEach(function(item){
-    setTimeout(function(){
-      addCardToHand(item.hand, item.card, item.fd, 0, function(){
-        updateScoreDisplay();
-      });
-    }, item.d);
-  });
-
-  setTimeout(function(){
-    document.getElementById('btnHit').disabled = false;
-    document.getElementById('btnStand').disabled = false;
-    if(calcScore(playerHand) === 21) stand();
-  }, 900);
-}
-
-function hit(){
-  if(gameState !== 'playing') return;
-  var card = deck.pop();
-  playerHand.push(card);
-  addCardToHand('playerHand', card, false, 0, function(){
-    updateScoreDisplay();
-    if(calcScore(playerHand) > 21){
-      endGame('Bust! Dealer wins.');
-      stats.losses++;
-      document.getElementById('statLosses').textContent = stats.losses;
-    }
-  });
-}
-
-function stand(){
-  if(gameState !== 'playing') return;
-  document.getElementById('btnHit').disabled = true;
-  document.getElementById('btnStand').disabled = true;
-  dealerPlay();
-}
 
 // ── Image Protection ──
 document.addEventListener('dragstart',function(e){if(e.target.tagName==='IMG')e.preventDefault();});
@@ -613,8 +300,6 @@ function watermarkDownload(src){
 
 // ── Init ──
 buildGallery();
-buildDrawings();
-if(window.location.hash === '#play') switchTab('play');
 </script>
 </body>
 </html>
