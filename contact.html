@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contact — Omer Bin Asif</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0a0a;--surface:#111111;--surface-2:#1a1a1a;--surface-3:#242424;--text:#d0d0d0;--text-secondary:#999999;--text-muted:#666666;--border:#222222;--border-light:#2a2a2a;--accent:#b0b0b0;--accent-hover:#cccccc;--nav-bg:rgba(10,10,10,0.85);--nav-border:rgba(34,34,34,0.5);--shadow:0 25px 80px rgba(0,0,0,0.5);--font-mono:'SF Mono','Fira Code','Cascadia Code',monospace}
+body{font-family:var(--font-mono);background:var(--bg);color:var(--text);min-height:100vh}
+.top-nav{position:fixed;top:0;left:0;right:0;z-index:100;background:var(--nav-bg);backdrop-filter:blur(24px) saturate(180%);-webkit-backdrop-filter:blur(24px) saturate(180%);border-bottom:1px solid var(--nav-border)}
+.nav-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:14px 32px}
+.nav-brand{display:flex;align-items:center;gap:8px;text-decoration:none;color:var(--text)}
+.nav-avatar{width:32px;height:32px;border-radius:4px;background:var(--surface-2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;color:var(--text-muted);font-family:var(--font-mono)}
+.nav-name{font-size:13px;font-weight:500;letter-spacing:.02em;text-transform:uppercase}
+.nav-links{display:flex;align-items:center;gap:2px}
+.nav-link{padding:5px 12px;border-radius:4px;text-decoration:none;color:var(--text-muted);font-size:12px;font-weight:400;transition:all .2s;font-family:var(--font-mono)}
+.nav-link:hover{color:var(--text);background:var(--surface-2)}
+.nav-link.active{color:var(--accent);background:var(--surface-2)}
+.nav-actions{display:flex;align-items:center;gap:6px}
+.nav-cta{padding:6px 14px;border-radius:4px;background:transparent;color:var(--accent);border:1px solid var(--border);text-decoration:none;font-size:11px;font-weight:400;transition:all .2s;font-family:var(--font-mono);text-transform:uppercase;letter-spacing:.05em}
+.nav-cta:hover{background:var(--surface-2);border-color:var(--accent)}
+@media(max-width:768px){.nav-links{display:none}.nav-inner{padding:12px 20px}}
+
+.page{max-width:1200px;margin:0 auto;padding:100px 32px 60px}
+.page-label{font-size:11px;font-weight:400;color:var(--text-muted);text-transform:uppercase;letter-spacing:.15em;margin-bottom:6px}
+.page-title{font-size:clamp(22px,4vw,40px);font-weight:600;letter-spacing:-.01em;margin-bottom:10px;text-transform:uppercase}
+.page-title .accent{color:var(--accent)}
+.page-sub{font-size:14px;color:var(--text-secondary);max-width:560px;line-height:1.7;margin-bottom:36px}
+
+/* Main Grid */
+.contact-main{display:grid;grid-template-columns:1fr 1fr;gap:32px;align-items:start}
+@media(max-width:900px){.contact-main{grid-template-columns:1fr}}
+
+/* Left Column */
+.contact-left{display:flex;flex-direction:column;gap:20px}
+
+/* Contact Cards */
+.contact-cards{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:600px){.contact-cards{grid-template-columns:1fr}}
+.contact-card{padding:20px;background:var(--surface);border:1px solid var(--border);border-radius:6px;text-decoration:none;color:var(--text);transition:all .2s;cursor:pointer}
+.contact-card:hover{border-color:var(--border-light);background:var(--surface-2)}
+.contact-icon{width:40px;height:40px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:18px;margin-bottom:12px;background:var(--surface-3);border:1px solid var(--border)}
+.contact-icon.email,.contact-icon.location,.contact-icon.linkedin,.contact-icon.github{background:var(--surface-3)}
+.contact-label{font-size:10px;color:var(--text-muted);margin-bottom:2px;text-transform:uppercase;letter-spacing:.08em}
+.contact-value{font-size:14px;font-weight:500}
+.contact-hint{font-size:11px;color:var(--text-muted);margin-top:3px}
+
+/* Email Form */
+.email-form{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:24px}
+.form-title{font-size:16px;font-weight:500;margin-bottom:3px}
+.form-desc{font-size:12px;color:var(--text-secondary);margin-bottom:20px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+@media(max-width:600px){.form-row{grid-template-columns:1fr}}
+.form-group{display:flex;flex-direction:column;gap:4px}
+.form-label{font-size:11px;color:var(--text-muted)}
+.form-input,.form-textarea{padding:10px 14px;border-radius:4px;border:1px solid var(--border);background:var(--surface-2);color:var(--text);font-family:var(--font-mono);font-size:13px;outline:none;transition:border-color .2s}
+.form-input:focus,.form-textarea:focus{border-color:var(--accent)}
+.form-textarea{min-height:120px;resize:vertical}
+.form-submit{padding:10px 20px;border-radius:4px;border:1px solid var(--border);background:var(--surface-2);color:var(--accent);font-family:var(--font-mono);font-size:12px;font-weight:400;cursor:pointer;transition:all .2s;margin-top:6px;width:100%;text-transform:uppercase;letter-spacing:.05em}
+.form-submit:hover{background:var(--surface-3);border-color:var(--accent)}
+
+.form-success{display:none;padding:12px;border-radius:4px;background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.2);color:var(--text);font-size:12px;margin-top:12px;text-align:center}
+.form-success.show{display:block}
+
+/* Right Column - Calendly */
+.calendly-section{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:24px;position:sticky;top:100px}
+.calendly-header{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.calendly-icon{width:36px;height:36px;border-radius:4px;background:var(--surface-3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:16px}
+.calendly-title{font-size:16px;font-weight:500}
+.calendly-desc{font-size:12px;color:var(--text-secondary);margin-bottom:20px;line-height:1.6}
+.calendly-embed{width:100%;min-height:450px;border-radius:4px;border:1px solid var(--border);overflow:hidden;background:var(--surface-2)}
+.calendly-embed iframe{width:100%;height:450px;border:none}
+
+/* Quick Links */
+.quick-links{margin-top:24px;padding:20px;background:var(--surface);border:1px solid var(--border);border-radius:6px}
+.quick-links-title{font-size:12px;font-weight:500;margin-bottom:12px}
+.quick-links-grid{display:flex;flex-wrap:wrap;gap:8px}
+.quick-link{padding:7px 12px;border-radius:3px;background:var(--surface-2);border:1px solid var(--border);font-size:11px;color:var(--text-secondary);text-decoration:none;transition:all .2s;display:flex;align-items:center;gap:6px}
+.quick-link:hover{border-color:var(--accent);color:var(--accent)}
+
+.footer{max-width:1100px;margin:0 auto;padding:28px 32px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.footer-text{font-size:11px;color:var(--text-muted)}
+.footer-links{display:flex;gap:10px}
+.footer-link{font-size:11px;color:var(--text-muted);text-decoration:none}
+.footer-link:hover{color:var(--accent)}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.animate-in{animation:fadeInUp .5s cubic-bezier(.34,1.56,.64,1) forwards;opacity:0}
+.delay-1{animation-delay:.1s}.delay-2{animation-delay:.15s}.delay-3{animation-delay:.2s}.delay-4{animation-delay:.25s}
+</style>
+</head>
+<body>
+<nav class="top-nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-brand"><div class="nav-avatar">OB</div><span class="nav-name">Omer Bin Asif</span></a>
+    <div class="nav-links">
+      <a href="index.html" class="nav-link">Home</a>
+      <a href="projects.html" class="nav-link">Work</a>
+      <a href="skills.html" class="nav-link">Skills</a>
+      <a href="journey.html" class="nav-link">Journey</a>
+      <a href="resume.html" class="nav-link">CV</a>
+      <a href="contact.html" class="nav-link active">Contact</a>
+    </div>
+    <div class="nav-actions">
+      <a href="contact.html" class="nav-cta">Let's Talk</a>
+    </div>
+  </div>
+</nav>
+
+<div class="page">
+  <div class="page-label animate-in delay-1">Get in Touch</div>
+  <h1 class="page-title animate-in delay-1">Let's <span class="accent">connect</span></h1>
+  <p class="page-sub animate-in delay-2">Have a project in mind? Want to collaborate? Book a call or send me a message.</p>
+
+  <div class="contact-main">
+    <!-- Left Column -->
+    <div class="contact-left">
+      <div class="contact-cards animate-in delay-2">
+        <a href="mailto:omerchaudhry760@gmail.com" class="contact-card">
+          <div class="contact-icon email">✉️</div>
+          <div class="contact-label">Email</div>
+          <div class="contact-value">omerchaudhry760@gmail.com</div>
+          <div class="contact-hint">Click to send email →</div>
+        </a>
+        <div class="contact-card">
+          <div class="contact-icon location">📍</div>
+          <div class="contact-label">Location</div>
+          <div class="contact-value">Bonn, Germany</div>
+          <div class="contact-hint">Available remotely</div>
+        </div>
+        <a href="https://linkedin.com" target="_blank" class="contact-card">
+          <div class="contact-icon linkedin">💼</div>
+          <div class="contact-label">LinkedIn</div>
+          <div class="contact-value">Omer Bin Asif</div>
+          <div class="contact-hint">Let's connect →</div>
+        </a>
+        <a href="https://github.com" target="_blank" class="contact-card">
+          <div class="contact-icon github">💻</div>
+          <div class="contact-label">GitHub</div>
+          <div class="contact-value">@omerbinasif</div>
+          <div class="contact-hint">View projects →</div>
+        </a>
+      </div>
+
+      <div class="email-form animate-in delay-3">
+        <div class="form-title">Send a Message</div>
+        <div class="form-desc">Prefer to write? Send me a message directly.</div>
+        <form id="contactForm" onsubmit="handleEmail(event)">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Your Name</label>
+              <input class="form-input" type="text" id="formName" placeholder="John Doe" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Your Email</label>
+              <input class="form-input" type="email" id="formEmail" placeholder="john@example.com" required>
+            </div>
+          </div>
+          <div class="form-group" style="margin-bottom:16px">
+            <label class="form-label">Subject</label>
+            <input class="form-input" type="text" id="formSubject" placeholder="Project inquiry, collaboration, etc." required>
+          </div>
+          <div class="form-group" style="margin-bottom:16px">
+            <label class="form-label">Message</label>
+            <textarea class="form-textarea" id="formMessage" placeholder="Tell me about your project or idea..." required></textarea>
+          </div>
+          <button class="form-submit" type="submit">Send Message →</button>
+          <div class="form-success" id="formSuccess">✅ Your email client will open with the message pre-filled!</div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Right Column - Calendly -->
+    <div class="calendly-section animate-in delay-3">
+      <div class="calendly-header">
+        <div class="calendly-icon">📅</div>
+        <div class="calendly-title">Book a Call</div>
+      </div>
+      <div class="calendly-desc">Schedule a free 30-minute call to discuss your project, ideas, or anything else. Pick a time that works for you.</div>
+      <div class="calendly-embed">
+        <iframe src="https://calendly.com/omerchaudhry760?background_color=ffffff&text_color=1a1a1a&primary_color=f59e0b" loading="lazy" allow="payment"></iframe>
+      </div>
+
+      <div class="quick-links">
+        <div class="quick-links-title">Quick Links</div>
+        <div class="quick-links-grid">
+          <a href="mailto:omerchaudhry760@gmail.com?subject=Project%20Inquiry" class="quick-link">💼 Project Inquiry</a>
+          <a href="mailto:omerchaudhry760@gmail.com?subject=Collaboration" class="quick-link">🤝 Collaboration</a>
+          <a href="mailto:omerchaudhry760@gmail.com?subject=Just%20Hello!" class="quick-link">👋 Say Hello</a>
+          <a href="resume.html" class="quick-link">📄 View CV</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer class="footer">
+  <span class="footer-text">© 2026 Omer Bin Asif</span>
+  <div class="footer-links">
+    <a href="index.html" class="footer-link">Home</a>
+    <a href="projects.html" class="footer-link">Work</a>
+    <a href="resume.html" class="footer-link">CV</a>
+  </div>
+</footer>
+
+<script>
+var html=document.documentElement;
+
+function handleEmail(e){
+  e.preventDefault();
+  var name=document.getElementById('formName').value;
+  var email=document.getElementById('formEmail').value;
+  var subject=document.getElementById('formSubject').value;
+  var message=document.getElementById('formMessage').value;
+  var mailto='mailto:omerchaudhry760@gmail.com?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent('From: '+name+' ('+email+')\n\n'+message);
+  window.location.href=mailto;
+  document.getElementById('formSuccess').classList.add('show');
+  setTimeout(function(){document.getElementById('formSuccess').classList.remove('show')},5000);
+}
+</script>
+</body>
+</html>

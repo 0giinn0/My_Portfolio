@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Skills — Omer Bin Asif</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0a0a;--surface:#111111;--surface-2:#1a1a1a;--surface-3:#242424;--text:#d0d0d0;--text-secondary:#999999;--text-muted:#666666;--border:#222222;--border-light:#2a2a2a;--accent:#b0b0b0;--accent-hover:#cccccc;--nav-bg:rgba(10,10,10,0.85);--nav-border:rgba(34,34,34,0.5);--shadow:0 25px 80px rgba(0,0,0,0.5);--font-mono:'SF Mono','Fira Code','Cascadia Code',monospace}
+body{font-family:var(--font-mono);background:var(--bg);color:var(--text);min-height:100vh}
+.top-nav{position:fixed;top:0;left:0;right:0;z-index:100;background:var(--nav-bg);backdrop-filter:blur(24px) saturate(180%);-webkit-backdrop-filter:blur(24px) saturate(180%);border-bottom:1px solid var(--nav-border)}
+.nav-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:14px 32px}
+.nav-brand{display:flex;align-items:center;gap:8px;text-decoration:none;color:var(--text)}
+.nav-avatar{width:32px;height:32px;border-radius:4px;background:var(--surface-2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;color:var(--text-muted);font-family:var(--font-mono)}
+.nav-name{font-size:13px;font-weight:500;letter-spacing:.02em;text-transform:uppercase}
+.nav-links{display:flex;align-items:center;gap:2px}
+.nav-link{padding:5px 12px;border-radius:4px;text-decoration:none;color:var(--text-muted);font-size:12px;font-weight:400;transition:all .2s;font-family:var(--font-mono)}
+.nav-link:hover{color:var(--text);background:var(--surface-2)}
+.nav-link.active{color:var(--accent);background:var(--surface-2)}
+.nav-actions{display:flex;align-items:center;gap:6px}
+.nav-cta{padding:6px 14px;border-radius:4px;background:transparent;color:var(--accent);border:1px solid var(--border);text-decoration:none;font-size:11px;font-weight:400;transition:all .2s;font-family:var(--font-mono);text-transform:uppercase;letter-spacing:.05em}
+.nav-cta:hover{background:var(--surface-2);border-color:var(--accent)}
+@media(max-width:768px){.nav-links{display:none}.nav-inner{padding:12px 20px}}
+.page{max-width:900px;margin:0 auto;padding:100px 32px 60px}
+.page-label{font-size:11px;font-weight:400;color:var(--text-muted);text-transform:uppercase;letter-spacing:.15em;margin-bottom:6px}
+.page-title{font-size:clamp(22px,4vw,36px);font-weight:600;letter-spacing:-.01em;margin-bottom:28px;text-transform:uppercase}
+.page-title .accent{color:var(--accent)}
+.skills-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+.skill-card{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:20px;transition:all .2s;cursor:pointer;position:relative;overflow:hidden}
+.skill-card:hover{border-color:var(--border-light);background:var(--surface-2)}
+.skill-card-xray{position:absolute;inset:0;z-index:0;pointer-events:none;border-radius:6px;overflow:hidden;background-size:cover;background-position:center;clip-path:circle(0% at 50% 50%)}
+.skill-card > *{position:relative;z-index:1}
+.skill-header{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.skill-icon{width:40px;height:40px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;background:var(--surface-3);border:1px solid var(--border)}
+.skill-icon.ai,.skill-icon.ml,.skill-icon.design,.skill-icon.dev,.skill-icon.data,.skill-icon.tools,.skill-icon.creative,.skill-icon.python,.skill-icon.math,.skill-icon.comm{background:var(--surface-3);color:var(--text-secondary)}
+.skill-name{font-size:16px;font-weight:500;margin-bottom:3px}
+.skill-role{font-size:11px;color:var(--text-muted)}
+.skill-desc{font-size:13px;color:var(--text-secondary);line-height:1.6;margin-bottom:10px}
+.skill-tags{display:flex;flex-wrap:wrap;gap:4px}
+.skill-tag{padding:4px 10px;border-radius:3px;background:var(--surface-2);color:var(--text-muted);font-size:11px;border:1px solid var(--border)}
+.footer{max-width:1100px;margin:0 auto;padding:28px 32px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.footer-text{font-size:11px;color:var(--text-muted)}
+.footer-links{display:flex;gap:10px}
+.footer-link{font-size:11px;color:var(--text-muted);text-decoration:none}
+.footer-link:hover{color:var(--accent)}
+</style>
+</head>
+<body>
+<nav class="top-nav"><div class="nav-inner"><a href="index.html" class="nav-brand"><div class="nav-avatar">OB</div><span class="nav-name">Omer Bin Asif</span></a><div class="nav-links"><a href="index.html" class="nav-link">Home</a><a href="projects.html" class="nav-link">Work</a><a href="skills.html" class="nav-link active">Skills</a><a href="journey.html" class="nav-link">Journey</a><a href="resume.html" class="nav-link">CV</a><a href="contact.html" class="nav-link">Contact</a></div><div class="nav-actions"><a href="contact.html" class="nav-cta">Let's Talk</a></div></div></nav>
+<div class="page">
+  <div class="page-label">Expertise</div>
+  <h1 class="page-title">What I <span class="accent">excel</span> at</h1>
+  <div class="skills-grid">
+    <div class="skill-card"><div class="skill-card-xray"></div><div class="skill-header"><div class="skill-icon ai">🤖</div><div><div class="skill-name">Artificial Intelligence</div><div class="skill-role">AI & Machine Learning</div></div></div><div class="skill-desc">Teaching machines to think. They're getting scary good at it. I'm both proud and terrified.</div><div class="skill-tags"><span class="skill-tag">Neural Networks</span><span class="skill-tag">Deep Learning</span><span class="skill-tag">NLP</span></div></div>
+    <div class="skill-card"><div class="skill-card-xray"></div><div class="skill-header"><div class="skill-icon ml">🧠</div><div><div class="skill-name">Machine Learning</div><div class="skill-role">Data & Models</div></div></div><div class="skill-desc">Making computers learn from data instead of reading books. Lazy? No. Efficient? Yes.</div><div class="skill-tags"><span class="skill-tag">TensorFlow</span><span class="skill-tag">PyTorch</span><span class="skill-tag">Scikit-learn</span></div></div>
+    <div class="skill-card"><div class="skill-card-xray"></div><div class="skill-header"><div class="skill-icon ai">🔬</div><div><div class="skill-name">Deep Learning</div><div class="skill-role">Neural Networks</div></div></div><div class="skill-desc">Stacking neural networks like pancakes. The deeper, the scarier. Just how I like it.</div><div class="skill-tags"><span class="skill-tag">CNNs</span><span class="skill-tag">RNNs</span><span class="skill-tag">Transformers</span></div></div>
+    <div class="skill-card"><div class="skill-card-xray"></div><div class="skill-header"><div class="skill-icon python">🐍</div><div><div class="skill-name">Python Development</div><div class="skill-role">Programming</div></div></div><div class="skill-desc">Writing code that actually works. Revolutionary concept, I know.</div><div class="skill-tags"><span class="skill-tag">Python</span><span class="skill-tag">NumPy</span><span class="skill-tag">Pandas</span></div></div>
+    <div class="skill-card"><div class="skill-card-xray"></div><div class="skill-header"><div class="skill-icon data">📊</div><div><div class="skill-name">Data Analysis</div><div class="skill-role">Insights & Visualization</div></div></div><div class="skill-desc">Finding needles in haystacks, but the haystacks are made of numbers.</div><div class="skill-tags"><span class="skill-tag">SQL</span><span class="skill-tag">Matplotlib</span><span class="skill-tag">Data Viz</span></div></div>
+    <div class="skill-card"><div class="skill-card-xray"></div><div class="skill-header"><div class="skill-icon ml">📈</div><div><div class="skill-name">Model Optimization</div><div class="skill-role">Performance Tuning</div></div></div><div class="skill-desc">Making AI faster so it can judge you in real-time. You're welcome.</div><div class="skill-tags"><span class="skill-tag">Model Compression</span><span class="skill-tag">Quantization</span><span class="skill-tag">Pruning</span></div></div>
+    <div class="skill-card"><div class="skill-card-xray"></div><div class="skill-header"><div class="skill-icon data">🤖</div><div><div class="skill-name">NLP & Chatbots</div><div class="skill-role">Language Models</div></div></div><div class="skill-desc">Building chatbots that don't want to destroy humanity. Low bar, I know.</div><div class="skill-tags"><span class="skill-tag">GPT</span><span class="skill-tag">BERT</span><span class="skill-tag">LangChain</span></div></div>
+    <div class="skill-card"><div class="skill-card-xray"></div><div class="skill-header"><div class="skill-icon dev">💻</div><div><div class="skill-name">Software Development</div><div class="skill-role">Full Stack</div></div></div><div class="skill-desc">Full-stack developer. I touch both ends. Nice.</div><div class="skill-tags"><span class="skill-tag">HTML/CSS</span><span class="skill-tag">JavaScript</span><span class="skill-tag">Git</span></div></div>
+    <div class="skill-card"><div class="skill-card-xray"></div><div class="skill-header"><div class="skill-icon tools">⌨️</div><div><div class="skill-name">Coding Tools & IDEs</div><div class="skill-role">Development Environment</div></div></div><div class="skill-desc">I let AI write my code so I can take credit. It's called delegation.</div><div class="skill-tags"><span class="skill-tag">Pi Coding Agent</span><span class="skill-tag">OpenCode</span><span class="skill-tag">VS Code</span><span class="skill-tag">Cursor</span><span class="skill-tag">Copilot</span></div></div>
+    <div class="skill-card"><div class="skill-card-xray"></div><div class="skill-header"><div class="skill-icon ai">🤖</div><div><div class="skill-name">AI Development Tools</div><div class="skill-role">AI-Powered Coding</div></div></div><div class="skill-desc">Using AI to build AI. It's like inception, but with more coffee.</div><div class="skill-tags"><span class="skill-tag">ChatGPT</span><span class="skill-tag">Claude</span><span class="skill-tag">GitHub Copilot</span><span class="skill-tag">AI Agents</span></div></div>
+    <div class="skill-card"><div class="skill-card-xray"></div><div class="skill-header"><div class="skill-icon math">📐</div><div><div class="skill-name">Mathematics</div><div class="skill-role">Foundation</div></div></div><div class="skill-desc">Math that makes AI possible. I didn't choose the nerd life, it chose me.</div><div class="skill-tags"><span class="skill-tag">Linear Algebra</span><span class="skill-tag">Calculus</span><span class="skill-tag">Statistics</span></div></div>
+    <div class="skill-card"><div class="skill-card-xray"></div><div class="skill-header"><div class="skill-icon comm">🗣️</div><div><div class="skill-name">Communication</div><div class="skill-role">Languages</div></div></div><div class="skill-desc">I speak 5 languages. Mostly so I can argue with myself in different accents.</div><div class="skill-tags"><span class="skill-tag">English (Fluent)</span><span class="skill-tag">Urdu (Fluent)</span><span class="skill-tag">German (B2)</span></div></div>
+    <div class="skill-card"><div class="skill-card-xray"></div><div class="skill-header"><div class="skill-icon design">🎨</div><div><div class="skill-name">UI/UX Design</div><div class="skill-role">User Experience</div></div></div><div class="skill-desc">Making things pretty so you'll actually use them. You're welcome.</div><div class="skill-tags"><span class="skill-tag">Figma</span><span class="skill-tag">Prototyping</span><span class="skill-tag">User Flows</span></div></div>
+    <div class="skill-card"><div class="skill-card-xray"></div><div class="skill-header"><div class="skill-icon creative">✏️</div><div><div class="skill-name">Character Design</div><div class="skill-role">Illustration</div></div></div><div class="skill-desc">Drawing fictional people because real ones are disappointing.</div><div class="skill-tags"><span class="skill-tag">Krita</span><span class="skill-tag">Digital Art</span><span class="skill-tag">Concept Art</span></div></div>
+    <div class="skill-card"><div class="skill-card-xray"></div><div class="skill-header"><div class="skill-icon tools">🔧</div><div><div class="skill-name">3D Modeling</div><div class="skill-role">Digital Art</div></div></div><div class="skill-desc">Creating 3D assets and models for games and interactive experiences.</div><div class="skill-tags"><span class="skill-tag">Blender</span><span class="skill-tag">3D Assets</span><span class="skill-tag">Modeling</span></div></div>
+    <div class="skill-card"><div class="skill-card-xray"></div><div class="skill-header"><div class="skill-icon design">🖼️</div><div><div class="skill-name">Graphic Design</div><div class="skill-role">Visual Communication</div></div></div><div class="skill-desc">Creating compelling visual content from logos to social media graphics.</div><div class="skill-tags"><span class="skill-tag">Adobe Creative</span><span class="skill-tag">Canva</span><span class="skill-tag">Branding</span></div></div>
+  </div>
+</div>
+<footer class="footer"><span class="footer-text">© 2026 Omer Bin Asif</span><div class="footer-links"><a href="index.html" class="footer-link">Home</a><a href="resume.html" class="footer-link">CV</a><a href="contact.html" class="footer-link">Contact</a></div></footer>
+<script>
+var html=document.documentElement;
+
+document.querySelectorAll('.skill-card-xray').forEach(function(xray){
+    xray.style.backgroundImage='url("XRAY CSS image/Dark mode.png")';
+  });
+
+document.querySelectorAll('.skill-card').forEach(function(card){
+  var xray=card.querySelector('.skill-card-xray');
+  if(!xray)return;
+  card.addEventListener('mouseenter',function(e){
+    var rect=card.getBoundingClientRect();
+    var x=((e.clientX-rect.left)/rect.width)*100;
+    var y=((e.clientY-rect.top)/rect.height)*100;
+    xray.style.setProperty('--mx',x+'%');
+    xray.style.setProperty('--my',y+'%');
+    xray.style.transition='clip-path .5s cubic-bezier(.34,1.56,.64,1)';
+    xray.style.clipPath='circle(35% at var(--mx,50%) var(--my,50%))';
+  });
+  card.addEventListener('mousemove',function(e){
+    var rect=card.getBoundingClientRect();
+    xray.style.transition='none';
+    xray.style.setProperty('--mx',((e.clientX-rect.left)/rect.width*100)+'%');
+    xray.style.setProperty('--my',((e.clientY-rect.top)/rect.height*100)+'%');
+  });
+  card.addEventListener('mouseleave',function(){
+    xray.style.transition='clip-path .5s cubic-bezier(.34,1.56,.64,1)';
+    xray.style.clipPath='circle(0% at 50% 50%)';
+    setTimeout(function(){xray.style.transition='';xray.style.clipPath=''},500);
+  });
+});
+</script>
+</body>
+</html>

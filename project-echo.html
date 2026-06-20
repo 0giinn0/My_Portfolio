@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Echo — Character Design Gallery</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@700;800;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+:root{--bg:#ffffff;--surface:#f8f9fa;--surface-2:#ffffff;--surface-3:#f1f3f4;--text:#202124;--text-secondary:#5f6368;--text-muted:#9aa0a6;--border:#e0e0e0;--border-light:#f0f0f0;--nav-bg:rgba(255,255,255,0.95);--nav-border:rgba(224,224,224,0.5);--font-mono:'SF Mono','Fira Code','Cascadia Code',monospace;
+  
+  
+  
+  --accent:#8b5cf6;--accent-light:#a78bfa;--accent-dark:#7c3aed;
+  --purple:#7c3aed;--purple-light:#8b5cf6;
+   --shadow:0 25px 80px rgba(0,0,0,0.1);
+}body{font-family:var(--font-mono);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;transition:all .4s}
+.top-nav{position:fixed;top:0;left:0;right:0;z-index:100;height:48px;display:flex;align-items:center;background:var(--nav-bg);backdrop-filter:blur(24px) saturate(180%);-webkit-backdrop-filter:blur(24px) saturate(180%);border-bottom:1px solid var(--nav-border)}
+.nav-inner{max-width:1200px;margin:0 auto;width:100%;display:flex;align-items:center;justify-content:space-between;padding:0 24px}
+.nav-brand{display:flex;align-items:center;gap:8px;text-decoration:none;color:var(--text)}
+.nav-avatar{width:28px;height:28px;border-radius:4px;background:var(--surface-2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;color:var(--text-muted);font-family:var(--font-mono)}
+.nav-name{font-size:12px;font-weight:500;letter-spacing:.02em;text-transform:uppercase}
+.nav-links{display:flex;align-items:center;gap:2px}
+.nav-link{padding:4px 10px;border-radius:4px;text-decoration:none;color:var(--text-muted);font-size:11px;font-weight:400;transition:all .2s;font-family:var(--font-mono)}
+.nav-link:hover{color:var(--text);background:var(--surface-2)}
+.nav-link.active{color:var(--accent);background:var(--surface-2)}
+.nav-actions{display:flex;align-items:center;gap:6px}
+.nav-cta{padding:5px 12px;border-radius:4px;background:transparent;color:var(--accent);border:1px solid var(--border);text-decoration:none;font-size:10px;font-weight:400;transition:all .2s;font-family:var(--font-mono);text-transform:uppercase;letter-spacing:.05em}
+.nav-cta:hover{background:var(--surface-2);border-color:var(--accent)}
+
+
+/* Container */
+.container{max-width:1200px;margin:0 auto;width:100%;padding:80px 24px}
+
+/* Theme Toggle */
+@media(max-width:768px){.container{padding:60px 20px 40px;max-width:100%;width:100%;margin:0 auto}}
+
+/* Header */
+.page-header{text-align:center;margin-bottom:60px}
+.page-label{font-size:12px;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:.2em;margin-bottom:16px;display:inline-flex;align-items:center;gap:12px}
+.page-label::before,.page-label::after{content:'';width:32px;height:1px;background:var(--accent)}
+.page-title{font-family:'Playfair Display',serif;font-size:clamp(40px,8vw,72px);font-weight:900;line-height:1;letter-spacing:-.03em;margin-bottom:20px}
+.page-title .accent{color:var(--accent);font-style:italic}
+.page-sub{font-size:18px;color:var(--text-secondary);max-width:600px;margin:0 auto;line-height:1.7}
+
+/* Stats Bar */
+.stats-bar{display:flex;justify-content:center;gap:40px;margin-top:40px;padding:24px;background:var(--surface);border:1px solid var(--border);border-radius:20px}
+.stat{text-align:center}
+.stat-value{font-size:28px;font-weight:800;color:var(--accent);font-family:'Playfair Display',serif}
+.stat-label{font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.1em;margin-top:4px}
+
+/* Filter Tabs */
+.filter-tabs{display:flex;justify-content:center;gap:8px;margin-bottom:40px;flex-wrap:wrap}
+.filter-tab{padding:12px 24px;border-radius:14px;border:1px solid var(--border);background:transparent;color:var(--text-secondary);font-family:'Inter',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:all .3s}
+.filter-tab:hover{border-color:var(--accent);color:var(--text)}
+.filter-tab.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+/* Horizontal Scroll Loop */
+.scroll-section{margin-bottom:60px;overflow:hidden}
+.scroll-title{font-size:12px;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:.15em;margin-bottom:16px;display:flex;align-items:center;gap:12px}
+.scroll-title::before{content:'';width:24px;height:1px;background:var(--accent)}
+.scroll-track{position:relative;width:100%;overflow:hidden;padding:20px 0}
+.scroll-track::before,.scroll-track::after{content:'';position:absolute;top:0;bottom:0;width:100px;z-index:2;pointer-events:none}
+.scroll-track::before{left:0;background:linear-gradient(90deg,var(--bg),transparent)}
+.scroll-track::after{right:0;background:linear-gradient(-90deg,var(--bg),transparent)}
+.scroll-wrapper{display:flex;gap:20px;animation:scroll 40s linear infinite;width:max-content}
+@keyframes scroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+.scroll-item{flex-shrink:0;width:280px;height:280px;border-radius:16px;overflow:hidden;cursor:pointer;transition:all .3s;position:relative}
+.scroll-item:hover{transform:scale(1.05);box-shadow:0 12px 40px rgba(139,92,246,0.3)}
+.scroll-item img{width:100%;height:100%;object-fit:cover}
+.scroll-item-overlay{position:absolute;inset:0;background:linear-gradient(180deg,transparent 50%,rgba(0,0,0,0.7) 100%);opacity:0;transition:opacity .3s;display:flex;align-items:flex-end;padding:12px}
+.scroll-item:hover .scroll-item-overlay{opacity:1}
+.scroll-item-name{font-size:12px;font-weight:600;color:#fff}
+
+/* Gallery Grid */
+.gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px}
+@media(max-width:600px){.gallery{grid-template-columns:1fr}}
+
+/* Gallery Card */
+.gallery-card{position:relative;border-radius:20px;overflow:hidden;background:var(--surface);border:1px solid var(--border);cursor:pointer;transition:all .4s cubic-bezier(.34,1.56,.64,1);aspect-ratio:3/4}
+.gallery-card:hover{transform:translateY(-8px) scale(1.02);border-color:var(--accent);box-shadow:0 20px 60px rgba(139,92,246,0.2)}.card-image{width:100%;height:100%;object-fit:cover;transition:transform .6s ease}
+.gallery-card:hover .card-image{transform:scale(1.05)}
+.card-overlay{position:absolute;inset:0;background:linear-gradient(180deg,transparent 40%,rgba(0,0,0,0.8) 100%);opacity:0;transition:opacity .4s;display:flex;flex-direction:column;justify-content:flex-end;padding:24px}
+.gallery-card:hover .card-overlay{opacity:1}
+.card-category{font-size:11px;font-weight:600;color:var(--accent-light);text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px}
+.card-title{font-size:20px;font-weight:700;margin-bottom:4px}
+.card-desc{font-size:13px;color:rgba(255,255,255,0.7);line-height:1.5}
+
+/* Light mode overlay text */
+/* Lightbox */
+.lightbox{position:fixed;inset:0;background:rgba(255,255,255,0.95);z-index:1000;display:none;align-items:center;justify-content:center;padding:40px;cursor:pointer}
+.lightbox.active{display:flex}
+.lightbox-content{max-width:90vw;max-height:90vh;position:relative}
+.lightbox-img{max-width:100%;max-height:85vh;border-radius:16px;box-shadow:0 25px 80px rgba(0,0,0,0.1)}
+.lightbox-info{position:absolute;bottom:-60px;left:0;right:0;text-align:center}
+.lightbox-title{font-size:24px;font-weight:700;color:#202124;margin-bottom:4px}
+.lightbox-category{font-size:14px;color:var(--accent-light)}
+.lightbox-close{position:fixed;top:24px;right:24px;width:48px;height:48px;border-radius:50%;background:rgba(0,0,0,0.1);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#202124;font-size:24px;transition:all .3s}
+.lightbox-close:hover{background:rgba(0,0,0,0.2);transform:scale(1.1)}
+.lightbox-nav{position:fixed;top:50%;transform:translateY(-50%);width:48px;height:48px;border-radius:50%;background:rgba(0,0,0,0.1);border:none;cursor:pointer;display:flex;align-items:center:justify-content:center;color:#202124;font-size:20px;transition:all .3s}
+.lightbox-nav:hover{background:rgba(0,0,0,0.2)}
+.lightbox-prev{left:24px}
+.lightbox-next{right:24px}
+
+/* About Section */
+.about-section{margin-top:80px;padding:48px;background:var(--surface);border:1px solid var(--border);border-radius:24px}
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center}
+@media(max-width:768px){.about-grid{grid-template-columns:1fr}}
+.about-content h2{font-family:'Playfair Display',serif;font-size:32px;font-weight:900;margin-bottom:16px}
+.about-content p{font-size:15px;color:var(--text-secondary);line-height:1.8;margin-bottom:16px}
+.about-tags{display:flex;flex-wrap:wrap;gap:8px}
+.about-tag{padding:8px 16px;border-radius:10px;background:var(--surface-2);border:1px solid var(--border);font-size:13px;font-weight:500;color:var(--text-secondary)}
+.about-visual{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.about-img{border-radius:16px;overflow:hidden;aspect-ratio:1}
+.about-img img{width:100%;height:100%;object-fit:cover}
+
+/* Footer */
+.page-footer{margin-top:80px;text-align:center}
+.footer-link{color:var(--accent);text-decoration:none;font-weight:600;font-size:14px}
+.footer-link:hover{text-decoration:underline}
+
+@keyframes fadeInUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+.animate-in{animation:fadeInUp .6s cubic-bezier(.34,1.56,.64,1) forwards;opacity:0}
+.delay-1{animation-delay:.1s}.delay-2{animation-delay:.15s}.delay-3{animation-delay:.2s}.delay-4{animation-delay:.25s}.delay-5{animation-delay:.3s}
+</style>
+</head>
+<body>
+<nav class="top-nav"><div class="nav-inner"><a href="index.html" class="nav-brand"><div class="nav-avatar">OB</div><span class="nav-name">Omer Bin Asif</span></a><div class="nav-links"><a href="index.html" class="nav-link">Home</a><a href="projects.html" class="nav-link active">Work</a><a href="skills.html" class="nav-link">Skills</a><a href="journey.html" class="nav-link">Journey</a><a href="resume.html" class="nav-link">CV</a><a href="contact.html" class="nav-link">Contact</a></div><div class="nav-actions"><a href="contact.html" class="nav-cta">Let's Talk</a></div></div></nav>
+<div class="container">
+  <header class="page-header animate-in delay-1">
+    <div class="page-label">Character Design</div>
+    <h1 class="page-title">Echo <span class="accent">Gallery</span></h1>
+    <p class="page-sub">A collection of original character illustrations — from samurai warriors to modern mobsters. Each piece tells a story through ink and imagination.</p>
+    <div class="stats-bar animate-in delay-2">
+      <div class="stat"><div class="stat-value">80+</div><div class="stat-label">Pieces</div></div>
+      <div class="stat"><div class="stat-value">20</div><div class="stat-label">Animations</div></div>
+      <div class="stat"><div class="stat-value">3</div><div class="stat-label">Collections</div></div>
+      <div class="stat"><div class="stat-value">2</div><div class="stat-label">Years</div></div>
+    </div>
+  </header>
+
+  <!-- Horizontal Scrolling Loop -->
+  <div class="scroll-section animate-in delay-2">
+    <div class="scroll-title">Swipe to Explore</div>
+    <div class="scroll-track">
+      <div class="scroll-wrapper" id="scrollWrapper">
+        <div class="scroll-item" onclick="openLightbox(0)"><img src="Drawings/1.png" alt="1"></div>
+        <div class="scroll-item" onclick="openLightbox(1)"><img src="Drawings/2.png" alt="2"></div>
+        <div class="scroll-item" onclick="openLightbox(2)"><img src="Drawings/3.png" alt="3"></div>
+        <div class="scroll-item" onclick="openLightbox(3)"><img src="Drawings/4.png" alt="4"></div>
+        <div class="scroll-item" onclick="openLightbox(4)"><img src="Drawings/5.png" alt="5"></div>
+        <div class="scroll-item" onclick="openLightbox(5)"><img src="Drawings/6.png" alt="6"></div>
+        <div class="scroll-item" onclick="openLightbox(6)"><img src="Drawings/7.png" alt="7"></div>
+        <div class="scroll-item" onclick="openLightbox(7)"><img src="Drawings/8.png" alt="8"></div>
+        <div class="scroll-item" onclick="openLightbox(8)"><img src="Drawings/9.png" alt="9"></div>
+        <div class="scroll-item" onclick="openLightbox(9)"><img src="Drawings/10.png" alt="10"></div>
+        <div class="scroll-item" onclick="openLightbox(10)"><img src="Drawings/11.png" alt="11"></div>
+        <div class="scroll-item" onclick="openLightbox(11)"><img src="Drawings/12.png" alt="12"></div>
+        <div class="scroll-item" onclick="openLightbox(12)"><img src="Drawings/13.png" alt="13"></div>
+        <div class="scroll-item" onclick="openLightbox(13)"><img src="Drawings/14.png" alt="14"></div>
+        <div class="scroll-item" onclick="openLightbox(14)"><img src="Drawings/16.png" alt="15"></div>
+        <div class="scroll-item" onclick="openLightbox(15)"><img src="Drawings/17.png" alt="16"></div>
+        <div class="scroll-item" onclick="openLightbox(16)"><img src="Drawings/18.png" alt="17"></div>
+        <div class="scroll-item" onclick="openLightbox(17)"><img src="Drawings/26.png" alt="18"></div>
+        <div class="scroll-item" onclick="openLightbox(18)"><img src="Drawings/30.png" alt="19"></div>
+        <div class="scroll-item" onclick="openLightbox(19)"><img src="Drawings/31.png" alt="20"></div>
+        <div class="scroll-item" onclick="openLightbox(20)"><img src="Drawings/32.png" alt="21"></div>
+        <div class="scroll-item" onclick="openLightbox(21)"><img src="Drawings/36.png" alt="22"></div>
+        <div class="scroll-item" onclick="openLightbox(22)"><img src="Drawings/37.png" alt="23"></div>
+        <div class="scroll-item" onclick="openLightbox(23)"><img src="Drawings/39.png" alt="24"></div>
+        <div class="scroll-item" onclick="openLightbox(24)"><img src="Drawings/41.png" alt="25"></div>
+        <div class="scroll-item" onclick="openLightbox(25)"><img src="Drawings/42.png" alt="26"></div>
+        <div class="scroll-item" onclick="openLightbox(26)"><img src="Drawings/43.png" alt="27"></div>
+        <div class="scroll-item" onclick="openLightbox(27)"><img src="Drawings/44.png" alt="28"></div>
+        <div class="scroll-item" onclick="openLightbox(28)"><img src="Drawings/45.png" alt="29"></div>
+        <div class="scroll-item" onclick="openLightbox(29)"><img src="Drawings/46.png" alt="30"></div>
+        <div class="scroll-item" onclick="openLightbox(30)"><img src="Drawings/47.png" alt="31"></div>
+        <div class="scroll-item" onclick="openLightbox(31)"><img src="Drawings/51.png" alt="32"></div>
+        <div class="scroll-item" onclick="openLightbox(32)"><img src="Drawings/52.png" alt="33"></div>
+        <div class="scroll-item" onclick="openLightbox(33)"><img src="Drawings/53.png" alt="34"></div>
+        <div class="scroll-item" onclick="openLightbox(34)"><img src="Drawings/54.png" alt="35"></div>
+        <div class="scroll-item" onclick="openLightbox(35)"><img src="Drawings/55.png" alt="36"></div>
+        <div class="scroll-item" onclick="openLightbox(36)"><img src="Drawings/56.png" alt="37"></div>
+        <div class="scroll-item" onclick="openLightbox(37)"><img src="Drawings/57.png" alt="38"></div>
+        <div class="scroll-item" onclick="openLightbox(38)"><img src="Drawings/60.png" alt="39"></div>
+        <div class="scroll-item" onclick="openLightbox(39)"><img src="Drawings/61.png" alt="40"></div>
+        <div class="scroll-item" onclick="openLightbox(40)"><img src="Drawings/62.png" alt="41"></div>
+        <div class="scroll-item" onclick="openLightbox(41)"><img src="Drawings/63.png" alt="42"></div>
+        <div class="scroll-item" onclick="openLightbox(42)"><img src="Drawings/64.png" alt="43"></div>
+        <div class="scroll-item" onclick="openLightbox(43)"><img src="Drawings/65.png" alt="44"></div>
+        <div class="scroll-item" onclick="openLightbox(44)"><img src="Drawings/66.png" alt="45"></div>
+        <div class="scroll-item" onclick="openLightbox(45)"><img src="Drawings/67.png" alt="46"></div>
+        <div class="scroll-item" onclick="openLightbox(46)"><img src="Drawings/68.png" alt="47"></div>
+        <div class="scroll-item" onclick="openLightbox(47)"><img src="Drawings/69.png" alt="48"></div>
+        <div class="scroll-item" onclick="openLightbox(48)"><img src="Drawings/70.png" alt="49"></div>
+        <div class="scroll-item" onclick="openLightbox(49)"><img src="Drawings/71.png" alt="50"></div>
+        <div class="scroll-item" onclick="openLightbox(50)"><img src="Drawings/72.png" alt="51"></div>
+        <div class="scroll-item" onclick="openLightbox(51)"><img src="Drawings/73.png" alt="52"></div>
+        <div class="scroll-item" onclick="openLightbox(52)"><img src="Drawings/75.png" alt="53"></div>
+        <div class="scroll-item" onclick="openLightbox(53)"><img src="Drawings/76.png" alt="54"></div>
+        <div class="scroll-item" onclick="openLightbox(54)"><img src="Drawings/77.png" alt="55"></div>
+        <div class="scroll-item" onclick="openLightbox(55)"><img src="Drawings/78.png" alt="56"></div>
+        <div class="scroll-item" onclick="openLightbox(56)"><img src="Drawings/79.png" alt="57"></div>
+        <div class="scroll-item" onclick="openLightbox(57)"><img src="Drawings/80.png" alt="58"></div>
+        <div class="scroll-item" onclick="openLightbox(58)"><img src="Drawings/FACES (2).png" alt="59"></div>
+        <div class="scroll-item" onclick="openLightbox(59)"><img src="Drawings/Mon.png" alt="60"></div>
+        <div class="scroll-item" onclick="openLightbox(60)"><img src="Drawings/TEARS.gif" alt="Tears"></div>
+        <div class="scroll-item" onclick="openLightbox(61)"><img src="Drawings/EYES BLINK 2.gif" alt="Eyes Blink"></div>
+        <div class="scroll-item" onclick="openLightbox(62)"><img src="Drawings/Candle (fix it).gif" alt="Candle"></div>
+        <div class="scroll-item" onclick="openLightbox(63)"><img src="Drawings/CREEPY SKULL ANIMATION.gif" alt="Creepy Skull"></div>
+        <div class="scroll-item" onclick="openLightbox(64)"><img src="Drawings/HATCH.gif" alt="Hatch"></div>
+        <div class="scroll-item" onclick="openLightbox(65)"><img src="Drawings/FOR FUN 2.gif" alt="For Fun 2"></div>
+        <div class="scroll-item" onclick="openLightbox(66)"><img src="Drawings/My Hand.gif" alt="My Hand"></div>
+        <div class="scroll-item" onclick="openLightbox(67)"><img src="Drawings/for fun.gif" alt="For Fun"></div>
+        <div class="scroll-item" onclick="openLightbox(68)"><img src="Drawings/yin and yang 2.gif" alt="Yin &amp; Yang"></div>
+        <div class="scroll-item" onclick="openLightbox(69)"><img src="Drawings/CREEPY SKULL ANIMATION (1).gif" alt="Creepy Skull II"></div>
+        <div class="scroll-item" onclick="openLightbox(70)"><img src="Drawings/BUILDING.gif" alt="Building"></div>
+        <div class="scroll-item" onclick="openLightbox(71)"><img src="Drawings/HALF ELF.gif" alt="Half Elf"></div>
+        <div class="scroll-item" onclick="openLightbox(72)"><img src="Drawings/CHARACTERS FEMALE 1 .gif" alt="Female I"></div>
+        <div class="scroll-item" onclick="openLightbox(73)"><img src="Drawings/CHARACTERS FEMALE 3 .gif" alt="Female III"></div>
+        <div class="scroll-item" onclick="openLightbox(74)"><img src="Drawings/CHARACTERS FEMALE 4 .gif" alt="Female IV"></div>
+        <div class="scroll-item" onclick="openLightbox(75)"><img src="Drawings/OVERCOAT.gif" alt="Overcoat"></div>
+        <div class="scroll-item" onclick="openLightbox(76)"><img src="Drawings/BOSS MAN.gif" alt="Boss Man"></div>
+        <div class="scroll-item" onclick="openLightbox(77)"><img src="Drawings/ABSTRACT.gif" alt="Abstract"></div>
+        <div class="scroll-item" onclick="openLightbox(78)"><img src="Drawings/Male 1.gif" alt="Male I"></div>
+        <div class="scroll-item" onclick="openLightbox(79)"><img src="Drawings/Male 2.gif" alt="Male II"></div>
+        <!-- Duplicates for infinite loop -->
+        <div class="scroll-item" onclick="openLightbox(0)"><img src="Drawings/1.png" alt="1"></div>
+        <div class="scroll-item" onclick="openLightbox(1)"><img src="Drawings/2.png" alt="2"></div>
+        <div class="scroll-item" onclick="openLightbox(2)"><img src="Drawings/3.png" alt="3"></div>
+        <div class="scroll-item" onclick="openLightbox(3)"><img src="Drawings/4.png" alt="4"></div>
+        <div class="scroll-item" onclick="openLightbox(4)"><img src="Drawings/5.png" alt="5"></div>
+        <div class="scroll-item" onclick="openLightbox(5)"><img src="Drawings/6.png" alt="6"></div>
+        <div class="scroll-item" onclick="openLightbox(6)"><img src="Drawings/7.png" alt="7"></div>
+        <div class="scroll-item" onclick="openLightbox(7)"><img src="Drawings/8.png" alt="8"></div>
+        <div class="scroll-item" onclick="openLightbox(8)"><img src="Drawings/9.png" alt="9"></div>
+        <div class="scroll-item" onclick="openLightbox(9)"><img src="Drawings/10.png" alt="10"></div>
+        <div class="scroll-item" onclick="openLightbox(10)"><img src="Drawings/11.png" alt="11"></div>
+        <div class="scroll-item" onclick="openLightbox(11)"><img src="Drawings/12.png" alt="12"></div>
+        <div class="scroll-item" onclick="openLightbox(12)"><img src="Drawings/13.png" alt="13"></div>
+        <div class="scroll-item" onclick="openLightbox(13)"><img src="Drawings/14.png" alt="14"></div>
+        <div class="scroll-item" onclick="openLightbox(14)"><img src="Drawings/16.png" alt="15"></div>
+        <div class="scroll-item" onclick="openLightbox(15)"><img src="Drawings/17.png" alt="16"></div>
+        <div class="scroll-item" onclick="openLightbox(16)"><img src="Drawings/18.png" alt="17"></div>
+        <div class="scroll-item" onclick="openLightbox(17)"><img src="Drawings/26.png" alt="18"></div>
+        <div class="scroll-item" onclick="openLightbox(18)"><img src="Drawings/30.png" alt="19"></div>
+        <div class="scroll-item" onclick="openLightbox(19)"><img src="Drawings/31.png" alt="20"></div>
+        <div class="scroll-item" onclick="openLightbox(20)"><img src="Drawings/32.png" alt="21"></div>
+        <div class="scroll-item" onclick="openLightbox(21)"><img src="Drawings/36.png" alt="22"></div>
+        <div class="scroll-item" onclick="openLightbox(22)"><img src="Drawings/37.png" alt="23"></div>
+        <div class="scroll-item" onclick="openLightbox(23)"><img src="Drawings/39.png" alt="24"></div>
+        <div class="scroll-item" onclick="openLightbox(24)"><img src="Drawings/41.png" alt="25"></div>
+        <div class="scroll-item" onclick="openLightbox(25)"><img src="Drawings/42.png" alt="26"></div>
+        <div class="scroll-item" onclick="openLightbox(26)"><img src="Drawings/43.png" alt="27"></div>
+        <div class="scroll-item" onclick="openLightbox(27)"><img src="Drawings/44.png" alt="28"></div>
+        <div class="scroll-item" onclick="openLightbox(28)"><img src="Drawings/45.png" alt="29"></div>
+        <div class="scroll-item" onclick="openLightbox(29)"><img src="Drawings/46.png" alt="30"></div>
+        <div class="scroll-item" onclick="openLightbox(30)"><img src="Drawings/47.png" alt="31"></div>
+        <div class="scroll-item" onclick="openLightbox(31)"><img src="Drawings/51.png" alt="32"></div>
+        <div class="scroll-item" onclick="openLightbox(32)"><img src="Drawings/52.png" alt="33"></div>
+        <div class="scroll-item" onclick="openLightbox(33)"><img src="Drawings/53.png" alt="34"></div>
+        <div class="scroll-item" onclick="openLightbox(34)"><img src="Drawings/54.png" alt="35"></div>
+        <div class="scroll-item" onclick="openLightbox(35)"><img src="Drawings/55.png" alt="36"></div>
+        <div class="scroll-item" onclick="openLightbox(36)"><img src="Drawings/56.png" alt="37"></div>
+        <div class="scroll-item" onclick="openLightbox(37)"><img src="Drawings/57.png" alt="38"></div>
+        <div class="scroll-item" onclick="openLightbox(38)"><img src="Drawings/60.png" alt="39"></div>
+        <div class="scroll-item" onclick="openLightbox(39)"><img src="Drawings/61.png" alt="40"></div>
+        <div class="scroll-item" onclick="openLightbox(40)"><img src="Drawings/62.png" alt="41"></div>
+        <div class="scroll-item" onclick="openLightbox(41)"><img src="Drawings/63.png" alt="42"></div>
+        <div class="scroll-item" onclick="openLightbox(42)"><img src="Drawings/64.png" alt="43"></div>
+        <div class="scroll-item" onclick="openLightbox(43)"><img src="Drawings/65.png" alt="44"></div>
+        <div class="scroll-item" onclick="openLightbox(44)"><img src="Drawings/66.png" alt="45"></div>
+        <div class="scroll-item" onclick="openLightbox(45)"><img src="Drawings/67.png" alt="46"></div>
+        <div class="scroll-item" onclick="openLightbox(46)"><img src="Drawings/68.png" alt="47"></div>
+        <div class="scroll-item" onclick="openLightbox(47)"><img src="Drawings/69.png" alt="48"></div>
+        <div class="scroll-item" onclick="openLightbox(48)"><img src="Drawings/70.png" alt="49"></div>
+        <div class="scroll-item" onclick="openLightbox(49)"><img src="Drawings/71.png" alt="50"></div>
+        <div class="scroll-item" onclick="openLightbox(50)"><img src="Drawings/72.png" alt="51"></div>
+        <div class="scroll-item" onclick="openLightbox(51)"><img src="Drawings/73.png" alt="52"></div>
+        <div class="scroll-item" onclick="openLightbox(52)"><img src="Drawings/75.png" alt="53"></div>
+        <div class="scroll-item" onclick="openLightbox(53)"><img src="Drawings/76.png" alt="54"></div>
+        <div class="scroll-item" onclick="openLightbox(54)"><img src="Drawings/77.png" alt="55"></div>
+        <div class="scroll-item" onclick="openLightbox(55)"><img src="Drawings/78.png" alt="56"></div>
+        <div class="scroll-item" onclick="openLightbox(56)"><img src="Drawings/79.png" alt="57"></div>
+        <div class="scroll-item" onclick="openLightbox(57)"><img src="Drawings/80.png" alt="58"></div>
+        <div class="scroll-item" onclick="openLightbox(58)"><img src="Drawings/FACES (2).png" alt="59"></div>
+        <div class="scroll-item" onclick="openLightbox(59)"><img src="Drawings/Mon.png" alt="60"></div>
+        <div class="scroll-item" onclick="openLightbox(60)"><img src="Drawings/TEARS.gif" alt="Tears"></div>
+        <div class="scroll-item" onclick="openLightbox(61)"><img src="Drawings/EYES BLINK 2.gif" alt="Eyes Blink"></div>
+        <div class="scroll-item" onclick="openLightbox(62)"><img src="Drawings/Candle (fix it).gif" alt="Candle"></div>
+        <div class="scroll-item" onclick="openLightbox(63)"><img src="Drawings/CREEPY SKULL ANIMATION.gif" alt="Creepy Skull"></div>
+        <div class="scroll-item" onclick="openLightbox(64)"><img src="Drawings/HATCH.gif" alt="Hatch"></div>
+        <div class="scroll-item" onclick="openLightbox(65)"><img src="Drawings/FOR FUN 2.gif" alt="For Fun 2"></div>
+        <div class="scroll-item" onclick="openLightbox(66)"><img src="Drawings/My Hand.gif" alt="My Hand"></div>
+        <div class="scroll-item" onclick="openLightbox(67)"><img src="Drawings/for fun.gif" alt="For Fun"></div>
+        <div class="scroll-item" onclick="openLightbox(68)"><img src="Drawings/yin and yang 2.gif" alt="Yin &amp; Yang"></div>
+        <div class="scroll-item" onclick="openLightbox(69)"><img src="Drawings/CREEPY SKULL ANIMATION (1).gif" alt="Creepy Skull II"></div>
+        <div class="scroll-item" onclick="openLightbox(70)"><img src="Drawings/BUILDING.gif" alt="Building"></div>
+        <div class="scroll-item" onclick="openLightbox(71)"><img src="Drawings/HALF ELF.gif" alt="Half Elf"></div>
+        <div class="scroll-item" onclick="openLightbox(72)"><img src="Drawings/CHARACTERS FEMALE 1 .gif" alt="Female I"></div>
+        <div class="scroll-item" onclick="openLightbox(73)"><img src="Drawings/CHARACTERS FEMALE 3 .gif" alt="Female III"></div>
+        <div class="scroll-item" onclick="openLightbox(74)"><img src="Drawings/CHARACTERS FEMALE 4 .gif" alt="Female IV"></div>
+        <div class="scroll-item" onclick="openLightbox(75)"><img src="Drawings/OVERCOAT.gif" alt="Overcoat"></div>
+        <div class="scroll-item" onclick="openLightbox(76)"><img src="Drawings/BOSS MAN.gif" alt="Boss Man"></div>
+        <div class="scroll-item" onclick="openLightbox(77)"><img src="Drawings/ABSTRACT.gif" alt="Abstract"></div>
+        <div class="scroll-item" onclick="openLightbox(78)"><img src="Drawings/Male 1.gif" alt="Male I"></div>
+        <div class="scroll-item" onclick="openLightbox(79)"><img src="Drawings/Male 2.gif" alt="Male II"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="filter-tabs animate-in delay-3">
+    <button class="filter-tab active" data-filter="all">All Work</button>
+    <button class="filter-tab" data-filter="samurai">Samurai</button>
+    <button class="filter-tab" data-filter="mobster">Mobster</button>
+    <button class="filter-tab" data-filter="portrait">Portraits</button>
+    <button class="filter-tab" data-filter="ink">Ink Studies</button>
+    <button class="filter-tab" data-filter="animations">Animations</button>
+  </div>
+
+  <div class="gallery" id="gallery">
+    <div class="gallery-card animate-in delay-3" data-category="samurai" onclick="openLightbox(0)"><img class="card-image" src="Drawings/1.png" alt="1" loading="lazy"><div class="card-overlay"><div class="card-category">Character</div><div class="card-title">#1</div></div></div>
+    <div class="gallery-card animate-in delay-3" data-category="portrait" onclick="openLightbox(1)"><img class="card-image" src="Drawings/2.png" alt="2" loading="lazy"><div class="card-overlay"><div class="card-category">Portrait</div><div class="card-title">#2</div></div></div>
+    <div class="gallery-card animate-in delay-4" data-category="portrait" onclick="openLightbox(2)"><img class="card-image" src="Drawings/3.png" alt="3" loading="lazy"><div class="card-overlay"><div class="card-category">Portrait</div><div class="card-title">#3</div></div></div>
+    <div class="gallery-card animate-in delay-4" data-category="portrait" onclick="openLightbox(3)"><img class="card-image" src="Drawings/4.png" alt="4" loading="lazy"><div class="card-overlay"><div class="card-category">Portrait</div><div class="card-title">#4</div></div></div>
+    <div class="gallery-card animate-in delay-5" data-category="portrait" onclick="openLightbox(4)"><img class="card-image" src="Drawings/5.png" alt="5" loading="lazy"><div class="card-overlay"><div class="card-category">Portrait</div><div class="card-title">#5</div></div></div>
+    <div class="gallery-card animate-in delay-3" data-category="portrait" onclick="openLightbox(5)"><img class="card-image" src="Drawings/6.png" alt="6" loading="lazy"><div class="card-overlay"><div class="card-category">Portrait</div><div class="card-title">#6</div></div></div>
+    <div class="gallery-card animate-in delay-3" data-category="portrait" onclick="openLightbox(6)"><img class="card-image" src="Drawings/7.png" alt="7" loading="lazy"><div class="card-overlay"><div class="card-category">Portrait</div><div class="card-title">#7</div></div></div>
+    <div class="gallery-card animate-in delay-4" data-category="portrait" onclick="openLightbox(7)"><img class="card-image" src="Drawings/8.png" alt="8" loading="lazy"><div class="card-overlay"><div class="card-category">Portrait</div><div class="card-title">#8</div></div></div>
+    <div class="gallery-card animate-in delay-4" data-category="portrait" onclick="openLightbox(8)"><img class="card-image" src="Drawings/9.png" alt="9" loading="lazy"><div class="card-overlay"><div class="card-category">Portrait</div><div class="card-title">#9</div></div></div>
+    <div class="gallery-card animate-in delay-5" data-category="mobster" onclick="openLightbox(9)"><img class="card-image" src="Drawings/10.png" alt="10" loading="lazy"><div class="card-overlay"><div class="card-category">Mobster</div><div class="card-title">#10</div></div></div>
+    <div class="gallery-card animate-in delay-3" data-category="ink" onclick="openLightbox(10)"><img class="card-image" src="Drawings/11.png" alt="11" loading="lazy"><div class="card-overlay"><div class="card-category">Ink Study</div><div class="card-title">#11</div></div></div>
+    <div class="gallery-card animate-in delay-3" data-category="ink" onclick="openLightbox(11)"><img class="card-image" src="Drawings/12.png" alt="12" loading="lazy"><div class="card-overlay"><div class="card-category">Ink Study</div><div class="card-title">#12</div></div></div>
+    <div class="gallery-card animate-in delay-4" data-category="mobster" onclick="openLightbox(12)"><img class="card-image" src="Drawings/13.png" alt="13" loading="lazy"><div class="card-overlay"><div class="card-category">Mobster</div><div class="card-title">#13</div></div></div>
+    <div class="gallery-card animate-in delay-4" data-category="ink" onclick="openLightbox(13)"><img class="card-image" src="Drawings/14.png" alt="14" loading="lazy"><div class="card-overlay"><div class="card-category">Ink Study</div><div class="card-title">#14</div></div></div>
+    <div class="gallery-card animate-in delay-5" data-category="ink" onclick="openLightbox(14)"><img class="card-image" src="Drawings/16.png" alt="15" loading="lazy"><div class="card-overlay"><div class="card-category">Ink Study</div><div class="card-title">#15</div></div></div>
+    <div class="gallery-card animate-in delay-3" data-category="ink" onclick="openLightbox(15)"><img class="card-image" src="Drawings/17.png" alt="16" loading="lazy"><div class="card-overlay"><div class="card-category">Ink Study</div><div class="card-title">#16</div></div></div>
+    <div class="gallery-card animate-in delay-3" data-category="ink" onclick="openLightbox(16)"><img class="card-image" src="Drawings/18.png" alt="17" loading="lazy"><div class="card-overlay"><div class="card-category">Ink Study</div><div class="card-title">#17</div></div></div>
+    <div class="gallery-card animate-in delay-4" data-category="portrait" onclick="openLightbox(17)"><img class="card-image" src="Drawings/26.png" alt="18" loading="lazy"><div class="card-overlay"><div class="card-category">Portrait</div><div class="card-title">#18</div></div></div>
+    <div class="gallery-card animate-in delay-4" data-category="samurai" onclick="openLightbox(18)"><img class="card-image" src="Drawings/30.png" alt="19" loading="lazy"><div class="card-overlay"><div class="card-category">Samurai</div><div class="card-title">#19</div></div></div>
+    <div class="gallery-card animate-in delay-5" data-category="samurai" onclick="openLightbox(19)"><img class="card-image" src="Drawings/31.png" alt="20" loading="lazy"><div class="card-overlay"><div class="card-category">Samurai</div><div class="card-title">#20</div></div></div>
+    <div class="gallery-card animate-in delay-3" data-category="samurai" onclick="openLightbox(20)"><img class="card-image" src="Drawings/32.png" alt="21" loading="lazy"><div class="card-overlay"><div class="card-category">Samurai</div><div class="card-title">#21</div></div></div>
+    <div class="gallery-card animate-in delay-3" data-category="portrait" onclick="openLightbox(21)"><img class="card-image" src="Drawings/36.png" alt="22" loading="lazy"><div class="card-overlay"><div class="card-category">Portrait</div><div class="card-title">#22</div></div></div>
+    <div class="gallery-card animate-in delay-4" data-category="portrait" onclick="openLightbox(22)"><img class="card-image" src="Drawings/37.png" alt="23" loading="lazy"><div class="card-overlay"><div class="card-category">Portrait</div><div class="card-title">#23</div></div></div>
+    <div class="gallery-card animate-in delay-4" data-category="portrait" onclick="openLightbox(23)"><img class="card-image" src="Drawings/39.png" alt="24" loading="lazy"><div class="card-overlay"><div class="card-category">Portrait</div><div class="card-title">#24</div></div></div>
+    <div class="gallery-card animate-in delay-5" data-category="samurai" onclick="openLightbox(24)"><img class="card-image" src="Drawings/41.png" alt="25" loading="lazy"><div class="card-overlay"><div class="card-category">Samurai</div><div class="card-title">#25</div></div></div>
+    <div class="gallery-card animate-in delay-3" data-category="samurai" onclick="openLightbox(25)"><img class="card-image" src="Drawings/42.png" alt="26" loading="lazy"><div class="card-overlay"><div class="card-category">Samurai</div><div class="card-title">#26</div></div></div>
+    <div class="gallery-card animate-in delay-3" data-category="samurai" onclick="openLightbox(26)"><img class="card-image" src="Drawings/43.png" alt="27" loading="lazy"><div class="card-overlay"><div class="card-category">Samurai</div><div class="card-title">#27</div></div></div>
+    <div class="gallery-card animate-in delay-4" data-category="samurai" onclick="openLightbox(27)"><img class="card-image" src="Drawings/44.png" alt="28" loading="lazy"><div class="card-overlay"><div class="card-category">Samurai</div><div class="card-title">#28</div></div></div>
+    <div class="gallery-card animate-in delay-4" data-category="samurai" onclick="openLightbox(28)"><img class="card-image" src="Drawings/45.png" alt="29" loading="lazy"><div class="card-overlay"><div class="card-category">Samurai</div><div class="card-title">#29</div></div></div>
+    <div class="gallery-card animate-in delay-5" data-category="samurai" onclick="openLightbox(29)"><img class="card-image" src="Drawings/46.png" alt="30" loading="lazy"><div class="card-overlay"><div class="card-category">Samurai</div><div class="card-title">#30</div></div></div>
+    <div class="gallery-card animate-in delay-3" data-category="samurai" onclick="openLightbox(30)"><img class="card-image" src="Drawings/47.png" alt="31" loading="lazy"><div class="card-overlay"><div class="card-category">Samurai</div><div class="card-title">#31</div></div></div>
+    <div class="gallery-card animate-in delay-3" data-category="mobster" onclick="openLightbox(31)"><img class="card-image" src="Drawings/51.png" alt="32" loading="lazy"><div class="card-overlay"><div class="card-category">Mobster</div><div class="card-title">#32</div></div></div>
+    <div class="gallery-card animate-in delay-4" data-category="mobster" onclick="openLightbox(32)"><img class="card-image" src="Drawings/52.png" alt="33" loading="lazy"><div class="card-overlay"><div class="card-category">Mobster</div><div class="card-title">#33</div></div></div>
+    <div class="gallery-card animate-in delay-4" data-category="mobster" onclick="openLightbox(33)"><img class="card-image" src="Drawings/53.png" alt="34" loading="lazy"><div class="card-overlay"><div class="card-category">Mobster</div><div class="card-title">#34</div></div></div>
+    <div class="gallery-card animate-in delay-5" data-category="mobster" onclick="openLightbox(34)"><img class="card-image" src="Drawings/54.png" alt="35" loading="lazy"><div class="card-overlay"><div class="card-category">Mobster</div><div class="card-title">#35</div></div></div>
+    <div class="gallery-card animate-in delay-3" data-category="mobster" onclick="openLightbox(35)"><img class="card-image" src="Drawings/55.png" alt="36" loading="lazy"><div class="card-overlay"><div class="card-category">Mobster</div><div class="card-title">#36</div></div></div>
+    <div class="gallery-card animate-in delay-3" data-category="mobster" onclick="openLightbox(36)"><img class="card-image" src="Drawings/56.png" alt="37" loading="lazy"><div class="card-overlay"><div class="card-category">Mobster</div><div class="card-title">#37</div></div></div>
+    <div class="gallery-card animate-in delay-4" data-category="mobster" onclick="openLightbox(37)"><img class="card-image" src="Drawings/57.png" alt="38" loading="lazy"><div class="card-overlay"><div class="card-category">Mobster</div><div class="card-title">#38</div></div></div>
+    <div class="gallery-card animate-in delay-4" data-category="samurai" onclick="openLightbox(38)"><img class="card-image" src="Drawings/60.png" alt="39" loading="lazy"><div class="card-overlay"><div class="card-category">Samurai</div><div class="card-title">#39</div></div></div>
+    <div class="gallery-card animate-in delay-5" data-category="samurai" onclick="openLightbox(39)"><img class="card-image" src="Drawings/61.png" alt="40" loading="lazy"><div class="card-overlay"><div class="card-category">Samurai</div><div class="card-title">#40</div></div></div>
+    <div class="gallery-card animate-in delay-3" data-category="samurai" onclick="openLightbox(40)"><img class="card-image" src="Drawings/62.png" alt="41" loading="lazy"><div class="card-overlay"><div class="card-category">Samurai</div><div class="card-title">#41</div></div></div>
+    <div class="gallery-card animate-in delay-3" data-category="samurai" onclick="openLightbox(41)"><img class="card-image" src="Drawings/63.png" alt="42" loading="lazy"><div class="card-overlay"><div class="card-category">Samurai</div><div class="card-title">#42</div></div></div>
+    <div class="gallery-card animate-in delay-4" data-category="samurai" onclick="openLightbox(42)"><img class="card-image" src="Drawings/64.png" alt="43" loading="lazy"><div class="card-overlay"><div class="card-category">Samurai</div><div class="card-title">#43</div></div></div>
+    <div class="gallery-card animate-in delay-4" data-category="samurai" onclick="openLightbox(43)"><img class="card-image" src="Drawings/65.png" alt="44" loading="lazy"><div class="card-overlay"><div class="card-category">Samurai</div><div class="card-title">#44</div></div></div>
+    <div class="gallery-card animate-in delay-5" data-category="samurai" onclick="openLightbox(44)"><img class="card-image" src="Drawings/66.png" alt="45" loading="lazy"><div class="card-overlay"><div class="card-category">Samurai</div><div class="card-title">#45</div></div></div>
+    <div class="gallery-card animate-in delay-3" data-category="samurai" onclick="openLightbox(45)"><img class="card-image" src="Drawings/67.png" alt="46" loading="lazy"><div class="card-overlay"><div class="card-category">Samurai</div><div class="card-title">#46</div></div></div>
+    <div class="gallery-card animate-in delay-3" data-category="samurai" onclick="openLightbox(46)"><img class="card-image" src="Drawings/68.png" alt="47" loading="lazy"><div class="card-overlay"><div class="card-category">Samurai</div><div class="card-title">#47</div></div></div>
+    <div class="gallery-card animate-in delay-4" data-category="samurai" onclick="openLightbox(47)"><img class="card-image" src="Drawings/69.png" alt="48" loading="lazy"><div class="card-overlay"><div class="card-category">Samurai</div><div class="card-title">#48</div></div></div>
+    <div class="gallery-card animate-in delay-4" data-category="samurai" onclick="openLightbox(48)"><img class="card-image" src="Drawings/70.png" alt="49" loading="lazy"><div class="card-overlay"><div class="card-category">Samurai</div><div class="card-title">#49</div></div></div>
+    <div class="gallery-card animate-in delay-5" data-category="samurai" onclick="openLightbox(49)"><img class="card-image" src="Drawings/71.png" alt="50" loading="lazy"><div class="card-overlay"><div class="card-category">Samurai</div><div class="card-title">#50</div></div></div>
+    <div class="gallery-card animate-in delay-3" data-category="samurai" onclick="openLightbox(50)"><img class="card-image" src="Drawings/72.png" alt="51" loading="lazy"><div class="card-overlay"><div class="card-category">Samurai</div><div class="card-title">#51</div></div></div>
+    <div class="gallery-card animate-in delay-3" data-category="samurai" onclick="openLightbox(51)"><img class="card-image" src="Drawings/73.png" alt="52" loading="lazy"><div class="card-overlay"><div class="card-category">Samurai</div><div class="card-title">#52</div></div></div>
+    <div class="gallery-card animate-in delay-4" data-category="samurai" onclick="openLightbox(52)"><img class="card-image" src="Drawings/75.png" alt="53" loading="lazy"><div class="card-overlay"><div class="card-category">Samurai</div><div class="card-title">#53</div></div></div>
+    <div class="gallery-card animate-in delay-4" data-category="samurai" onclick="openLightbox(53)"><img class="card-image" src="Drawings/76.png" alt="54" loading="lazy"><div class="card-overlay"><div class="card-category">Samurai</div><div class="card-title">#54</div></div></div>
+    <div class="gallery-card animate-in delay-5" data-category="samurai" onclick="openLightbox(54)"><img class="card-image" src="Drawings/77.png" alt="55" loading="lazy"><div class="card-overlay"><div class="card-category">Samurai</div><div class="card-title">#55</div></div></div>
+    <div class="gallery-card animate-in delay-3" data-category="samurai" onclick="openLightbox(55)"><img class="card-image" src="Drawings/78.png" alt="56" loading="lazy"><div class="card-overlay"><div class="card-category">Samurai</div><div class="card-title">#56</div></div></div>
+    <div class="gallery-card animate-in delay-3" data-category="samurai" onclick="openLightbox(56)"><img class="card-image" src="Drawings/79.png" alt="57" loading="lazy"><div class="card-overlay"><div class="card-category">Samurai</div><div class="card-title">#57</div></div></div>
+    <div class="gallery-card animate-in delay-4" data-category="samurai" onclick="openLightbox(57)"><img class="card-image" src="Drawings/80.png" alt="58" loading="lazy"><div class="card-overlay"><div class="card-category">Samurai</div><div class="card-title">#58</div></div></div>
+    <div class="gallery-card animate-in delay-4" data-category="samurai" onclick="openLightbox(58)"><img class="card-image" src="Drawings/FACES (2).png" alt="59" loading="lazy"><div class="card-overlay"><div class="card-category">Samurai</div><div class="card-title">#59</div></div></div>
+    <div class="gallery-card animate-in delay-5" data-category="mobster" onclick="openLightbox(59)"><img class="card-image" src="Drawings/Mon.png" alt="60" loading="lazy"><div class="card-overlay"><div class="card-category">Mobster</div><div class="card-title">#60</div></div></div>
+    <div class="gallery-card animate-in delay-3" data-category="animations" onclick="openLightbox(60)"><img class="card-image" src="Drawings/TEARS.gif" alt="Tears" loading="lazy"><div class="card-overlay"><div class="card-category">Animation</div><div class="card-title">Tears</div></div></div>
+    <div class="gallery-card animate-in delay-3" data-category="animations" onclick="openLightbox(61)"><img class="card-image" src="Drawings/EYES BLINK 2.gif" alt="Eyes Blink" loading="lazy"><div class="card-overlay"><div class="card-category">Animation</div><div class="card-title">Eyes Blink</div></div></div>
+    <div class="gallery-card animate-in delay-4" data-category="animations" onclick="openLightbox(62)"><img class="card-image" src="Drawings/Candle (fix it).gif" alt="Candle" loading="lazy"><div class="card-overlay"><div class="card-category">Animation</div><div class="card-title">Candle</div></div></div>
+    <div class="gallery-card animate-in delay-4" data-category="animations" onclick="openLightbox(63)"><img class="card-image" src="Drawings/CREEPY SKULL ANIMATION.gif" alt="Creepy Skull" loading="lazy"><div class="card-overlay"><div class="card-category">Animation</div><div class="card-title">Creepy Skull</div></div></div>
+    <div class="gallery-card animate-in delay-5" data-category="animations" onclick="openLightbox(64)"><img class="card-image" src="Drawings/HATCH.gif" alt="Hatch" loading="lazy"><div class="card-overlay"><div class="card-category">Animation</div><div class="card-title">Hatch</div></div></div>
+    <div class="gallery-card animate-in delay-3" data-category="animations" onclick="openLightbox(65)"><img class="card-image" src="Drawings/FOR FUN 2.gif" alt="For Fun 2" loading="lazy"><div class="card-overlay"><div class="card-category">Animation</div><div class="card-title">For Fun 2</div></div></div>
+    <div class="gallery-card animate-in delay-3" data-category="animations" onclick="openLightbox(66)"><img class="card-image" src="Drawings/My Hand.gif" alt="My Hand" loading="lazy"><div class="card-overlay"><div class="card-category">Animation</div><div class="card-title">My Hand</div></div></div>
+    <div class="gallery-card animate-in delay-4" data-category="animations" onclick="openLightbox(67)"><img class="card-image" src="Drawings/for fun.gif" alt="For Fun" loading="lazy"><div class="card-overlay"><div class="card-category">Animation</div><div class="card-title">For Fun</div></div></div>
+    <div class="gallery-card animate-in delay-4" data-category="animations" onclick="openLightbox(68)"><img class="card-image" src="Drawings/yin and yang 2.gif" alt="Yin &amp; Yang" loading="lazy"><div class="card-overlay"><div class="card-category">Animation</div><div class="card-title">Yin &amp; Yang</div></div></div>
+    <div class="gallery-card animate-in delay-5" data-category="animations" onclick="openLightbox(69)"><img class="card-image" src="Drawings/CREEPY SKULL ANIMATION (1).gif" alt="Creepy Skull II" loading="lazy"><div class="card-overlay"><div class="card-category">Animation</div><div class="card-title">Creepy Skull II</div></div></div>
+    <div class="gallery-card animate-in delay-3" data-category="animations" onclick="openLightbox(70)"><img class="card-image" src="Drawings/BUILDING.gif" alt="Building" loading="lazy"><div class="card-overlay"><div class="card-category">Animation</div><div class="card-title">Building</div></div></div>
+    <div class="gallery-card animate-in delay-3" data-category="animations" onclick="openLightbox(71)"><img class="card-image" src="Drawings/HALF ELF.gif" alt="Half Elf" loading="lazy"><div class="card-overlay"><div class="card-category">Animation</div><div class="card-title">Half Elf</div></div></div>
+    <div class="gallery-card animate-in delay-4" data-category="animations" onclick="openLightbox(72)"><img class="card-image" src="Drawings/CHARACTERS FEMALE 1 .gif" alt="Female I" loading="lazy"><div class="card-overlay"><div class="card-category">Animation</div><div class="card-title">Female I</div></div></div>
+    <div class="gallery-card animate-in delay-4" data-category="animations" onclick="openLightbox(73)"><img class="card-image" src="Drawings/CHARACTERS FEMALE 3 .gif" alt="Female III" loading="lazy"><div class="card-overlay"><div class="card-category">Animation</div><div class="card-title">Female III</div></div></div>
+    <div class="gallery-card animate-in delay-5" data-category="animations" onclick="openLightbox(74)"><img class="card-image" src="Drawings/CHARACTERS FEMALE 4 .gif" alt="Female IV" loading="lazy"><div class="card-overlay"><div class="card-category">Animation</div><div class="card-title">Female IV</div></div></div>
+    <div class="gallery-card animate-in delay-3" data-category="animations" onclick="openLightbox(75)"><img class="card-image" src="Drawings/OVERCOAT.gif" alt="Overcoat" loading="lazy"><div class="card-overlay"><div class="card-category">Animation</div><div class="card-title">Overcoat</div></div></div>
+    <div class="gallery-card animate-in delay-3" data-category="animations" onclick="openLightbox(76)"><img class="card-image" src="Drawings/BOSS MAN.gif" alt="Boss Man" loading="lazy"><div class="card-overlay"><div class="card-category">Animation</div><div class="card-title">Boss Man</div></div></div>
+    <div class="gallery-card animate-in delay-4" data-category="animations" onclick="openLightbox(77)"><img class="card-image" src="Drawings/ABSTRACT.gif" alt="Abstract" loading="lazy"><div class="card-overlay"><div class="card-category">Animation</div><div class="card-title">Abstract</div></div></div>
+    <div class="gallery-card animate-in delay-4" data-category="animations" onclick="openLightbox(78)"><img class="card-image" src="Drawings/Male 1.gif" alt="Male I" loading="lazy"><div class="card-overlay"><div class="card-category">Animation</div><div class="card-title">Male I</div></div></div>
+    <div class="gallery-card animate-in delay-5" data-category="animations" onclick="openLightbox(79)"><img class="card-image" src="Drawings/Male 2.gif" alt="Male II" loading="lazy"><div class="card-overlay"><div class="card-category">Animation</div><div class="card-title">Male II</div></div></div>
+  </div>
+
+  <section class="about-section animate-in delay-4">
+    <div class="about-grid">
+      <div class="about-content">
+        <h2>About the <span style="color:var(--accent)">Art</span></h2>
+        <p>This collection represents years of character exploration — from early ink studies to refined portraits. Each piece begins as a quick gesture sketch, evolving through multiple iterations until the character's personality shines through.</p>
+        <p>The samurai series explores the intersection of traditional Japanese aesthetics with contemporary character design. The mobster collection plays with noir aesthetics and bold linework. The portrait studies are exercises in capturing emotion with minimal strokes.</p>
+        <div class="about-tags">
+          <span class="about-tag">Ink Drawing</span>
+          <span class="about-tag">Character Design</span>
+          <span class="about-tag">Illustration</span>
+          <span class="about-tag">Procreate</span>
+          <span class="about-tag">Digital Art</span>
+          <span class="about-tag">Portraiture</span>
+        </div>
+      </div>
+      <div class="about-visual">
+        <div class="about-img"><img src="Drawings/1.png" alt="Sample 1"></div>
+        <div class="about-img"><img src="Drawings/10.png" alt="Sample 2"></div>
+        <div class="about-img"><img src="Drawings/Mon.png" alt="Sample 3"></div>
+        <div class="about-img"><img src="Drawings/30.png" alt="Sample 4"></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="page-footer animate-in delay-5">
+    <a href="index.html" class="footer-link">← Back to Portfolio</a>
+  </div>
+</div>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox">
+  <button class="lightbox-close" onclick="closeLightbox()">×</button>
+  <button class="lightbox-nav lightbox-prev" onclick="prevImage()">‹</button>
+  <button class="lightbox-nav lightbox-next" onclick="nextImage()">›</button>
+  <div class="lightbox-content">
+    <img class="lightbox-img" id="lightboxImg" src="" alt="">
+    <div class="lightbox-info">
+      <div class="lightbox-title" id="lightboxTitle"></div>
+      <div class="lightbox-category" id="lightboxCategory"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+
+
+// Filter
+var filterTabs=document.querySelectorAll('.filter-tab');
+var cards=document.querySelectorAll('.gallery-card');
+filterTabs.forEach(function(tab){
+  tab.addEventListener('click',function(){
+    filterTabs.forEach(function(t){t.classList.remove('active')});
+    this.classList.add('active');
+    var filter=this.getAttribute('data-filter');
+    cards.forEach(function(card){
+      if(filter==='all'){card.style.display='block'}
+      else{card.style.display=card.getAttribute('data-category')===filter?'block':'none'}
+    });
+  });
+});
+
+// Lightbox
+var allCards=Array.from(document.querySelectorAll('.gallery-card'));
+var currentIndex=0;
+
+function openLightbox(index){
+  currentIndex=index;
+  var card=allCards[index];
+  var img=card.querySelector('.card-image');
+  var overlay=card.querySelector('.card-overlay');
+  document.getElementById('lightboxImg').src=img.src;
+  document.getElementById('lightboxTitle').textContent=overlay.querySelector('.card-title').textContent;
+  document.getElementById('lightboxCategory').textContent=overlay.querySelector('.card-category').textContent;
+  document.getElementById('lightbox').classList.add('active');
+  document.body.style.overflow='hidden';
+}
+
+function closeLightbox(){
+  document.getElementById('lightbox').classList.remove('active');
+  document.body.style.overflow='';
+}
+
+function nextImage(){
+  currentIndex=(currentIndex+1)%allCards.length;
+  openLightbox(currentIndex);
+}
+
+function prevImage(){
+  currentIndex=(currentIndex-1+allCards.length)%allCards.length;
+  openLightbox(currentIndex);
+}
+
+document.getElementById('lightbox').addEventListener('click',function(e){
+  if(e.target===this)closeLightbox();
+});
+
+document.addEventListener('keydown',function(e){
+  if(e.key==='Escape')closeLightbox();
+  if(e.key==='ArrowRight')nextImage();
+  if(e.key==='ArrowLeft')prevImage();
+});
+
+// Slow down scroll on hover
+var scrollWrapper=document.getElementById('scrollWrapper');
+if(scrollWrapper){
+  scrollWrapper.addEventListener('mouseenter',function(){
+    this.style.animationDuration='120s';
+  });
+  scrollWrapper.addEventListener('mouseleave',function(){
+    this.style.animationDuration='40s';
+  });
+}
+</script>
+</body>
+</html>

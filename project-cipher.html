@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Project Cipher — Encryption Software</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0a0a;--surface:#111111;--surface-2:#1a1a1a;--surface-3:#242424;--text:#d0d0d0;--text-secondary:#999999;--text-muted:#666666;--border:#222222;--border-light:#2a2a2a;--nav-bg:rgba(10,10,10,0.85);--nav-border:rgba(34,34,34,0.5);--font-mono:'SF Mono','Fira Code','Cascadia Code',monospace;--accent:#22c55e;--accent-light:#4ade80;--accent-dark:#16a34a;--red:#ef4444;--blue:#3b82f6;--purple:#8b5cf6;--orange:#f97316;--cyan:#06b6d4}body{font-family:var(--font-mono);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;transition:all .4s}
+.top-nav{position:fixed;top:0;left:0;right:0;z-index:100;height:48px;display:flex;align-items:center;background:var(--nav-bg);backdrop-filter:blur(24px) saturate(180%);-webkit-backdrop-filter:blur(24px) saturate(180%);border-bottom:1px solid var(--nav-border)}
+.nav-inner{max-width:1200px;margin:0 auto;width:100%;display:flex;align-items:center;justify-content:space-between;padding:0 24px}
+.nav-brand{display:flex;align-items:center;gap:8px;text-decoration:none;color:var(--text)}
+.nav-avatar{width:28px;height:28px;border-radius:4px;background:var(--surface-2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;color:var(--text-muted);font-family:var(--font-mono)}
+.nav-name{font-size:12px;font-weight:500;letter-spacing:.02em;text-transform:uppercase}
+.nav-links{display:flex;align-items:center;gap:2px}
+.nav-link{padding:4px 10px;border-radius:4px;text-decoration:none;color:var(--text-muted);font-size:11px;font-weight:400;transition:all .2s;font-family:var(--font-mono)}
+.nav-link:hover{color:var(--text);background:var(--surface-2)}
+.nav-link.active{color:var(--accent);background:var(--surface-2)}
+.nav-actions{display:flex;align-items:center;gap:6px}
+.nav-cta{padding:5px 12px;border-radius:4px;background:transparent;color:var(--accent);border:1px solid var(--border);text-decoration:none;font-size:10px;font-weight:400;transition:all .2s;font-family:var(--font-mono);text-transform:uppercase;letter-spacing:.05em}
+.nav-cta:hover{background:var(--surface-2);border-color:var(--accent)}
+
+.container{max-width:1100px;margin:0 auto;padding:80px 32px 40px}
+.mono{font-family:'JetBrains Mono',monospace}
+.page-label{font-size:12px;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:.2em;margin-bottom:12px;display:flex;align-items:center;gap:12px}
+.page-label::before{content:'';width:32px;height:1px;background:var(--accent)}
+.page-title{font-size:clamp(28px,5vw,48px);font-weight:900;letter-spacing:-.02em;margin-bottom:8px}
+.page-title .accent{color:var(--accent)}
+.page-sub{font-size:18px;color:var(--text-secondary);max-width:700px;line-height:1.7;margin-bottom:40px}
+
+/* Level Tabs */
+.level-tabs{display:flex;gap:8px;margin-bottom:32px;flex-wrap:wrap}
+.level-tab{padding:12px 24px;border-radius:14px;border:2px solid var(--border);background:transparent;color:var(--text-secondary);font-family:'Inter',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:all .3s;display:flex;align-items:center;gap:8px}
+.level-tab:hover{border-color:var(--accent);color:var(--text)}
+.level-tab.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.level-tab .level-dot{width:8px;height:8px;border-radius:50%}
+.level-dot.basic{background:#22c55e}.level-dot.intermediate{background:#f59e0b}.level-dot.advanced{background:#f97316}.level-dot.expert{background:#ef4444}
+
+/* Main Layout */
+.app-layout{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+@media(max-width:900px){.app-layout{grid-template-columns:1fr}}
+
+/* Panels */
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:20px;overflow:hidden}
+.panel-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.panel-title{font-size:14px;font-weight:600;display:flex;align-items:center;gap:8px}
+.panel-title .icon{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px}
+.panel-actions{display:flex;gap:8px}
+.panel-btn{padding:8px 14px;border-radius:10px;border:1px solid var(--border);background:var(--surface-2);color:var(--text-secondary);font-family:'Inter',sans-serif;font-size:12px;font-weight:500;cursor:pointer;transition:all .2s}
+.panel-btn:hover{border-color:var(--accent);color:var(--accent)}
+.panel-btn.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+.panel-btn.primary:hover{background:var(--accent-dark)}
+.panel-body{padding:20px}
+.container{max-width:1100px;margin:0 auto;padding:80px 32px 40px}
+
+/* Text Areas */
+.text-area{width:100%;min-height:200px;padding:16px;border-radius:12px;border:2px solid var(--border);background:var(--surface-2);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:14px;line-height:1.6;resize:vertical;outline:none;transition:border-color .2s}
+.text-area:focus{border-color:var(--accent)}
+.text-area::placeholder{color:var(--text-muted)}
+.output-area{width:100%;min-height:200px;padding:16px;border-radius:12px;border:2px solid var(--border);background:var(--surface-2);color:var(--accent);font-family:'JetBrains Mono',monospace;font-size:14px;line-height:1.6;resize:vertical;outline:none;white-space:pre-wrap;word-break:break-all}
+
+/* Controls */
+.controls{display:flex;flex-direction:column;gap:16px;margin-top:20px}
+.control-group{display:flex;flex-direction:column;gap:8px}
+.control-label{font-size:12px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.1em}
+.control-input{padding:12px 16px;border-radius:10px;border:2px solid var(--border);background:var(--surface-2);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:14px;outline:none;transition:border-color .2s}
+.control-input:focus{border-color:var(--accent)}
+.control-row{display:flex;gap:12px;align-items:end}
+.control-row .control-group{flex:1}
+
+/* Stats Bar */
+.stats-bar{display:flex;gap:16px;margin-top:20px;flex-wrap:wrap}
+.stat-item{flex:1;min-width:120px;padding:14px;border-radius:12px;background:var(--surface-2);border:1px solid var(--border);text-align:center}
+.stat-value{font-size:20px;font-weight:800;color:var(--accent)}
+.stat-label{font-size:11px;color:var(--text-muted);margin-top:4px;text-transform:uppercase}
+
+/* Algorithm Info */
+.algo-info{margin-top:20px;padding:20px;border-radius:14px;background:var(--surface-2);border:1px solid var(--border)}
+.algo-title{font-size:14px;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.algo-desc{font-size:13px;color:var(--text-secondary);line-height:1.6}
+.algo-complexity{display:flex;gap:12px;margin-top:12px}
+.complexity-item{padding:6px 12px;border-radius:8px;font-size:11px;font-weight:600;background:var(--surface-3);color:var(--text-secondary)}
+
+/* Case Study */
+.case-study{margin-top:60px}
+.case-header{margin-bottom:32px}
+.case-title{font-size:clamp(24px,4vw,36px);font-weight:900;margin-bottom:8px}
+.case-title .accent{color:var(--accent)}
+.case-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px}
+.case-card{padding:28px;background:var(--surface);border:1px solid var(--border);border-radius:20px}
+.case-card-icon{width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:16px}
+.case-card h3{font-size:18px;font-weight:700;margin-bottom:8px}
+.case-card p{font-size:14px;color:var(--text-secondary);line-height:1.7}
+.case-card ul{padding-left:16px;margin-top:12px}
+.case-card li{font-size:13px;color:var(--text-secondary);line-height:1.8}
+.case-tag{display:inline-block;padding:4px 10px;border-radius:8px;font-size:11px;font-weight:600;margin-right:6px;margin-top:8px}
+.case-tag.security{background:rgba(239,68,68,0.15);color:var(--red)}
+.case-tag.crypto{background:rgba(139,92,246,0.15);color:var(--purple)}
+.case-tag.ux{background:rgba(59,130,246,0.15);color:var(--blue)}
+.case-tag.education{background:rgba(34,197,94,0.15);color:var(--accent)}
+
+/* Timeline */
+.timeline-section{margin-top:40px;padding:32px;background:var(--surface);border:1px solid var(--border);border-radius:20px}
+.timeline-title{font-size:20px;font-weight:700;margin-bottom:24px}
+.timeline{position:relative;padding-left:32px}
+.timeline::before{content:'';position:absolute;left:12px;top:0;bottom:0;width:2px;background:var(--border)}
+.timeline-item{position:relative;margin-bottom:24px}
+.timeline-item:last-child{margin-bottom:0}
+.timeline-dot{position:absolute;left:-26px;top:4px;width:12px;height:12px;border-radius:50%;background:var(--accent);border:2px solid var(--surface)}
+.timeline-phase{font-size:12px;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px}
+.timeline-content{font-size:14px;color:var(--text-secondary);line-height:1.6}
+
+.footer-link{display:block;text-align:center;margin-top:48px;color:var(--accent);text-decoration:none;font-weight:600;font-size:14px}
+.footer-link:hover{text-decoration:underline}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="page-label">Security & Encryption</div>
+  <h1 class="page-title">Project <span class="accent">Cipher</span></h1>
+  <p class="page-sub">A multi-level encryption and decryption platform with increasing complexity — from classical ciphers to modern cryptographic algorithms.</p>
+
+  <!-- Level Tabs -->
+  <div class="level-tabs">
+    <button class="level-tab active" onclick="switchLevel(0,this)"><span class="level-dot basic"></span>Level 1 — Caesar</button>
+    <button class="level-tab" onclick="switchLevel(1,this)"><span class="level-dot intermediate"></span>Level 2 — Vigenère</button>
+    <button class="level-tab" onclick="switchLevel(2,this)"><span class="level-dot advanced"></span>Level 3 — XOR</button>
+    <button class="level-tab" onclick="switchLevel(3,this)"><span class="level-dot expert"></span>Level 4 — AES-like</button>
+  </div>
+
+  <!-- App Layout -->
+  <div class="app-layout">
+    <!-- Input Panel -->
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title"><span class="icon" style="background:rgba(34,197,94,0.15)">📝</span>Plaintext Input</div>
+        <div class="panel-actions">
+          <button class="panel-btn" onclick="loadSample()">Sample</button>
+          <button class="panel-btn" onclick="clearAll()">Clear</button>
+        </div>
+      </div>
+      <div class="panel-body">
+        <textarea class="text-area" id="inputText" placeholder="Enter your message here..."></textarea>
+        <div class="controls">
+          <div class="control-row">
+            <div class="control-group">
+              <div class="control-label" id="keyLabel">Shift Key</div>
+              <input class="control-input mono" id="keyInput" type="number" value="3" min="1" max="25">
+            </div>
+            <div class="control-group" id="extraKeyGroup" style="display:none">
+              <div class="control-label">Extra Key</div>
+              <input class="control-input mono" id="extraKeyInput" type="text" value="SECRET" placeholder="Key">
+            </div>
+          </div>
+          <div style="display:flex;gap:12px">
+            <button class="panel-btn primary" style="flex:1;padding:14px" onclick="encrypt()">🔒 Encrypt</button>
+            <button class="panel-btn" style="flex:1;padding:14px;border-color:var(--red);color:var(--red)" onclick="decrypt()">🔓 Decrypt</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Output Panel -->
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title" id="outputTitle" style="color:var(--purple)">🔐 Encrypted Output</div>
+        <div class="panel-actions">
+          <button class="panel-btn" onclick="copyOutput()">Copy</button>
+        </div>
+      </div>
+      <div class="panel-body">
+        <div class="output-area" id="outputText">Output will appear here...</div>
+        <div class="stats-bar">
+          <div class="stat-item"><div class="stat-value" id="statChars">0</div><div class="stat-label">Characters</div></div>
+          <div class="stat-item"><div class="stat-value" id="statTime">0ms</div><div class="stat-label">Process Time</div></div>
+          <div class="stat-item"><div class="stat-value" id="statEntropy">0</div><div class="stat-label">Entropy</div></div>
+          <div class="stat-item"><div class="stat-value" id="statStrength">-</div><div class="stat-label">Strength</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Algorithm Info -->
+  <div class="algo-info" id="algoInfo">
+    <div class="algo-title"><span style="font-size:20px">🛡️</span><span id="algoName">Caesar Cipher</span></div>
+    <div class="algo-desc" id="algoDesc">One of the simplest and most widely known encryption techniques. Each letter is shifted a certain number of places down the alphabet. Named after Julius Caesar who used it in his private correspondence.</div>
+    <div class="algo-complexity">
+      <div class="complexity-item">Type: <span id="algoType">Substitution</span></div>
+      <div class="complexity-item">Key Space: <span id="algoKeySpace">25</span></div>
+      <div class="complexity-item">Security: <span id="algoSecurity" style="color:var(--red)">Low</span></div>
+    </div>
+  </div>
+
+  <!-- Case Study -->
+  <div class="case-study">
+    <div class="case-header">
+      <div class="page-label">Case Study</div>
+      <h2 class="case-title">Why <span class="accent">Cipher</span> Matters</h2>
+    </div>
+    
+    <div class="case-grid">
+      <div class="case-card">
+        <div class="case-card-icon" style="background:rgba(239,68,68,0.15)">🎯</div>
+        <h3>The Problem</h3>
+        <p>In an era of increasing digital surveillance and data breaches, understanding encryption is no longer optional — it's essential. Most people use encryption daily without understanding how it works.</p>
+        <ul>
+          <li>71% of data breaches involve credential theft</li>
+          <li>End-to-end encryption protects 2 billion+ users</li>
+          <li>Quantum computing threatens current encryption</li>
+        </ul>
+        <span class="case-tag security">Security</span><span class="case-tag education">Education</span>
+      </div>
+      
+      <div class="case-card">
+        <div class="case-card-icon" style="background:rgba(139,92,246,0.15)">💡</div>
+        <h3>The Solution</h3>
+        <p>Cipher provides an interactive, educational platform that teaches encryption through hands-on experience. Users progress from classical ciphers to understanding modern cryptographic principles.</p>
+        <ul>
+          <li>4 levels of increasing complexity</li>
+          <li>Real-time encryption/decryption</li>
+          <li>Visual feedback and strength analysis</li>
+          <li>Educational context for each algorithm</li>
+        </ul>
+        <span class="case-tag crypto">Cryptography</span><span class="case-tag ux">UX Design</span>
+      </div>
+      
+      <div class="case-card">
+        <div class="case-card-icon" style="background:rgba(59,130,246,0.15)">📊</div>
+        <h3>Technical Implementation</h3>
+        <p>Each encryption level builds upon the previous, demonstrating the evolution of cryptographic techniques from ancient times to modern standards.</p>
+        <ul>
+          <li><strong>Caesar:</strong> Monoalphabetic substitution (26 keys)</li>
+          <li><strong>Vigenère:</strong> Polyalphabetic cipher (26^n keys)</li>
+          <li><strong>XOR:</strong> Bitwise operations with key cycling</li>
+          <li><strong>AES-like:</strong> Substitution-permutation network</li>
+        </ul>
+        <span class="case-tag crypto">Cryptography</span><span class="case-tag security">Security</span>
+      </div>
+      
+      <div class="case-card">
+        <div class="case-card-icon" style="background:rgba(34,197,94,0.15)">🌍</div>
+        <h3>Impact & Applications</h3>
+        <p>Cipher has applications in education, security awareness, and understanding the foundations of digital privacy.</p>
+        <ul>
+          <li>Cybersecurity education courses</li>
+          <li>Security awareness training</li>
+          <li>Cryptography fundamentals curriculum</li>
+          <li>CTF (Capture The Flag) preparation</li>
+        </ul>
+        <span class="case-tag education">Education</span><span class="case-tag security">Security</span>
+      </div>
+    </div>
+
+    <!-- Development Timeline -->
+    <div class="timeline-section">
+      <div class="timeline-title">Development Timeline</div>
+      <div class="timeline">
+        <div class="timeline-item"><div class="timeline-dot"></div><div class="timeline-phase">Phase 1 — Research</div><div class="timeline-content">Studied classical ciphers, modern encryption standards, and cryptographic principles. Analysed existing educational tools and identified gaps.</div></div>
+        <div class="timeline-item"><div class="timeline-dot"></div><div class="timeline-phase">Phase 2 — Architecture</div><div class="timeline-content">Designed the modular encryption system with pluggable algorithms. Created the level progression system and user interface wireframes.</div></div>
+        <div class="timeline-item"><div class="timeline-dot"></div><div class="timeline-phase">Phase 3 — Implementation</div><div class="timeline-content">Built each encryption algorithm from scratch. Implemented the Caesar, Vigenère, XOR, and AES-like ciphers with full encrypt/decrypt capabilities.</div></div>
+        <div class="timeline-item"><div class="timeline-dot"></div><div class="timeline-phase">Phase 4 — Testing & Polish</div><div class="timeline-content">Extensive testing of edge cases, Unicode support, and performance optimisation. Added entropy calculations and strength indicators.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <a href="index.html" class="footer-link">← Back to Portfolio</a>
+</div>
+
+<script>
+var currentLevel=0;
+var levels=[
+  {name:'Caesar Cipher',desc:'One of the simplest encryption techniques. Each letter is shifted a certain number of places down the alphabet. Named after Julius Caesar who used it in his private correspondence.',type:'Substitution',keySpace:'25 keys',security:'Low',keyLabel:'Shift (1-25)',keyType:'number',keyDefault:3,extraKey:false},
+  {name:'Vigenère Cipher',desc:'A method of encrypting alphabetic text by using a series of interwoven Caesar ciphers based on the letters of a keyword. It was considered unbreakable for over 300 years.',type:'Polyalphabetic',keySpace:'26^n keys',security:'Medium',keyLabel:'Keyword',keyType:'text',keyDefault:'SECRET',extraKey:false},
+  {name:'XOR Cipher',desc:'A symmetric cipher that uses bitwise XOR operation with a repeating key. Simple but effective — the foundation of many modern encryption systems.',type:'Symmetric Bitwise',keySpace:'2^n keys',security:'Medium',keyLabel:'Key (text)',keyType:'text',keyDefault:'KEY',extraKey:false},
+  {name:'AES-like Cipher',desc:'A simplified version of the Advanced Encryption Standard. Uses substitution-permutation networks with multiple rounds of transformation.',type:'Block Cipher',keySpace:'2^128 keys',security:'High',keyLabel:'Key (16 chars)',keyType:'text',keyDefault:'0123456789abcdef',extraKey:true,extraKeyLabel:'IV (16 chars)',extraKeyDefault:'fedcba9876543210'}
+];
+
+function switchLevel(level,el){
+  currentLevel=level;
+  document.querySelectorAll('.level-tab').forEach(function(t){t.classList.remove('active')});
+  el.classList.add('active');
+  var l=levels[level];
+  document.getElementById('algoName').textContent=l.name;
+  document.getElementById('algoDesc').textContent=l.desc;
+  document.getElementById('algoType').textContent=l.type;
+  document.getElementById('algoKeySpace').textContent=l.keySpace;
+  document.getElementById('algoSecurity').textContent=l.security;
+  document.getElementById('keyLabel').textContent=l.keyLabel;
+  var ki=document.getElementById('keyInput');
+  ki.type=l.keyType==='number'?'number':'text';
+  ki.value=l.keyDefault;
+  ki.min=1;ki.max=l.keyType==='number'?25:'';
+  var eg=document.getElementById('extraKeyGroup');
+  if(l.extraKey){eg.style.display='block';document.getElementById('extraKeyInput').value=l.extraKeyDefault}
+  else{eg.style.display='none'}
+  document.getElementById('outputText').textContent='Output will appear here...';
+  updateStats(0,0,0,'-');
+}
+
+function loadSample(){
+  var samples=['Hello, World! This is a secret message.','The quick brown fox jumps over the lazy dog.','Meet me at the bridge at midnight. Come alone.','Attack at dawn! The fleet awaits your command.','Meet me at the bridge at midnight.'];
+  document.getElementById('inputText').value=samples[Math.floor(Math.random()*samples.length)];
+}
+
+function clearAll(){
+  document.getElementById('inputText').value='';
+  document.getElementById('outputText').textContent='Output will appear here...';
+  updateStats(0,0,0,'-');
+}
+
+function updateStats(chars,time,entropy,strength){
+  document.getElementById('statChars').textContent=chars;
+  document.getElementById('statTime').textContent=time+'ms';
+  document.getElementById('statEntropy').textContent=entropy.toFixed(1);
+  document.getElementById('statStrength').textContent=strength;
+}
+
+function calculateEntropy(text){
+  var freq={};
+  for(var i=0;i<text.length;i++){var c=text[i];freq[c]=(freq[c]||0)+1}
+  var entropy=0;
+  Object.values(freq).forEach(function(f){var p=f/text.length;entropy-=p*Math.log2(p)});
+  return entropy;
+}
+
+function getStrength(level,entropy){
+  var strengths=[['Weak','Moderate'],['Moderate','Strong'],['Strong','Very Strong'],['Very Strong','Military Grade']];
+  return entropy>3.5?strengths[level][1]:strengths[level][0];
+}
+
+// Caesar Cipher
+function caesarEncrypt(text,shift){
+  return text.split('').map(function(c){
+    if(c>='a'&&c<='z')return String.fromCharCode(((c.charCodeAt(0)-97+shift)%26)+97);
+    if(c>='A'&&c<='Z')return String.fromCharCode(((c.charCodeAt(0)-65+shift)%26)+65);
+    return c;
+  }).join('');
+}
+
+function caesarDecrypt(text,shift){
+  return caesarEncrypt(text,26-shift);
+}
+
+// Vigenère Cipher
+function vigenereEncrypt(text,key){
+  var result='';var ki=0;
+  for(var i=0;i<text.length;i++){
+    var c=text[i];
+    if(c>='a'&&c<='z'){result+=String.fromCharCode(((c.charCodeAt(0)-97+key.charCodeAt(ki%key.length)-65)%26)+97);ki++}
+    else if(c>='A'&&c<='Z'){result+=String.fromCharCode(((c.charCodeAt(0)-65+key.charCodeAt(ki%key.length)-65)%26)+65);ki++}
+    else result+=c;
+  }
+  return result;
+}
+
+function vigenereDecrypt(text,key){
+  var result='';var ki=0;
+  for(var i=0;i<text.length;i++){
+    var c=text[i];
+    if(c>='a'&&c<='z'){result+=String.fromCharCode(((c.charCodeAt(0)-97-(key.charCodeAt(ki%key.length)-65)+26)%26)+97);ki++}
+    else if(c>='A'&&c<='Z'){result+=String.fromCharCode(((c.charCodeAt(0)-65-(key.charCodeAt(ki%key.length)-65)+26)%26)+65);ki++}
+    else result+=c;
+  }
+  return result;
+}
+
+// XOR Cipher
+function xorEncrypt(text,key){
+  var result='';
+  for(var i=0;i<text.length;i++){
+    var c=text.charCodeAt(i);
+    var k=key.charCodeAt(i%key.length);
+    result+=('0'+((c^k).toString(16))).slice(-2).toUpperCase();
+  }
+  return result;
+}
+
+function xorDecrypt(hex,key){
+  var result='';
+  for(var i=0;i<hex.length;i+=2){
+    var c=parseInt(hex.substr(i,2),16);
+    var k=key.charCodeAt((i/2)%key.length);
+    result+=String.fromCharCode(c^k);
+  }
+  return result;
+}
+
+// AES-like (simplified substitution-permutation)
+var sBox=[0x63,0x7c,0x77,0x7b,0xf2,0x6b,0x6f,0xc5,0x30,0x01,0x67,0x2b,0xfe,0xd7,0xab,0x76,0xca,0x82,0xc9,0x7d,0xfa,0x59,0x47,0xf0,0xad,0xd4,0xa2,0xaf,0x9c,0xa4,0x72,0xc0,0xb7,0xfd,0x93,0x26,0x36,0x3f,0xf7,0xcc,0x34,0xa5,0xe5,0xf1,0x71,0xd8,0x31,0x15,0x04,0xc7,0x23,0xc3,0x18,0x96,0x05,0x9a,0x07,0x12,0x80,0xe2,0xeb,0x27,0xb2,0x75,0x09,0x83,0x2c,0x1a,0x1b,0x6e,0x5a,0xa0,0x52,0x3b,0xd6,0xb3,0x29,0xe3,0x2f,0x84,0x53,0xd1,0x00,0xed,0x20,0xfc,0xb1,0x5b,0x6a,0xcb,0xbe,0x39,0x4a,0x4c,0x58,0xcf,0xd0,0xef,0xaa,0xfb,0x43,0x4d,0x33,0x85,0x45,0xf9,0x02,0x7f,0x50,0x3c,0x9f,0xa8,0x51,0xa3,0x40,0x8f,0x92,0x9d,0x38,0xf5,0xbc,0xb6,0xda,0x21,0x10,0xff,0xf3,0xd2,0xcd,0x0c,0x13,0xec,0x5f,0x97,0x44,0x17,0xc4,0xa7,0x7e,0x3d,0x64,0x5d,0x19,0x73,0x60,0x81,0x4f,0xdc,0x22,0x2a,0x90,0x88,0x46,0xee,0xb8,0x14,0xde,0x5e,0x0b,0xdb,0xe0,0x32,0x3a,0x0a,0x49,0x06,0x24,0x5c,0xc2,0xd3,0xac,0x62,0x91,0x95,0xe4,0x79,0xe7,0xc8,0x37,0x6d,0x8d,0xd5,0x4e,0xa9,0x6c,0x56,0xf4,0xea,0x65,0x7a,0xae,0x08,0xba,0x78,0x25,0x2e,0x1c,0xa6,0xb4,0xc6,0xe8,0xdd,0x74,0x1f,0x4b,0xbd,0x8b,0x8a,0x70,0x3e,0xb5,0x66,0x48,0x03,0xf6,0x0e,0x61,0x35,0x57,0xb9,0x86,0xc1,0x1d,0x9e,0xe1,0xf8,0x98,0x11,0x69,0xd9,0x8e,0x94,0x9b,0x1e,0x87,0xe9,0xce,0x55,0x28,0xdf,0x8c,0xa1,0x89,0x0d,0xbf,0xe6,0x42,0x68,0x41,0x99,0x2d,0x0f,0xb0,0x54,0xbb,0x16];
+
+function aesEncrypt(text,key){
+  var result='';
+  key=key||'0123456789abcdef';
+  for(var i=0;i<text.length;i++){
+    var c=text.charCodeAt(i);
+    var k=key.charCodeAt(i%key.length);
+    var mixed=(c+k)%256;
+    var sub=sBox[mixed];
+    var perm=((sub<<3)|(sub>>5))&0xff;
+    result+=('0'+(perm.toString(16))).slice(-2).toUpperCase();
+  }
+  return result;
+}
+
+function aesDecrypt(hex,key){
+  var result='';
+  key=key||'0123456789abcdef';
+  for(var i=0;i<hex.length;i+=2){
+    var c=parseInt(hex.substr(i,2),16);
+    var perm=((c>>3)|(c<<5))&0xff;
+    var k=key.charCodeAt((i/2)%key.length);
+    var found=false;
+    for(var j=0;j<256;j++){
+      if(sBox[j]===perm){
+        var orig=(j-k+256)%256;
+        result+=String.fromCharCode(orig);
+        found=true;
+        break;
+      }
+    }
+    if(!found)result+=String.fromCharCode(perm);
+  }
+  return result;
+}
+
+function encrypt(){
+  var input=document.getElementById('inputText').value;
+  if(!input){alert('Please enter text to encrypt');return}
+  var key=document.getElementById('keyInput').value;
+  var start=performance.now();
+  var output='';
+  
+  try{
+    switch(currentLevel){
+      case 0:output=caesarEncrypt(input,parseInt(key)||3);break;
+      case 1:output=vigenereEncrypt(input,key.toUpperCase()||'SECRET');break;
+      case 2:output=xorEncrypt(input,key||'KEY');break;
+      case 3:output=aesEncrypt(input,key||'0123456789abcdef');break;
+    }
+    var time=Math.round((performance.now()-start)*100)/100;
+    var entropy=calculateEntropy(output);
+    var strength=getStrength(currentLevel,entropy);
+    document.getElementById('outputText').textContent=output;
+    updateStats(output.length,time,entropy,strength);
+    document.getElementById('outputTitle').textContent='🔐 Encrypted Output';
+    document.getElementById('outputTitle').style.color='var(--purple)';
+  }catch(e){
+    document.getElementById('outputText').textContent='Encryption error: '+e.message;
+  }
+}
+
+function decrypt(){
+  var input=document.getElementById('outputText').textContent;
+  if(!input||input==='Output will appear here...'){
+    input=document.getElementById('inputText').value;
+  }
+  if(!input){alert('Please enter or encrypt text first');return}
+  var key=document.getElementById('keyInput').value;
+  var start=performance.now();
+  var output='';
+  
+  try{
+    switch(currentLevel){
+      case 0:output=caesarDecrypt(input,parseInt(key)||3);break;
+      case 1:output=vigenereDecrypt(input,key.toUpperCase()||'SECRET');break;
+      case 2:output=xorDecrypt(input.replace(/\s/g,''),key||'KEY');break;
+      case 3:output=aesDecrypt(input.replace(/\s/g,''),key||'0123456789abcdef');break;
+    }
+    var time=Math.round((performance.now()-start)*100)/100;
+    var entropy=calculateEntropy(output);
+    var strength=getStrength(currentLevel,entropy);
+    document.getElementById('outputText').textContent=output;
+    updateStats(output.length,time,entropy,strength);
+    document.getElementById('outputTitle').textContent='🔓 Decrypted Output';
+    document.getElementById('outputTitle').style.color='var(--blue)';
+  }catch(e){
+    document.getElementById('outputText').textContent='Decryption error: '+e.message;
+  }
+}
+
+function copyOutput(){
+  var text=document.getElementById('outputText').textContent;
+  navigator.clipboard.writeText(text).then(function(){alert('Copied!')});
+}
+</script>
+</body>
+</html>

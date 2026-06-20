@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Project Flux — Login Experience</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0a0a;--surface:#111111;--surface-2:#1a1a1a;--surface-3:#242424;--text:#d0d0d0;--text-secondary:#999999;--text-muted:#666666;--border:#222222;--border-light:#2a2a2a;--nav-bg:rgba(10,10,10,0.85);--nav-border:rgba(34,34,34,0.5);--font-mono:'SF Mono','Fira Code','Cascadia Code',monospace;--accent:#ff6b6b;--coral:#ff6b6b;--coral-light:#ff8a8a;--green:#22c55e;--blue:#3b82f6}body{font-family:var(--font-mono);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;transition:all .4s}
+.top-nav{position:fixed;top:0;left:0;right:0;z-index:100;height:48px;display:flex;align-items:center;background:var(--nav-bg);backdrop-filter:blur(24px) saturate(180%);-webkit-backdrop-filter:blur(24px) saturate(180%);border-bottom:1px solid var(--nav-border)}
+.nav-inner{max-width:1200px;margin:0 auto;width:100%;display:flex;align-items:center;justify-content:space-between;padding:0 24px}
+.nav-brand{display:flex;align-items:center;gap:8px;text-decoration:none;color:var(--text)}
+.nav-avatar{width:28px;height:28px;border-radius:4px;background:var(--surface-2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;color:var(--text-muted);font-family:var(--font-mono)}
+.nav-name{font-size:12px;font-weight:500;letter-spacing:.02em;text-transform:uppercase}
+.nav-links{display:flex;align-items:center;gap:2px}
+.nav-link{padding:4px 10px;border-radius:4px;text-decoration:none;color:var(--text-muted);font-size:11px;font-weight:400;transition:all .2s;font-family:var(--font-mono)}
+.nav-link:hover{color:var(--text);background:var(--surface-2)}
+.nav-link.active{color:var(--accent);background:var(--surface-2)}
+.nav-actions{display:flex;align-items:center;gap:6px}
+.nav-cta{padding:5px 12px;border-radius:4px;background:transparent;color:var(--accent);border:1px solid var(--border);text-decoration:none;font-size:10px;font-weight:400;transition:all .2s;font-family:var(--font-mono);text-transform:uppercase;letter-spacing:.05em}
+.nav-cta:hover{background:var(--surface-2);border-color:var(--accent)}
+
+.container{max-width:1100px;margin:0 auto;padding:80px 32px 40px}
+.page-label{font-size:12px;font-weight:600;color:var(--coral);text-transform:uppercase;letter-spacing:.2em;margin-bottom:12px;display:flex;align-items:center;gap:12px}
+.page-label::before{content:'';width:32px;height:1px;background:var(--coral)}
+.page-title{font-size:clamp(28px,5vw,42px);font-weight:900;letter-spacing:-.02em;margin-bottom:8px}
+.page-title .accent{color:var(--coral)}
+.page-sub{font-size:16px;color:var(--text-secondary);max-width:600px;line-height:1.7;margin-bottom:40px}
+.showcase{display:grid;grid-template-columns:380px 1fr;gap:48px;align-items:start}
+@media(max-width:900px){.showcase{grid-template-columns:1fr}}
+.phone-frame{width:380px;height:780px;background:#000;border-radius:56px;padding:12px;box-shadow:0 25px 80px rgba(0,0,0,0.5),inset 0 0 0 2px #333;position:sticky;top:24px;margin:0 auto}
+.phone-notch{width:120px;height:28px;background:#000;border-radius:0 0 20px 20px;position:absolute;top:12px;left:50%;transform:translateX(-50%);z-index:10}
+.phone-screen{width:100%;height:100%;border-radius:44px;overflow:hidden;position:relative}
+.login-screen{position:absolute;inset:0;display:flex;flex-direction:column;background:linear-gradient(135deg,#ff6b6b 0%,#ff8a8a 50%,#ffb4b4 100%);transition:all .5s}
+.login-screen.hidden{opacity:0;transform:scale(1.1);pointer-events:none}
+.login-bg{position:absolute;inset:0;overflow:hidden}
+.login-wave{position:absolute;bottom:0;left:0;right:0;height:40%}
+.login-wave svg{width:100%;height:100%}
+.login-content{position:relative;z-index:2;flex:1;display:flex;flex-direction:column;justify-content:center;padding:40px 32px}
+.login-logo{font-size:48px;font-weight:900;color:#fff;margin-bottom:4px}
+.login-tagline{font-size:14px;color:rgba(255,255,255,0.8);margin-bottom:48px}
+.login-form{display:flex;flex-direction:column;gap:16px}
+.login-input{padding:16px 20px;border-radius:14px;border:2px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.15);backdrop-filter:blur(10px);color:#fff;font-family:'Inter',sans-serif;font-size:15px;outline:none;transition:all .3s}
+.login-input::placeholder{color:rgba(255,255,255,0.6)}
+.login-input:focus{border-color:#fff;background:rgba(255,255,255,0.25)}
+.login-btn{padding:16px;border-radius:14px;border:none;background:#fff;color:#ff6b6b;font-family:'Inter',sans-serif;font-size:16px;font-weight:700;cursor:pointer;transition:all .3s}
+.login-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,0.2)}
+.login-btn:active{transform:scale(0.98)}
+.login-divider{display:flex;align-items:center;gap:16px;margin:24px 0;color:rgba(255,255,255,0.6);font-size:13px}
+.login-divider::before,.login-divider::after{content:'';flex:1;height:1px;background:rgba(255,255,255,0.3)}
+.social-login{display:flex;gap:12px}
+.social-btn{flex:1;padding:14px;border-radius:14px;border:2px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.1);color:#fff;font-size:20px;cursor:pointer;transition:all .3s;display:flex;align-items:center;justify-content:center}
+.social-btn:hover{background:rgba(255,255,255,0.2);border-color:#fff}
+.login-footer{margin-top:24px;text-align:center;font-size:13px;color:rgba(255,255,255,0.7)}
+.login-footer a{color:#fff;text-decoration:underline;cursor:pointer}
+.login-error{background:rgba(255,0,0,0.2);border:1px solid rgba(255,0,0,0.3);border-radius:10px;padding:12px;color:#fff;font-size:13px;text-align:center;display:none}
+.login-error.show{display:block}
+.login-success{background:rgba(0,255,0,0.2);border:1px solid rgba(0,255,0,0.3);border-radius:10px;padding:12px;color:#fff;font-size:13px;text-align:center;display:none}
+.login-success.show{display:block}
+.saved-credentials{background:rgba(255,255,255,0.1);border-radius:12px;padding:12px 16px;margin-bottom:16px;display:none}
+.saved-credentials.show{display:block}
+.saved-credentials-title{font-size:11px;color:rgba(255,255,255,0.6);text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px}
+.saved-credentials-list{display:flex;flex-direction:column;gap:6px}
+.saved-cred{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;border-radius:8px;background:rgba(255,255,255,0.1);cursor:pointer;transition:all .2s}
+.saved-cred:hover{background:rgba(255,255,255,0.2)}
+.saved-cred-email{font-size:13px;color:#fff}
+.saved-cred-use{font-size:11px;color:rgba(255,255,255,0.6)}
+.saved-cred-delete{font-size:14px;cursor:pointer;opacity:0.6;transition:opacity .2s}
+.saved-cred-delete:hover{opacity:1}
+.dashboard{position:absolute;inset:0;background:var(--surface);display:flex;flex-direction:column;transform:scale(0.9);opacity:0;pointer-events:none;transition:all .5s}
+.dashboard.active{transform:scale(1);opacity:1;pointer-events:auto}
+.dash-header{padding:48px 24px 20px;background:linear-gradient(135deg,var(--coral),var(--coral-light))}
+.dash-user{display:flex;align-items:center;gap:14px;margin-bottom:16px}
+.dash-avatar{width:52px;height:52px;border-radius:16px;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:800;color:#fff}
+.dash-name{font-size:18px;font-weight:700;color:#fff}
+.dash-email{font-size:13px;color:rgba(255,255,255,0.7)}
+.dash-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.dash-stat{text-align:center;padding:12px;background:rgba(255,255,255,0.15);border-radius:12px}
+.dash-stat-value{font-size:22px;font-weight:800;color:#fff}
+.dash-stat-label{font-size:10px;color:rgba(255,255,255,0.7);text-transform:uppercase}
+.dash-content{flex:1;overflow-y:auto;padding:20px}
+.dash-section{margin-bottom:24px}
+.dash-section-title{font-size:12px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:12px}
+.dash-card{padding:16px;background:var(--surface-2);border:1px solid var(--border);border-radius:16px;margin-bottom:10px}
+.dash-card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.dash-card-title{font-size:15px;font-weight:600}
+.dash-card-badge{padding:4px 10px;border-radius:8px;font-size:11px;font-weight:600}
+.badge-active{background:rgba(34,197,94,0.15);color:var(--green)}
+.badge-done{background:rgba(59,130,246,0.15);color:var(--blue)}
+.dash-card-desc{font-size:13px;color:var(--text-secondary);line-height:1.5}
+.dash-card-meta{display:flex;gap:12px;margin-top:10px;font-size:11px;color:var(--text-muted)}
+.dash-activity{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)}
+.dash-activity:last-child{border-bottom:none}
+.dash-activity-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.dash-activity-text{font-size:13px;color:var(--text-secondary);line-height:1.4}
+.dash-activity-time{font-size:11px;color:var(--text-muted)}
+.dash-bottom{padding:16px 20px;border-top:1px solid var(--border);display:flex;justify-content:space-around;background:var(--surface)}
+.dash-nav-item{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:10px;color:var(--text-muted);cursor:pointer}
+.dash-nav-item.active{color:var(--coral)}
+.dash-nav-icon{font-size:20px}
+.logout-btn{width:100%;padding:14px;border-radius:14px;border:2px solid var(--border);background:transparent;color:var(--text-secondary);font-family:'Inter',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:all .3s;margin-top:20px}
+.logout-btn:hover{border-color:var(--coral);color:var(--coral)}
+.details{margin-top:48px}
+.detail-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:28px;margin-bottom:16px}
+.detail-card h3{font-size:20px;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:10px}
+.detail-card p{font-size:14px;color:var(--text-secondary);line-height:1.7}
+.detail-card ul{padding-left:20px;margin-top:12px}
+.detail-card li{font-size:14px;color:var(--text-secondary);line-height:1.8}
+.detail-tag{display:inline-block;padding:4px 10px;border-radius:8px;background:var(--surface-2);font-size:11px;font-weight:600;color:var(--coral);margin-right:6px;margin-top:8px}
+.footer-link{display:block;text-align:center;margin-top:48px;color:var(--coral);text-decoration:none;font-weight:600;font-size:14px}
+.footer-link:hover{text-decoration:underline}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="page-label">E-Commerce Experience</div>
+  <h1 class="page-title">Project <span class="accent">Flux</span></h1>
+  <p class="page-sub">A seamless login experience with credential memory. Sign in once, and your details are saved for next time.</p>
+  <div class="showcase">
+    <div class="phone-frame">
+      <div class="phone-notch"></div>
+      <div class="phone-screen">
+        <div class="login-screen" id="loginScreen">
+          <div class="login-bg"><div class="login-wave"><svg viewBox="0 0 1440 320" preserveAspectRatio="none"><path fill="rgba(255,255,255,0.1)" d="M0,224L48,213.3C96,203,192,181,288,181.3C384,181,480,203,576,218.7C672,235,768,245,864,229.3C960,213,1056,171,1152,149.3C1248,128,1344,128,1392,128L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"/></svg></div></div>
+          <div class="login-content">
+            <div class="login-logo">Flux</div>
+            <div class="login-tagline">Welcome back. Sign in to continue.</div>
+            <div class="saved-credentials" id="savedCreds"><div class="saved-credentials-title">💾 Saved Accounts</div><div class="saved-credentials-list" id="savedList"></div></div>
+            <div class="login-error" id="loginError">Invalid email or password</div>
+            <div class="login-success" id="loginSuccess">Login successful! Welcome back 👋</div>
+            <form class="login-form" id="loginForm" onsubmit="handleLogin(event)"><input class="login-input" type="email" id="emailInput" placeholder="Email address" required><input class="login-input" type="password" id="passwordInput" placeholder="Password" required><button class="login-btn" type="submit">Sign In</button></form>
+            <div class="login-divider">or continue with</div>
+            <div class="social-login"><div class="social-btn" onclick="socialLogin('Google')">G</div><div class="social-btn" onclick="socialLogin('Apple')"></div><div class="social-btn" onclick="socialLogin('Facebook')">f</div></div>
+            <div class="login-footer">Don't have an account? <a onclick="showSignup()">Sign up</a></div>
+          </div>
+        </div>
+        <div class="login-screen hidden" id="signupScreen">
+          <div class="login-bg"><div class="login-wave"><svg viewBox="0 0 1440 320" preserveAspectRatio="none"><path fill="rgba(255,255,255,0.1)" d="M0,224L48,213.3C96,203,192,181,288,181.3C384,181,480,203,576,218.7C672,235,768,245,864,229.3C960,213,1056,171,1152,149.3C1248,128,1344,128,1392,128L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"/></svg></div></div>
+          <div class="login-content">
+            <div class="login-logo">Flux</div>
+            <div class="login-tagline">Create your account to get started.</div>
+            <div class="login-error" id="signupError"></div>
+            <form class="login-form" id="signupForm" onsubmit="handleSignup(event)"><input class="login-input" type="text" id="signupName" placeholder="Full name" required><input class="login-input" type="email" id="signupEmail" placeholder="Email address" required><input class="login-input" type="password" id="signupPassword" placeholder="Password (min 6 chars)" required minlength="6"><button class="login-btn" type="submit">Create Account</button></form>
+            <div class="login-footer">Already have an account? <a onclick="showLogin()">Sign in</a></div>
+          </div>
+        </div>
+        <div class="dashboard" id="dashboard">
+          <div class="dash-header"><div class="dash-user"><div class="dash-avatar" id="dashAvatar">O</div><div><div class="dash-name" id="dashName">User</div><div class="dash-email" id="dashEmail">user@example.com</div></div></div><div class="dash-stats"><div class="dash-stat"><div class="dash-stat-value">24</div><div class="dash-stat-label">Orders</div></div><div class="dash-stat"><div class="dash-stat-value">€1.2k</div><div class="dash-stat-label">Spent</div></div><div class="dash-stat"><div class="dash-stat-value">Gold</div><div class="dash-stat-label">Tier</div></div></div></div>
+          <div class="dash-content">
+            <div class="dash-section"><div class="dash-section-title">Recent Orders</div><div class="dash-card"><div class="dash-card-header"><div class="dash-card-title">Wireless Headphones</div><div class="dash-card-badge badge-active">Active</div></div><div class="dash-card-desc">Premium noise-cancelling headphones</div><div class="dash-card-meta"><span>€189.99</span><span>•</span><span>Dec 15</span></div></div><div class="dash-card"><div class="dash-card-header"><div class="dash-card-title">Mechanical Keyboard</div><div class="dash-card-badge badge-done">Delivered</div></div><div class="dash-card-desc">RGB mechanical keyboard</div><div class="dash-card-meta"><span>€129.99</span><span>•</span><span>Dec 10</span></div></div></div>
+            <div class="dash-section"><div class="dash-section-title">Activity</div><div class="dash-activity"><div class="dash-activity-icon" style="background:rgba(34,197,94,0.15)">✓</div><div><div class="dash-activity-text">Order delivered</div><div class="dash-activity-time">2 hours ago</div></div></div><div class="dash-activity"><div class="dash-activity-icon" style="background:rgba(59,130,246,0.15)">📦</div><div><div class="dash-activity-text">Order shipped</div><div class="dash-activity-time">1 day ago</div></div></div></div>
+            <button class="logout-btn" onclick="handleLogout()">Sign Out</button>
+          </div>
+          <div class="dash-bottom"><div class="dash-nav-item active"><span class="dash-nav-icon">🏠</span>Home</div><div class="dash-nav-item"><span class="dash-nav-icon">🔍</span>Search</div><div class="dash-nav-item"><span class="dash-nav-icon">🛒</span>Cart</div><div class="dash-nav-item"><span class="dash-nav-icon">👤</span>Profile</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="details">
+      <div class="detail-card"><h3>🔐 Working Login System</h3><p>Complete authentication flow with email/password validation, error handling, and success feedback.</p><ul><li>Email and password validation</li><li>Error messages for invalid credentials</li><li>Smooth transitions between screens</li></ul><span class="detail-tag">Auth</span><span class="detail-tag">Validation</span></div>
+      <div class="detail-card"><h3>💾 Credential Memory</h3><p>Your login details are saved locally so you don't have to type them again.</p><ul><li>Saved accounts shown on login screen</li><li>One-click to fill credentials</li><li>Delete saved accounts individually</li></ul><span class="detail-tag">localStorage</span><span class="detail-tag">Persistence</span></div>
+      <div class="detail-card"><h3>📝 Account Creation</h3><p>Full signup flow to create new accounts.</p><ul><li>Name, email, and password fields</li><li>Password minimum length validation</li><li>Account saved to localStorage</li></ul><span class="detail-tag">Signup</span><span class="detail-tag">Registration</span></div>
+      <div class="detail-card"><h3>📊 Dashboard Display</h3><p>After successful login, a full dashboard is displayed.</p><ul><li>User profile with avatar</li><li>Order history with status badges</li><li>Activity timeline</li><li>Logout functionality</li></ul><span class="detail-tag">Dashboard</span><span class="detail-tag">E-Commerce</span></div>
+    </div>
+  </div>
+  <a href="index.html" class="footer-link">← Back to Portfolio</a>
+</div>
+<script>function getAccounts(){try{return JSON.parse(localStorage.getItem('flux-accounts'))||[]}catch(e){return[]}}
+function saveAccounts(accs){localStorage.setItem('flux-accounts',JSON.stringify(accs))}
+function showSavedCredentials(){var accs=getAccounts();var container=document.getElementById('savedCreds');var list=document.getElementById('savedList');if(accs.length===0){container.classList.remove('show');return}container.classList.add('show');list.innerHTML='';accs.forEach(function(acc,i){var div=document.createElement('div');div.className='saved-cred';div.innerHTML='<span class="saved-cred-email">'+acc.email+'</span><span style="display:flex;gap:8px;align-items:center"><span class="saved-cred-use">Use →</span><span class="saved-cred-delete" onclick="event.stopPropagation();deleteAccount('+i+')">✕</span></span>';div.onclick=function(){document.getElementById('emailInput').value=acc.email;document.getElementById('passwordInput').value=acc.password};list.appendChild(div)})}
+function deleteAccount(index){var accs=getAccounts();accs.splice(index,1);saveAccounts(accs);showSavedCredentials()}
+function handleLogin(e){e.preventDefault();var email=document.getElementById('emailInput').value;var password=document.getElementById('passwordInput').value;var accs=getAccounts();var account=accs.find(function(a){return a.email===email&&a.password===password});document.getElementById('loginError').classList.remove('show');document.getElementById('loginSuccess').classList.remove('show');if(account){document.getElementById('loginSuccess').classList.add('show');setTimeout(function(){showDashboard(account)},800)}else{document.getElementById('loginError').classList.add('show')}}
+function showDashboard(account){document.getElementById('loginScreen').classList.add('hidden');document.getElementById('signupScreen').classList.add('hidden');document.getElementById('dashboard').classList.add('active');document.getElementById('dashName').textContent=account.name||'User';document.getElementById('dashEmail').textContent=account.email;document.getElementById('dashAvatar').textContent=(account.name||'U')[0].toUpperCase()}
+function handleLogout(){document.getElementById('dashboard').classList.remove('active');document.getElementById('loginScreen').classList.remove('hidden');document.getElementById('emailInput').value='';document.getElementById('passwordInput').value='';document.getElementById('loginSuccess').classList.remove('show');document.getElementById('loginError').classList.remove('show');showSavedCredentials()}
+function showSignup(){document.getElementById('loginScreen').classList.add('hidden');document.getElementById('signupScreen').classList.remove('hidden')}
+function showLogin(){document.getElementById('signupScreen').classList.add('hidden');document.getElementById('loginScreen').classList.remove('hidden');showSavedCredentials()}
+function handleSignup(e){e.preventDefault();var name=document.getElementById('signupName').value;var email=document.getElementById('signupEmail').value;var password=document.getElementById('signupPassword').value;var accs=getAccounts();if(accs.find(function(a){return a.email===email})){document.getElementById('signupError').textContent='An account with this email already exists';document.getElementById('signupError').classList.add('show');return}accs.push({name:name,email:email,password:password});saveAccounts(accs);document.getElementById('signupError').classList.remove('show');document.getElementById('emailInput').value=email;document.getElementById('passwordInput').value=password;showLogin();document.getElementById('loginSuccess').textContent='Account created! Signing you in...';document.getElementById('loginSuccess').classList.add('show');setTimeout(function(){showDashboard({name:name,email:email})},800)}
+function socialLogin(provider){showDashboard({name:provider+' User',email:'user@'+provider.toLowerCase()+'.com'})}
+showSavedCredentials();
+</script>
+</body>
+</html>

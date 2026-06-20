@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Resume — Omer Bin Asif</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0a0a;--surface:#111111;--surface-2:#1a1a1a;--surface-3:#242424;--text:#d0d0d0;--text-secondary:#999999;--text-muted:#666666;--border:#222222;--border-light:#2a2a2a;--accent:#b0b0b0;--accent-hover:#cccccc;--nav-bg:rgba(10,10,10,0.85);--nav-border:rgba(34,34,34,0.5);--shadow:0 25px 80px rgba(0,0,0,0.5);--font-mono:'SF Mono','Fira Code','Cascadia Code',monospace}
+body{font-family:var(--font-mono);background:var(--bg);color:var(--text);min-height:100vh}
+.top-nav{position:fixed;top:0;left:0;right:0;z-index:100;background:var(--nav-bg);backdrop-filter:blur(24px) saturate(180%);-webkit-backdrop-filter:blur(24px) saturate(180%);border-bottom:1px solid var(--nav-border)}
+.nav-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:14px 32px}
+.nav-brand{display:flex;align-items:center;gap:8px;text-decoration:none;color:var(--text)}
+.nav-avatar{width:32px;height:32px;border-radius:4px;background:var(--surface-2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;color:var(--text-muted);font-family:var(--font-mono)}
+.nav-name{font-size:13px;font-weight:500;letter-spacing:.02em;text-transform:uppercase}
+.nav-links{display:flex;align-items:center;gap:2px}
+.nav-link{padding:5px 12px;border-radius:4px;text-decoration:none;color:var(--text-muted);font-size:12px;font-weight:400;transition:all .2s;font-family:var(--font-mono)}
+.nav-link:hover{color:var(--text);background:var(--surface-2)}
+.nav-link.active{color:var(--accent);background:var(--surface-2)}
+.nav-actions{display:flex;align-items:center;gap:6px}
+.nav-cta{padding:6px 14px;border-radius:4px;background:transparent;color:var(--accent);border:1px solid var(--border);text-decoration:none;font-size:11px;font-weight:400;transition:all .2s;font-family:var(--font-mono);text-transform:uppercase;letter-spacing:.05em}
+.nav-cta:hover{background:var(--surface-2);border-color:var(--accent)}
+@media(max-width:768px){.nav-links{display:none}.nav-inner{padding:12px 20px}}
+.resume-page{max-width:900px;margin:0 auto;padding:100px 32px 60px}
+.resume-header{text-align:center;margin-bottom:32px;padding-bottom:24px;border-bottom:1px solid var(--border)}
+.resume-name{font-size:clamp(28px,5vw,40px);font-weight:600;letter-spacing:-.01em;margin-bottom:6px;text-transform:uppercase}
+.resume-name .accent{color:var(--accent)}
+.resume-title{font-size:14px;color:var(--text-secondary);margin-bottom:12px}
+.resume-contact{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;font-size:12px;color:var(--text-muted)}
+.resume-grid{display:grid;grid-template-columns:1fr 1.5fr;gap:32px}
+@media(max-width:700px){.resume-grid{grid-template-columns:1fr}}
+.resume-section{margin-bottom:28px}
+.resume-section-title{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.15em;color:var(--text-muted);margin-bottom:12px;padding-bottom:6px;border-bottom:1px solid var(--border)}
+.resume-item{margin-bottom:16px}
+.resume-item-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px;flex-wrap:wrap;gap:4px}
+.resume-item-title{font-size:14px;font-weight:500}
+.resume-item-date{font-size:11px;color:var(--text-muted);white-space:nowrap}
+.resume-item-subtitle{font-size:12px;color:var(--text-secondary);margin-bottom:6px}
+.resume-item-desc{font-size:12px;color:var(--text-secondary);line-height:1.6}
+.resume-item-desc ul{padding-left:14px;margin:0}
+.resume-item-desc li{margin-bottom:3px}
+.resume-languages{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:8px}
+.resume-lang{padding:10px;border-radius:4px;background:var(--surface-2);border:1px solid var(--border);text-align:center}
+.resume-lang-name{font-size:13px;font-weight:500;margin-bottom:2px}
+.resume-lang-level{font-size:10px;color:var(--text-muted)}
+.resume-skills{display:flex;flex-wrap:wrap;gap:6px}
+.resume-skill{padding:5px 12px;border-radius:3px;background:var(--surface-2);border:1px solid var(--border);font-size:12px;color:var(--text-secondary)}
+.resume-software{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;width:100%}
+.resume-software-item{padding:8px;border-radius:3px;background:var(--surface-2);border:1px solid var(--border);font-size:11px;color:var(--text-secondary);text-align:center}
+.resume-software-item:hover{color:var(--text)}
+@media(max-width:768px){.resume-software{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:480px){.resume-software{grid-template-columns:repeat(2,1fr)}}
+.resume-actions{display:flex;justify-content:center;gap:8px;margin-top:32px;flex-wrap:wrap}
+.btn{padding:10px 20px;border-radius:4px;font-family:var(--font-mono);font-size:12px;font-weight:400;cursor:pointer;transition:all .2s;text-decoration:none;display:inline-flex;align-items:center;gap:6px;border:1px solid var(--border);text-transform:uppercase;letter-spacing:.05em}
+.btn-primary{background:var(--surface-2);color:var(--accent)}
+.btn-primary:hover{background:var(--surface-3);border-color:var(--accent)}
+.btn-secondary{background:transparent;color:var(--text-muted)}
+.btn-secondary:hover{color:var(--text);border-color:var(--border-light)}
+.footer{max-width:1100px;margin:0 auto;padding:28px 32px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.footer-text{font-size:11px;color:var(--text-muted)}
+.footer-links{display:flex;gap:10px}
+.footer-link{font-size:11px;color:var(--text-muted);text-decoration:none}
+.footer-link:hover{color:var(--accent)}
+@media print{.top-nav,.resume-actions{display:none!important}.resume-page{padding:20px}}
+</style>
+</head>
+<body>
+<nav class="top-nav"><div class="nav-inner"><a href="index.html" class="nav-brand"><div class="nav-avatar">OB</div><span class="nav-name">Omer Bin Asif</span></a><div class="nav-links"><a href="index.html" class="nav-link">Home</a><a href="projects.html" class="nav-link">Work</a><a href="skills.html" class="nav-link">Skills</a><a href="journey.html" class="nav-link">Journey</a><a href="resume.html" class="nav-link active">CV</a><a href="contact.html" class="nav-link">Contact</a></div><div class="nav-actions"><a href="contact.html" class="nav-cta">Let's Talk</a></div></div></nav>
+<div class="resume-page">
+  <header class="resume-header">
+    <h1 class="resume-name">Omer <span class="accent">Bin Asif</span></h1>
+    <p class="resume-title">AI Engineer / Designer</p>
+    <div class="resume-contact">
+      <span>📧 omerchaudhry760@gmail.com</span>
+      <span>📍 Bonn, Germany</span>
+    </div>
+  </header>
+  <div class="resume-grid">
+    <div>
+      <section class="resume-section"><h2 class="resume-section-title">About Me</h2><p style="font-size:14px;color:var(--text-secondary);line-height:1.8">So, you scrolled down to the About Me section? Bold move. I'm an AI Engineer who builds robots that are cooler than me (not a high bar, but still). Currently studying AI at IUBH Bonn because apparently, regular engineering wasn't nerdy enough. I break things with machine learning, then fix them with more machine learning — it's a whole cycle. When I'm not teaching computers to think, I'm designing stuff that humans actually want to look at. Previously worked as a designer, which means I've been judged by both algorithms AND clients. Spoiler: algorithms are nicer.</p></section>
+      <section class="resume-section"><h2 class="resume-section-title">Education</h2><div class="resume-item"><div class="resume-item-header"><span class="resume-item-title">Bachelor of Artificial Intelligence</span><span class="resume-item-date">Currently</span></div><div class="resume-item-subtitle">IUBH — Bad Honnef, DE</div></div><div class="resume-item"><div class="resume-item-header"><span class="resume-item-title">Pre-Engineering</span><span class="resume-item-date">2021-2022</span></div><div class="resume-item-subtitle">PEA — Dubai, UAE</div></div><div class="resume-item"><div class="resume-item-header"><span class="resume-item-title">Design and Technology</span><span class="resume-item-date">2016-2018</span></div><div class="resume-item-subtitle">Arab Unity School — Dubai, UAE</div></div></section>
+      <section class="resume-section"><h2 class="resume-section-title">Languages</h2><div class="resume-languages"><div class="resume-lang"><div class="resume-lang-name">English</div><div class="resume-lang-level">Fluent</div></div><div class="resume-lang"><div class="resume-lang-name">Urdu</div><div class="resume-lang-level">Fluent</div></div><div class="resume-lang"><div class="resume-lang-name">Punjabi</div><div class="resume-lang-level">Fluent</div></div><div class="resume-lang"><div class="resume-lang-name">German</div><div class="resume-lang-level">B2</div></div><div class="resume-lang"><div class="resume-lang-name">Arabic</div><div class="resume-lang-level">Basic</div></div></div></section>
+      <section class="resume-section"><h2 class="resume-section-title">Software & Tools</h2><div class="resume-software"><div class="resume-software-item">VS Code</div><div class="resume-software-item">Cursor</div><div class="resume-software-item">Pi Coding Agent</div><div class="resume-software-item">OpenCode</div><div class="resume-software-item">GitHub Copilot</div><div class="resume-software-item">ChatGPT</div><div class="resume-software-item">Claude</div><div class="resume-software-item">Adobe Creative</div><div class="resume-software-item">Figma</div><div class="resume-software-item">Blender</div><div class="resume-software-item">Krita</div><div class="resume-software-item">Canva</div></div></section>
+    </div>
+    <div>
+      <section class="resume-section"><h2 class="resume-section-title">Experience</h2><div class="resume-item"><div class="resume-item-header"><span class="resume-item-title">English Tutor</span><span class="resume-item-date">2022-2023</span></div><div class="resume-item-subtitle">Engoo — Remote</div><div class="resume-item-desc"><ul><li>Worked remotely as an English tutor</li><li>Created course materials for various students</li></ul></div></div><div class="resume-item"><div class="resume-item-header"><span class="resume-item-title">Operations Manager & Designer</span><span class="resume-item-date">2021-2022</span></div><div class="resume-item-subtitle">MDKB — Dubai, UAE</div><div class="resume-item-desc"><ul><li>Worked with contractors to get designs sorted</li><li>Managed client expectations and timelines</li></ul></div></div><div class="resume-item"><div class="resume-item-header"><span class="resume-item-title">Freelance Designer</span><span class="resume-item-date">2017-2023</span></div><div class="resume-item-subtitle">Upwork, Freelancer</div><div class="resume-item-desc"><ul><li>Created logos for various clients</li><li>Video editing using DaVinci Resolve</li><li>Created thumbnails for videos</li></ul></div></div></section>
+      <section class="resume-section"><h2 class="resume-section-title">Skills</h2><div class="resume-skills"><span class="resume-skill">AI & Machine Learning</span><span class="resume-skill">Python Development</span><span class="resume-skill">Data Analysis</span><span class="resume-skill">UI/UX Design</span><span class="resume-skill">Character Design</span><span class="resume-skill">3D Modeling</span><span class="resume-skill">Software Development</span><span class="resume-skill">Critical Thinking</span><span class="resume-skill">Problem Solving</span><span class="resume-skill">Leadership</span></div></section>
+    </div>
+  </div>
+  <div class="resume-actions"><a href="contact.html" class="btn btn-primary">Get in Touch →</a><button class="btn btn-secondary" onclick="window.print()">Print CV</button></div>
+</div>
+<footer class="footer"><span class="footer-text">© 2026 Omer Bin Asif</span><div class="footer-links"><a href="index.html" class="footer-link">Home</a><a href="projects.html" class="footer-link">Work</a><a href="contact.html" class="footer-link">Contact</a></div></footer>
+<script>
+var html=document.documentElement;
+</script>
+</body>
+</html>

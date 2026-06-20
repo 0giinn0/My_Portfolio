@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Solitaire — Klondike</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@700;800;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0a0f;--surface:#14141e;--surface-2:#1c1c2a;--text:#e8e8f0;--text-secondary:#9898b0;--text-muted:#686880;--border:#2a2a3e;--nav-bg:rgba(10,10,15,0.95);--nav-border:rgba(42,42,62,0.5);--accent:#8b5cf6;--font-mono:'SF Mono','Fira Code','Cascadia Code',monospace}
+body{font-family:var(--font-mono);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;user-select:none}
+.top-nav{position:fixed;top:0;left:0;right:0;z-index:100;height:48px;display:flex;align-items:center;background:var(--nav-bg);backdrop-filter:blur(24px) saturate(180%);border-bottom:1px solid var(--nav-border)}
+.nav-inner{max-width:1200px;margin:0 auto;width:100%;display:flex;align-items:center;justify-content:space-between;padding:0 24px}
+.nav-brand{display:flex;align-items:center;gap:8px;text-decoration:none;color:var(--text)}
+.nav-avatar{width:28px;height:28px;border-radius:4px;background:var(--surface-2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;color:var(--text-muted)}
+.nav-name{font-size:12px;font-weight:500;letter-spacing:.02em;text-transform:uppercase}
+.nav-links{display:flex;align-items:center;gap:2px}
+.nav-link{padding:4px 10px;border-radius:4px;text-decoration:none;color:var(--text-muted);font-size:11px;font-weight:400;transition:all .2s}
+.nav-link:hover{color:var(--text);background:var(--surface-2)}
+.nav-link.active{color:var(--accent);background:var(--surface-2)}
+.nav-actions{display:flex;align-items:center;gap:6px}
+.nav-cta{padding:5px 12px;border-radius:4px;background:transparent;color:var(--accent);border:1px solid var(--border);text-decoration:none;font-size:10px;font-weight:400;transition:all .2s;text-transform:uppercase;letter-spacing:.05em}
+.nav-cta:hover{background:var(--surface-2);border-color:var(--accent)}
+
+.page{max-width:860px;margin:0 auto;padding:72px 20px 40px}
+.page-label{font-size:11px;color:var(--accent);text-transform:uppercase;letter-spacing:.2em;text-align:center;margin-bottom:4px}
+.page-title{font-family:'Playfair Display',serif;font-size:clamp(24px,5vw,36px);font-weight:900;text-align:center;margin-bottom:16px}
+.page-title .accent{color:var(--accent);font-style:italic}
+.controls{display:flex;justify-content:center;gap:8px;margin-bottom:20px;flex-wrap:wrap}
+.btn{padding:7px 16px;border-radius:6px;border:1px solid var(--border);background:var(--surface);color:var(--text-secondary);font-family:var(--font-mono);font-size:11px;font-weight:500;cursor:pointer;transition:all .2s;text-transform:uppercase;letter-spacing:.05em}
+.btn:hover{border-color:var(--accent);color:var(--accent)}
+.btn.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+.btn.primary:hover{opacity:0.9}
+.how-to-play{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 16px;margin-bottom:20px}
+.how-to-play summary{cursor:pointer;color:var(--accent);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;list-style:none;display:flex;align-items:center;gap:8px;user-select:none}
+.how-to-play summary::-webkit-details-marker{display:none}
+.how-to-play summary::before{content:'▸';transition:transform .2s}
+.how-to-play[open] summary::before{transform:rotate(90deg)}
+.how-to-play .tip{font-size:11px;color:var(--text-secondary);line-height:1.8;margin-top:10px}
+.how-to-play .tip strong{color:var(--text)}
+.info-bar{display:flex;justify-content:center;gap:32px;margin-bottom:16px;font-size:11px;color:var(--text-muted)}
+.info-bar .val{color:var(--accent);font-weight:600}
+.footer-section{margin-top:40px;text-align:center;padding:24px 0;border-top:1px solid var(--border)}
+.footer-text{font-size:11px;color:var(--text-muted)}
+
+/* Solitaire board */
+.sol-board{position:relative;width:100%;aspect-ratio:7/4.2;min-height:420px;background:radial-gradient(ellipse at 50% 40%,#1e1a24,#0e0c12);border:1px solid rgba(180,150,80,0.15);border-radius:16px;padding:16px;overflow:hidden}
+.sol-board::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='120' height='120' viewBox='0 0 120 120' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");pointer-events:none}
+.sol-top{display:flex;gap:12px;margin-bottom:16px;justify-content:center;position:relative;z-index:1}
+.sol-pile{position:relative;cursor:pointer}
+.sol-placeholder{width:72px;height:100px;border-radius:6px;border:2px dashed rgba(180,150,80,0.2);background:rgba(255,255,255,0.02);display:flex;align-items:center;justify-content:center;font-size:18px;color:rgba(180,150,80,0.2)}
+.sol-placeholder.stock{cursor:pointer}
+.sol-placeholder.stock:hover{border-color:rgba(180,150,80,0.4);background:rgba(180,150,80,0.05)}
+.sol-stock-back{width:72px;height:100px;border-radius:6px;border:1px solid rgba(180,150,80,0.2);overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.3);cursor:pointer}
+.sol-stock-back img{width:100%;height:100%;object-fit:cover;filter:brightness(0.6) saturate(0.8)}
+.sol-stock-back:hover{box-shadow:0 2px 12px rgba(180,150,80,0.15)}
+.sol-gap{width:32px}
+.sol-foundation{position:relative}
+.sol-found-label{position:absolute;bottom:-14px;left:50%;transform:translateX(-50%);font-size:8px;color:rgba(180,150,80,0.3);text-transform:uppercase;letter-spacing:.1em;white-space:nowrap}
+.sol-tableau{display:flex;gap:12px;justify-content:center;position:relative;z-index:1}
+.sol-col{position:relative;width:72px;min-height:200px}
+.sol-col-placeholder{width:72px;height:100px;border-radius:6px;border:2px dashed rgba(180,150,80,0.12);background:rgba(255,255,255,0.01)}
+
+/* Cards */
+.sol-card{position:absolute;width:72px;height:100px;border-radius:6px;overflow:hidden;border:1px solid rgba(180,150,80,0.18);box-shadow:0 2px 8px rgba(0,0,0,0.3);transition:transform .2s,box-shadow .2s,margin-top .2s;cursor:pointer;z-index:1}
+.sol-card.face-down{cursor:default}
+.sol-card img{width:100%;height:100%;display:block;object-fit:cover}
+.sol-card.face-down img{filter:brightness(0.6) saturate(0.8)}
+.sol-card.selected{box-shadow:0 0 0 2px var(--accent),0 4px 20px rgba(139,92,246,0.4);transform:translateY(-4px);z-index:50}
+.sol-card.hint{box-shadow:0 0 0 2px rgba(180,150,80,0.5);z-index:40}
+.sol-card:hover:not(.face-down){box-shadow:0 4px 16px rgba(0,0,0,0.4);z-index:10}
+.sol-card-place{position:absolute;width:72px;height:100px;border-radius:6px;animation:cardPlace .3s ease}
+@keyframes cardPlace{0%{transform:scale(1.1);opacity:0.7}100%{transform:scale(1);opacity:1}}
+.sol-msg{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(10,10,15,0.95);border:1px solid rgba(180,150,80,0.3);border-radius:12px;padding:20px 32px;text-align:center;z-index:100;animation:fadeIn .4s ease}
+.sol-msg h2{font-family:'Playfair Display',serif;font-size:24px;color:#d4af37;margin-bottom:8px}
+.sol-msg p{font-size:12px;color:var(--text-secondary)}
+@keyframes fadeIn{from{opacity:0;transform:translate(-50%,-50%) scale(0.95)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
+</style>
+</head>
+<body>
+<nav class="top-nav"><div class="nav-inner"><a href="index.html" class="nav-brand"><div class="nav-avatar">OB</div><span class="nav-name">Omer Bin Asif</span></a><div class="nav-links"><a href="index.html" class="nav-link">Home</a><a href="projects.html" class="nav-link active">Work</a><a href="skills.html" class="nav-link">Skills</a><a href="journey.html" class="nav-link">Journey</a><a href="resume.html" class="nav-link">CV</a><a href="contact.html" class="nav-link">Contact</a></div><div class="nav-actions"><a href="contact.html" class="nav-cta">Let's Talk</a></div></div></nav>
+
+<div class="page">
+  <div class="page-label">Card Game</div>
+  <h1 class="page-title">Klondike <span class="accent">Solitaire</span></h1>
+
+  <div class="controls">
+    <button class="btn primary" onclick="solNewGame()">New Game</button>
+    <button class="btn" onclick="solUndo()">Undo</button>
+    <button class="btn" id="solVariantBtn" onclick="solToggleVariant()">Dark</button>
+    <a href="project-games.html" class="btn">← Arcade</a>
+  </div>
+
+  <details class="how-to-play">
+    <summary>How to Play</summary>
+    <div class="tip">
+      <strong>Goal:</strong> Move all cards to the 4 foundation piles (top right), sorted by suit A→K.<br>
+      <strong>Tableau:</strong> Build descending, alternating colors (red on black). Empty spots accept Kings only.<br>
+      <strong>Click</strong> a card to select → click destination. <strong>Double-click</strong> to auto-send to foundation.<br>
+      <strong>Stock:</strong> Click the deck to draw. Undo available if you mess up.
+    </div>
+  </details>
+
+  <div class="info-bar">
+    <span>Moves: <span class="val" id="solMoves">0</span></span>
+    <span>Time: <span class="val" id="solTime">0:00</span></span>
+    <span>Cards: <span class="val" id="solCards">0</span>/52</span>
+  </div>
+
+  <div class="sol-board" id="solBoard"></div>
+</div>
+
+<div class="footer-section">
+  <p class="footer-text">54 unique cards &bull; 2 colorways &bull; Designed by Omer Bin Asif</p>
+</div>
+
+<script>
+var S = {
+  deck: [], stock: [], waste: [],
+  foundations: [[], [], [], []],
+  tableau: [[], [], [], [], [], [], []],
+  selected: null, moves: 0, variant: 'Dark',
+  history: [], timer: 0, timerId: null, over: false
+};
+
+var SUITS = ['Clubs','Diamonds','Hearts','Spades'];
+var SUIT_COLOR = {Clubs:'black',Diamonds:'red',Hearts:'red',Spades:'black'};
+var RANKS = ['A',2,3,4,5,6,7,8,9,10,'J','Q','K'];
+var RANK_VAL = {A:1,2:2,3:3,4:4,5:5,6:6,7:7,8:8,9:9,10:10,J:11,Q:12,K:13};
+
+function solBuildDeck(){
+  S.deck=[];
+  for(var s=0;s<SUITS.length;s++)
+    for(var r=0;r<RANKS.length;r++)
+      S.deck.push({rank:RANKS[r],suit:SUITS[s],faceUp:false});
+}
+
+function solShuffle(a){
+  for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t}
+}
+
+function solCardImg(c){return 'Cards/'+c.rank+'_'+c.suit+'_'+S.variant+'.png'}
+function solCardColor(c){return SUIT_COLOR[c.suit]}
+function solIsRed(c){return SUIT_COLOR[c.suit]==='red'}
+
+function solDeal(){
+  solBuildDeck(); solShuffle(S.deck);
+  S.stock=[]; S.waste=[];
+  S.foundations=[[],[],[],[]];
+  S.tableau=[[],[],[],[],[],[],[]];
+  S.selected=null; S.moves=0; S.history=[]; S.over=false;
+  S.timer=0; if(S.timerId) clearInterval(S.timerId);
+  document.getElementById('solMoves').textContent='0';
+  document.getElementById('solTime').textContent='0:00';
+  var idx=0;
+  for(var col=0;col<7;col++){
+    for(var row=0;row<=col;row++){
+      var c=S.deck[idx++];
+      c.faceUp=(row===col);
+      S.tableau[col].push(c);
+    }
+  }
+  while(idx<52){S.stock.push(S.deck[idx++])}
+  S.timerId=setInterval(function(){
+    if(S.over)return;
+    S.timer++;
+    var m=Math.floor(S.timer/60);
+    var s=S.timer%60;
+    document.getElementById('solTime').textContent=m+':'+(s<10?'0':'')+s;
+  },1000);
+  solRender();
+}
+
+function solPushHistory(){
+  var snap=JSON.stringify({stock:S.stock,waste:S.waste,foundations:S.foundations,tableau:S.tableau});
+  S.history.push(snap);
+  if(S.history.length>100)S.history.shift();
+}
+
+function solUndo(){
+  if(!S.history.length)return;
+  var snap=JSON.parse(S.history.pop());
+  S.stock=snap.stock; S.waste=snap.waste;
+  S.foundations=snap.foundations; S.tableau=snap.tableau;
+  S.selected=null; solRender();
+}
+
+function solToggleVariant(){
+  S.variant=S.variant==='Dark'?'Light':'Dark';
+  document.getElementById('solVariantBtn').textContent=S.variant;
+  solRender();
+}
+
+function solCountFoundation(){
+  var n=0;
+  for(var i=0;i<4;i++)n+=S.foundations[i].length;
+  return n;
+}
+
+function solCheckWin(){
+  if(solCountFoundation()===52){
+    S.over=true;
+    if(S.timerId)clearInterval(S.timerId);
+    var board=document.getElementById('solBoard');
+    var msg=document.createElement('div');
+    msg.className='sol-msg';
+    msg.innerHTML='<h2>You Win!</h2><p>'+S.moves+' moves in '+document.getElementById('solTime').textContent+'</p>';
+    board.appendChild(msg);
+  }
+}
+
+function solFindFoundation(suit){
+  for(var i=0;i<4;i++){
+    if(!S.foundations[i].length && S.tableau.some(function(c){return c.suit===suit})) continue;
+    if(!S.foundations[i].length) return i;
+    if(S.foundations[i][S.foundations[i].length-1].suit===suit) return i;
+  }
+  return -1;
+}
+
+function solAutoMove(card){
+  var fi=solFindFoundation(card.suit);
+  if(fi<0)return false;
+  var top=S.foundations[fi][S.foundations[fi].length-1];
+  if(top && top.suit===card.suit && RANK_VAL[card.rank]===RANK_VAL[top.rank]+1){
+    solPushHistory();
+    S.foundations[fi].push(card);
+    S.moves++;
+    document.getElementById('solMoves').textContent=S.moves;
+    solCheckWin();
+    solRender();
+    return true;
+  }
+  if(!top && card.rank==='A'){
+    solPushHistory();
+    S.foundations[fi].push(card);
+    S.moves++;
+    document.getElementById('solMoves').textContent=S.moves;
+    solCheckWin();
+    solRender();
+    return true;
+  }
+  return false;
+}
+
+function solCanPlaceOnTableau(card, col){
+  var pile=S.tableau[col];
+  if(!pile.length) return card.rank==='K';
+  var top=pile[pile.length-1];
+  return top.faceUp && solIsRed(top)!==solIsRed(card) && RANK_VAL[top.rank]===RANK_VAL[card.rank]+1;
+}
+
+function solRemoveFrom(type, idx, cardIdx){
+  if(type==='waste'){
+    return S.waste.pop();
+  }
+  if(type==='tableau'){
+    var col=S.tableau[idx];
+    var c=col[cardIdx];
+    var removed=col.splice(cardIdx);
+    if(col.length && !col[col.length-1].faceUp){
+      col[col.length-1].faceUp=true;
+    }
+    return removed;
+  }
+  return null;
+}
+
+function solPlaceOn(type, idx, cards){
+  if(type==='foundation'){
+    for(var i=0;i<cards.length;i++) S.foundations[idx].push(cards[i]);
+  }
+  if(type==='tableau'){
+    for(var i=0;i<cards.length;i++) S.tableau[idx].push(cards[i]);
+  }
+}
+
+function solOnStockClick(){
+  solPushHistory();
+  if(!S.stock.length){
+    S.stock=S.waste.reverse();
+    S.waste=[];
+  } else {
+    var c=S.stock.pop();
+    c.faceUp=true;
+    S.waste.push(c);
+  }
+  S.selected=null;
+  solRender();
+}
+
+function solOnWasteClick(){
+  if(!S.waste.length)return;
+  var card=S.waste[S.waste.length-1];
+  if(S.selected && S.selected.type==='waste'){
+    S.selected=null; solRender(); return;
+  }
+  if(S.selected){
+    S.selected=null; solRender(); return;
+  }
+  S.selected={type:'waste',idx:0,cardIdx:S.waste.length-1};
+  solRender();
+}
+
+function solOnFoundationClick(fi){
+  if(S.selected){
+    S.selected=null; solRender(); return;
+  }
+}
+
+function solOnCardClick(type, colIdx, cardIdx){
+  var pile;
+  if(type==='tableau') pile=S.tableau[colIdx];
+  else return;
+  var card=pile[cardIdx];
+  if(!card.faceUp)return;
+
+  if(S.selected){
+    if(S.selected.type===type && S.selected.idx===colIdx && S.selected.cardIdx===cardIdx){
+      S.selected=null; solRender(); return;
+    }
+    var cards;
+    if(S.selected.type==='waste'){
+      cards=[S.waste.pop()];
+    } else if(S.selected.type==='tableau'){
+      var selCol=S.tableau[S.selected.idx];
+      cards=selCol.splice(S.selected.cardIdx);
+      if(selCol.length && !selCol[selCol.length-1].faceUp){
+        selCol[selCol.length-1].faceUp=true;
+      }
+    }
+    if(cards && cards.length){
+      if(solCanPlaceOnTableau(cards[0], colIdx)){
+        solPushHistory();
+        for(var i=0;i<cards.length;i++) pile.push(cards[i]);
+        S.moves++;
+        document.getElementById('solMoves').textContent=S.moves;
+        S.selected=null; solRender();
+        return;
+      } else {
+        if(S.selected.type==='waste') S.waste.push(cards[0]);
+        else if(S.selected.type==='tableau') S.tableau[S.selected.idx].push.apply(S.tableau[S.selected.idx],cards);
+        S.selected=null; solRender();
+        return;
+      }
+    }
+    S.selected=null; solRender();
+    return;
+  }
+
+  S.selected={type:'tableau',idx:colIdx,cardIdx:cardIdx};
+  solRender();
+}
+
+function solOnDoubleClick(type, colIdx, cardIdx){
+  var card;
+  if(type==='waste'){
+    if(!S.waste.length)return;
+    card=S.waste[S.waste.length-1];
+  } else if(type==='tableau'){
+    var pile=S.tableau[colIdx];
+    if(cardIdx!==pile.length-1)return;
+    card=pile[cardIdx];
+  } else return;
+  if(solAutoMove(card)){
+    if(type==='waste') S.waste.pop();
+    else if(type==='tableau'){
+      S.tableau[colIdx].pop();
+      if(S.tableau[colIdx].length && !S.tableau[colIdx][S.tableau[colIdx].length-1].faceUp)
+        S.tableau[colIdx][S.tableau[colIdx].length-1].faceUp=true;
+    }
+  }
+}
+
+function solOnEmptyColClick(colIdx){
+  if(S.selected){
+    var cards;
+    if(S.selected.type==='waste') cards=[S.waste.pop()];
+    else if(S.selected.type==='tableau'){
+      var selCol=S.tableau[S.selected.idx];
+      cards=selCol.splice(S.selected.cardIdx);
+      if(selCol.length && !selCol[selCol.length-1].faceUp) selCol[selCol.length-1].faceUp=true;
+    }
+    if(cards && cards.length && cards[0].rank==='K'){
+      solPushHistory();
+      S.tableau[colIdx].push.apply(S.tableau[colIdx],cards);
+      S.moves++;
+      document.getElementById('solMoves').textContent=S.moves;
+    } else if(cards){
+      if(S.selected.type==='waste') S.waste.push(cards[0]);
+      else if(S.selected.type==='tableau') S.tableau[S.selected.idx].push.apply(S.tableau[S.selected.idx],cards);
+    }
+    S.selected=null; solRender();
+  }
+}
+
+function solRender(){
+  var board=document.getElementById('solBoard');
+  board.innerHTML='';
+  document.getElementById('solCards').textContent=solCountFoundation();
+
+  var topRow=document.createElement('div');
+  topRow.className='sol-top';
+
+  var stockDiv=document.createElement('div');
+  stockDiv.className='sol-pile';
+  if(S.stock.length){
+    var back=document.createElement('div');
+    back.className='sol-stock-back';
+    back.innerHTML='<img src="Cards/BACK_'+S.variant+'.png" alt="">';
+    back.onclick=function(e){e.stopPropagation();solOnStockClick()};
+    stockDiv.appendChild(back);
+  } else {
+    var ph=document.createElement('div');
+    ph.className='sol-placeholder stock';
+    ph.textContent='↻';
+    ph.onclick=function(e){e.stopPropagation();solOnStockClick()};
+    stockDiv.appendChild(ph);
+  }
+  topRow.appendChild(stockDiv);
+
+  var wasteDiv=document.createElement('div');
+  wasteDiv.className='sol-pile';
+  if(S.waste.length){
+    var wc=S.waste[S.waste.length-1];
+    var wcEl=solMakeCard(wc,'waste',0,S.selected && S.selected.type==='waste');
+    wcEl.ondblclick=function(){solOnDoubleClick('waste')};
+    wasteDiv.appendChild(wcEl);
+  } else {
+    var ph=document.createElement('div');
+    ph.className='sol-placeholder';
+    wasteDiv.appendChild(ph);
+  }
+  topRow.appendChild(wasteDiv);
+
+  var gap=document.createElement('div');
+  gap.className='sol-gap';
+  topRow.appendChild(gap);
+
+  for(var f=0;f<4;f++){
+    var fDiv=document.createElement('div');
+    fDiv.className='sol-pile sol-foundation';
+    if(S.foundations[f].length){
+      var fc=S.foundations[f][S.foundations[f].length-1];
+      var fcEl=solMakeCard(fc,'foundation',f,false);
+      fDiv.appendChild(fcEl);
+    } else {
+      var suitSym=['♣','♦','♥','♠'][f];
+      var ph=document.createElement('div');
+      ph.className='sol-placeholder';
+      ph.textContent=suitSym;
+      fDiv.appendChild(ph);
+    }
+    var label=document.createElement('div');
+    label.className='sol-found-label';
+    label.textContent=['Clubs','Diamonds','Hearts','Spades'][f];
+    fDiv.appendChild(label);
+    topRow.appendChild(fDiv);
+  }
+  board.appendChild(topRow);
+
+  var tableauDiv=document.createElement('div');
+  tableauDiv.className='sol-tableau';
+  for(var col=0;col<7;col++){
+    var colDiv=document.createElement('div');
+    colDiv.className='sol-col';
+    colDiv.dataset.col=col;
+    if(!S.tableau[col].length){
+      var ph=document.createElement('div');
+      ph.className='sol-col-placeholder';
+      (function(c){ph.onclick=function(){solOnEmptyColClick(c)}})(col);
+      colDiv.appendChild(ph);
+    } else {
+      var pile=S.tableau[col];
+      for(var ci=0;ci<pile.length;ci++){
+        (function(card,type,cIdx,cI){
+          var el=solMakeCard(card,type,cIdx,S.selected && S.selected.type==='tableau' && S.selected.idx===cIdx && S.selected.cardIdx===cI);
+          el.style.top=(ci*22)+'px';
+          el.style.zIndex=ci+1;
+          el.onclick=function(e){e.stopPropagation();solOnCardClick('tableau',cIdx,cI)};
+          el.ondblclick=function(e){e.stopPropagation();solOnDoubleClick('tableau',cIdx,cI)};
+          colDiv.appendChild(el);
+        })(pile[ci],'tableau',col,ci);
+      }
+    }
+    tableauDiv.appendChild(colDiv);
+  }
+  board.appendChild(tableauDiv);
+}
+
+function solMakeCard(card,type,idx,selected){
+  var el=document.createElement('div');
+  el.className='sol-card'+(card.faceUp?'':' face-down')+(selected?' selected':'');
+  var src=card.faceUp?solCardImg(card):'Cards/BACK_'+S.variant+'.png';
+  el.innerHTML='<img src="'+src+'" alt="">';
+  return el;
+}
+
+solDeal();
+</script>
+</body>
+</html>

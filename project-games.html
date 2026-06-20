@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Arcade — Mini Games</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+:root{--bg:#0a0a0a;--surface:#111111;--surface-2:#1a1a1a;--surface-3:#242424;--text:#d0d0d0;--text-secondary:#999999;--text-muted:#666666;--border:#222222;--border-light:#2a2a2a;--accent:#b0b0b0;--accent-hover:#cccccc;--nav-bg:rgba(10,10,10,0.85);--nav-border:rgba(34,34,34,0.5);--shadow:0 25px 80px rgba(0,0,0,0.5);--font-mono:'SF Mono','Fira Code','Cascadia Code',monospace;--correct:#538d4e;--present:#b59f3b;--absent:#3a3a3c;--correct-glow:rgba(83,141,78,0.3);--present-glow:rgba(181,159,59,0.3);--absent-glow:rgba(58,58,60,0.3)}
+body{font-family:var(--font-mono);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+
+.top-nav{position:fixed;top:0;left:0;right:0;z-index:100;background:var(--nav-bg);backdrop-filter:blur(24px) saturate(180%);-webkit-backdrop-filter:blur(24px) saturate(180%);border-bottom:1px solid var(--nav-border)}
+.nav-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:14px 32px}
+.nav-brand{display:flex;align-items:center;gap:8px;text-decoration:none;color:var(--text)}
+.nav-avatar{width:32px;height:32px;border-radius:4px;background:var(--surface-2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;color:var(--text-muted);font-family:var(--font-mono)}
+.nav-name{font-size:13px;font-weight:500;letter-spacing:.02em;text-transform:uppercase}
+.nav-links{display:flex;align-items:center;gap:2px}
+.nav-link{padding:5px 12px;border-radius:4px;text-decoration:none;color:var(--text-muted);font-size:12px;font-weight:400;transition:all .2s;font-family:var(--font-mono)}
+.nav-link:hover{color:var(--text);background:var(--surface-2)}
+.nav-link.active{color:var(--accent);background:var(--surface-2)}
+.nav-actions{display:flex;align-items:center;gap:6px}
+.nav-cta{padding:6px 14px;border-radius:4px;background:transparent;color:var(--accent);border:1px solid var(--border);text-decoration:none;font-size:11px;font-weight:400;transition:all .2s;font-family:var(--font-mono);text-transform:uppercase;letter-spacing:.05em}
+.nav-cta:hover{background:var(--surface-2);border-color:var(--accent)}
+@media(max-width:768px){.nav-links{display:none}.nav-inner{padding:12px 20px}}
+
+.page{max-width:1100px;margin:0 auto;padding:100px 32px 60px}
+.page-label{font-size:11px;font-weight:400;color:var(--text-muted);text-transform:uppercase;letter-spacing:.15em;margin-bottom:6px}
+.page-title{font-size:clamp(22px,4vw,36px);font-weight:600;letter-spacing:-.01em;margin-bottom:24px;text-transform:uppercase}
+.page-title .accent{color:var(--accent)}
+
+/* Golden Spiral Hub */
+.spiral-hub{position:relative;width:400px;height:400px;margin:60px auto;display:flex;align-items:center;justify-content:center}
+.spiral-center{position:relative;width:80px;height:52px;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:10;transition:transform .3s}
+.spiral-center:hover{transform:scale(1.1)}
+.spiral-ring{width:80px;height:52px;border-radius:8px;border:2px solid var(--accent);transition:border-color .3s,box-shadow .3s}
+.spiral-center:hover .spiral-ring{border-color:var(--accent-hover);box-shadow:0 0 20px rgba(176,176,176,0.3)}
+.spiral-dot{position:absolute;width:10px;height:10px;background:var(--accent);border-radius:2px;top:50%;left:50%;transform:translate(-50%,-50%);transition:background .3s,box-shadow .3s}
+.spiral-center:hover .spiral-dot{background:var(--accent-hover);box-shadow:0 0 12px rgba(176,176,176,0.5)}
+.spiral-ripple{position:absolute;width:64px;height:64px;border-radius:50%;border:1px solid var(--accent);top:50%;left:50%;transform:translate(-50%,-50%) scale(0);pointer-events:none;opacity:0}
+.spiral-center.tapping .spiral-ripple{animation:ripple 0.6s ease-out forwards}
+
+.spiral-item{position:absolute;width:64px;height:64px;border-radius:50%;background:var(--surface-2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .3s;font-size:24px}
+.spiral-item:hover{border-color:var(--accent);background:var(--surface-3);transform:scale(1.15);box-shadow:0 0 20px rgba(176,176,176,0.2)}
+.spiral-item.active{border-color:var(--accent);background:var(--surface-3);box-shadow:0 0 20px rgba(176,176,176,0.3)}
+.spiral-item-label{position:absolute;bottom:-20px;font-size:9px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.1em;white-space:nowrap}
+
+@keyframes ripple{0%{transform:translate(-50%,-50%) scale(0);opacity:0.6}100%{transform:translate(-50%,-50%) scale(3.5);opacity:0}}
+
+/* Spiral line connections */
+.spiral-line{position:absolute;pointer-events:none;z-index:0}
+.spiral-line svg{width:100%;height:100%}
+.spiral-line path{fill:none;stroke:var(--border);stroke-width:1;stroke-dasharray:4 4}
+
+/* Game Container */
+.game-container{display:none;margin-top:40px;animation:fadeIn .4s ease}
+.game-container.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+.game-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px}
+.game-title{font-size:20px;font-weight:700;display:flex;align-items:center;gap:10px}
+.game-title svg{width:24px;height:24px;color:var(--accent)}
+.game-controls{display:flex;gap:8px}
+.game-btn{padding:8px 16px;border-radius:8px;border:1px solid var(--border);background:var(--surface-2);color:var(--text-secondary);font-family:var(--font-mono);font-size:11px;font-weight:500;cursor:pointer;transition:all .2s;text-transform:uppercase;letter-spacing:.05em}
+.game-btn:hover{border-color:var(--accent);color:var(--accent)}
+.game-btn.active{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+
+/* Wordle Board */
+.wordle-board{display:flex;flex-direction:column;align-items:center;gap:6px;margin-bottom:24px}
+.wordle-row{display:flex;gap:6px}
+.wordle-cell{width:56px;height:56px;border-radius:8px;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:700;text-transform:uppercase;transition:all .3s;background:var(--surface)}
+.wordle-cell.filled{border-color:var(--accent)}
+.wordle-cell.correct{background:var(--correct);border-color:var(--correct);color:#fff;box-shadow:0 0 12px var(--correct-glow)}
+.wordle-cell.present{background:var(--present);border-color:var(--present);color:#fff;box-shadow:0 0 12px var(--present-glow)}
+.wordle-cell.absent{background:var(--absent);border-color:var(--absent);color:#fff;box-shadow:0 0 12px var(--absent-glow)}
+.wordle-cell.pop{animation:pop .2s ease}
+@keyframes pop{0%{transform:scale(1)}50%{transform:scale(1.15)}100%{transform:scale(1)}}
+.wordle-cell.flip{animation:flip .5s ease}
+@keyframes flip{0%{transform:rotateX(0)}50%{transform:rotateX(90deg)}100%{transform:rotateX(0)}}
+
+/* Wordle Keyboard */
+.wordle-keyboard{display:flex;flex-direction:column;align-items:center;gap:6px}
+.key-row{display:flex;gap:5px}
+.key{height:52px;min-width:32px;padding:0 10px;border-radius:6px;border:none;background:var(--surface-2);color:var(--text);font-family:var(--font-mono);font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center}
+.key:hover{background:var(--surface-3)}
+.key:active{transform:scale(0.95)}
+.key.wide{min-width:56px;font-size:11px}
+.key.correct{background:var(--correct);color:#fff}
+.key.present{background:var(--present);color:#fff}
+.key.absent{background:var(--absent);color:var(--text-muted)}
+
+/* Urdu keyboard special keys */
+.key.urdu{font-size:16px;font-weight:400;min-width:36px}
+
+/* Game Message */
+.game-message{text-align:center;margin-bottom:20px;min-height:28px}
+.game-msg{padding:10px 20px;border-radius:8px;font-size:13px;font-weight:600;display:inline-block;animation:fadeIn .3s ease}
+.game-msg.win{background:var(--correct);color:#fff}
+.game-msg.lose{background:var(--absent);color:var(--text-secondary)}
+.game-msg.info{background:var(--surface-3);color:var(--text-secondary)}
+
+/* How to Play */
+.how-to-play{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 20px;margin-bottom:16px;max-width:700px;margin-left:auto;margin-right:auto}
+.how-to-play summary{font-size:13px;font-weight:600;color:var(--accent);cursor:pointer;list-style:none;display:flex;align-items:center;gap:8px}
+.how-to-play summary::-webkit-details-marker{display:none}
+.how-to-play summary::before{content:'▸';transition:transform .2s}
+.how-to-play[open] summary::before{transform:rotate(90deg)}
+.how-to-play .tip{font-size:12px;color:var(--text-secondary);line-height:1.7;margin-top:10px}
+.how-to-play .tip strong{color:var(--text)}
+
+/* Game Stats */
+.game-stats{display:flex;justify-content:center;gap:24px;margin-top:20px;padding:16px;background:var(--surface);border:1px solid var(--border);border-radius:12px}
+.stat{text-align:center}
+.stat-value{font-size:24px;font-weight:700;color:var(--accent)}
+.stat-label{font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em;margin-top:2px}
+
+/* Language Toggle */
+.lang-toggle{display:flex;gap:4px;padding:3px;background:var(--surface);border:1px solid var(--border);border-radius:8px}
+.lang-btn{padding:6px 12px;border-radius:6px;border:none;background:transparent;color:var(--text-muted);font-family:var(--font-mono);font-size:11px;font-weight:500;cursor:pointer;transition:all .2s}
+.lang-btn:hover{color:var(--text)}
+.lang-btn.active{background:var(--accent);color:var(--bg)}
+
+/* Footer */
+.footer{max-width:1100px;margin:0 auto;padding:28px 32px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.footer-text{font-size:11px;color:var(--text-muted)}
+.footer-links{display:flex;gap:10px}
+.footer-link{font-size:11px;color:var(--text-muted);text-decoration:none;transition:color .2s}
+.footer-link:hover{color:var(--accent)}
+
+@media(max-width:600px){
+  .spiral-hub{width:300px;height:300px}
+  .wordle-cell{width:46px;height:46px;font-size:22px}
+  .key{height:46px;min-width:26px;font-size:11px;padding:0 7px}
+  .game-stats{gap:16px}
+}
+
+/* Arrow Controls */
+.arrow-controls{display:flex;flex-direction:column;align-items:center;gap:4px;margin:16px 0}
+.arrow-row{display:flex;gap:4px}
+.arrow-btn{width:52px;height:52px;border-radius:10px;border:1px solid var(--border);background:var(--surface-2);color:var(--text);font-size:18px;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center}
+.arrow-btn:hover{border-color:var(--accent);color:var(--accent)}
+.arrow-btn:active{transform:scale(0.92);background:var(--surface-3)}
+
+/* Blackjack */
+.bj-table{background:radial-gradient(ellipse at 50% 40%,#1e1a24,#0e0c12);border-radius:20px;padding:28px 20px;max-width:860px;margin:0 auto;border:1px solid rgba(180,150,80,0.25);box-shadow:inset 0 0 120px rgba(0,0,0,0.7),0 8px 48px rgba(0,0,0,0.6);position:relative;overflow:hidden}
+.bj-table::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='120' height='120' viewBox='0 0 120 120' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:0}
+.bj-table>*{position:relative;z-index:1}
+.bj-section{text-align:center;font-size:10px;color:rgba(180,150,80,0.5);text-transform:uppercase;letter-spacing:.25em;margin-bottom:6px;font-weight:600}
+.bj-hand{display:flex;gap:10px;justify-content:center;min-height:110px;padding:8px 0;flex-wrap:wrap;align-items:center}
+.bj-card{width:72px;aspect-ratio:5/7;border-radius:6px;overflow:hidden;border:1px solid rgba(180,150,80,0.2);box-shadow:0 4px 16px rgba(0,0,0,0.5);animation:bjDeal .4s cubic-bezier(.34,1.56,.64,1) forwards}
+@keyframes bjDeal{0%{transform:translateY(-60px) translateX(40px) rotate(-10deg) scale(0.6);opacity:0}100%{transform:none;opacity:1}}
+.bj-card img{width:100%;height:100%;display:block;object-fit:cover}
+.bj-card.fd img{filter:brightness(0.6) saturate(0.8)}
+.bj-info{text-align:center;font-size:12px;color:rgba(255,255,255,0.5);font-weight:500;padding:4px 0;min-height:22px}
+.bj-result{text-align:center;font-size:20px;font-weight:800;color:#d4af37;padding:10px 0;min-height:46px;text-shadow:0 2px 12px rgba(0,0,0,0.6)}
+.bj-controls{display:flex;gap:12px;justify-content:center;padding:14px 0 6px;flex-wrap:wrap}
+.bj-btn{padding:10px 28px;border-radius:6px;border:1px solid rgba(180,150,80,0.2);font-size:12px;font-weight:700;cursor:pointer;transition:all .25s;text-transform:uppercase;letter-spacing:.12em;font-family:var(--font-mono);background:rgba(255,255,255,0.03);color:rgba(255,255,255,0.6)}
+.bj-btn:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 4px 20px rgba(0,0,0,0.4);border-color:rgba(180,150,80,0.4)}
+.bj-btn:disabled{opacity:0.15;cursor:not-allowed;transform:none}
+.bj-btn.deal{background:rgba(180,150,80,0.12);color:#d4af37;border-color:rgba(180,150,80,0.3)}
+.bj-btn.hit{background:rgba(34,197,94,0.08);color:#4ade80;border-color:rgba(34,197,94,0.25)}
+.bj-btn.stand{background:rgba(239,68,68,0.08);color:#f87171;border-color:rgba(239,68,68,0.25)}
+.bj-stats{display:flex;justify-content:center;gap:40px;padding:10px 0 4px;color:rgba(180,150,80,0.4);font-size:11px;letter-spacing:.06em}
+.bj-stats .v{color:#d4af37;font-weight:600}
+
+/* Solitaire */
+.sol-board{position:relative;width:100%;max-width:860px;margin:0 auto;aspect-ratio:7/4;min-height:380px;background:radial-gradient(ellipse at 50% 40%,#1e1a24,#0e0c12);border:1px solid rgba(180,150,80,0.15);border-radius:16px;padding:14px;overflow:hidden;user-select:none}
+.sol-board::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='120' height='120' viewBox='0 0 120 120' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");pointer-events:none}
+.sol-top{display:flex;gap:10px;margin-bottom:14px;justify-content:center;position:relative;z-index:1}
+.sol-pile{position:relative;cursor:pointer}
+.sol-ph{width:64px;height:90px;border-radius:5px;border:2px dashed rgba(180,150,80,0.2);background:rgba(255,255,255,0.02);display:flex;align-items:center;justify-content:center;font-size:16px;color:rgba(180,150,80,0.2)}
+.sol-ph.stock{cursor:pointer}.sol-ph.stock:hover{border-color:rgba(180,150,80,0.4);background:rgba(180,150,80,0.05)}
+.sol-sb{width:64px;height:90px;border-radius:5px;border:1px solid rgba(180,150,80,0.2);overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.3);cursor:pointer}
+.sol-sb img{width:100%;height:100%;object-fit:cover;filter:brightness(0.6) saturate(0.8)}
+.sol-sb:hover{box-shadow:0 2px 12px rgba(180,150,80,0.15)}
+.sol-gap{width:24px}
+.sol-tableau{display:flex;gap:10px;justify-content:center;position:relative;z-index:1}
+.sol-col{position:relative;width:64px;min-height:160px}
+.sol-cph{width:64px;height:90px;border-radius:5px;border:2px dashed rgba(180,150,80,0.12);background:rgba(255,255,255,0.01)}
+.sol-c{position:absolute;width:64px;height:90px;border-radius:5px;overflow:hidden;border:1px solid rgba(180,150,80,0.18);box-shadow:0 2px 8px rgba(0,0,0,0.3);cursor:pointer;z-index:1;transition:transform .15s,box-shadow .15s}
+.sol-c.face-down{cursor:default}
+.sol-c img{width:100%;height:100%;display:block;object-fit:cover}
+.sol-c.face-down img{filter:brightness(0.6) saturate(0.8)}
+.sol-c.sel{box-shadow:0 0 0 2px #8b5cf6,0 4px 20px rgba(139,92,246,0.4);transform:translateY(-4px);z-index:50}
+.sol-c:hover:not(.face-down){box-shadow:0 4px 16px rgba(0,0,0,0.4);z-index:10}
+.sol-msg{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(10,10,15,0.95);border:1px solid rgba(180,150,80,0.3);border-radius:12px;padding:20px 32px;text-align:center;z-index:100}
+.sol-msg h2{font-size:22px;color:#d4af37;margin-bottom:6px}
+.sol-msg p{font-size:12px;color:var(--text-secondary)}
+</style>
+</head>
+<body>
+
+<nav class="top-nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-brand"><div class="nav-avatar">OB</div><span class="nav-name">Omer Bin Asif</span></a>
+    <div class="nav-links">
+      <a href="index.html" class="nav-link">Home</a>
+      <a href="projects.html" class="nav-link active">Work</a>
+      <a href="skills.html" class="nav-link">Skills</a>
+      <a href="journey.html" class="nav-link">Journey</a>
+      <a href="resume.html" class="nav-link">CV</a>
+      <a href="contact.html" class="nav-link">Contact</a>
+    </div>
+    <div class="nav-actions"><a href="contact.html" class="nav-cta">Let's Talk</a></div>
+  </div>
+</nav>
+
+<div class="page">
+  <div class="page-label">Interactive</div>
+  <h1 class="page-title">The <span class="accent">arcade</span></h1>
+
+  <!-- Golden Spiral Hub -->
+  <div class="spiral-hub" id="spiralHub">
+    <div class="spiral-center" id="spiralCenter" onclick="toggleHub()">
+      <div class="spiral-ring"></div>
+      <div class="spiral-dot"></div>
+      <div class="spiral-ripple" id="spiralRipple"></div>
+    </div>
+    <div class="spiral-item" style="top:17%;left:50%;transform:translateX(-50%)" onclick="selectGame('wordle')" data-game="wordle">
+      <span>A</span>
+      <span class="spiral-item-label">Wordle</span>
+    </div>
+    <div class="spiral-item" style="top:42%;left:67%" onclick="selectGame('memory')" data-game="memory">
+      <span>♠</span>
+      <span class="spiral-item-label">Memory</span>
+    </div>
+    <div class="spiral-item" style="top:14%;left:70%" onclick="selectGame('typing')" data-game="typing">
+      <span>⌨</span>
+      <span class="spiral-item-label">Typing</span>
+    </div>
+    <div class="spiral-item" style="bottom:17%;left:50%;transform:translateX(-50%)" onclick="selectGame('snake')" data-game="snake">
+      <span>🐍</span>
+      <span class="spiral-item-label">Snake</span>
+    </div>
+    <div class="spiral-item" style="top:70%;left:14%" onclick="selectGame('solitaire')" data-game="solitaire">
+      <span>🃏</span>
+      <span class="spiral-item-label">Solitaire</span>
+    </div>
+    <div class="spiral-item" style="top:42%;left:17%" onclick="selectGame('tetris')" data-game="tetris">
+      <span>█</span>
+      <span class="spiral-item-label">Tetris</span>
+    </div>
+    <div class="spiral-item" style="top:14%;left:14%" onclick="selectGame('2048')" data-game="2048">
+      <span>2</span>
+      <span class="spiral-item-label">2048</span>
+    </div>
+    <div class="spiral-item" style="top:70%;left:70%" onclick="selectGame('blackjack')" data-game="blackjack">
+      <span>♣</span>
+      <span class="spiral-item-label">Blackjack</span>
+    </div>
+  </div>
+
+  <!-- Wordle Game -->
+  <div class="game-container" id="game-wordle">
+    <div class="game-header">
+      <div class="game-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        Wordle
+      </div>
+      <div class="game-controls">
+        <button class="game-btn" onclick="resetWordle()">New Game</button>
+        <button class="game-btn" onclick="goBack()">Back</button>
+      </div>
+    </div>
+
+    <details class="how-to-play">
+      <summary>How to Play (listen up, buttercup)</summary>
+      <div class="tip">
+        You get <strong>6 tries</strong> to guess a 5-letter word. Type a word and hit Enter.<br>
+        <strong>Green</strong> = right letter, right spot. <strong>Yellow</strong> = right letter, wrong spot. <strong>Gray</strong> = wrong letter, wrong life choices.<br>
+        Switch to <strong>اردو</strong> mode for Urdu words — full Urdu keyboard included. You're welcome.
+      </div>
+    </details>
+
+    <div class="game-message" id="wordleMessage"></div>
+
+    <div style="text-align:center;margin-bottom:16px">
+      <div class="lang-toggle" id="langToggle">
+        <button class="lang-btn active" onclick="setLanguage('en')">English</button>
+        <button class="lang-btn" onclick="setLanguage('ur')">اردو</button>
+      </div>
+    </div>
+
+    <div class="wordle-board" id="wordleBoard"></div>
+
+    <div class="wordle-keyboard" id="wordleKeyboard"></div>
+
+    <div class="game-stats" id="wordleStats">
+      <div class="stat"><div class="stat-value" id="statPlayed">0</div><div class="stat-label">Played</div></div>
+      <div class="stat"><div class="stat-value" id="statWin">0</div><div class="stat-label">Win %</div></div>
+      <div class="stat"><div class="stat-value" id="statStreak">0</div><div class="stat-label">Streak</div></div>
+      <div class="stat"><div class="stat-value" id="statMax">0</div><div class="stat-label">Max</div></div>
+    </div>
+  </div>
+
+  <!-- Memory Game -->
+  <div class="game-container" id="game-memory">
+    <div class="game-header">
+      <div class="game-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        Memory Match
+      </div>
+      <div class="game-controls">
+        <button class="game-btn active" onclick="setMemorySize(4)">4×3</button>
+        <button class="game-btn" onclick="setMemorySize(6)">6×4</button>
+        <button class="game-btn" onclick="resetMemory()">New Game</button>
+        <button class="game-btn" onclick="goBack()">Back</button>
+      </div>
+    </div>
+
+    <details class="how-to-play">
+      <summary>How to Play (yes, it's that simple)</summary>
+      <div class="tip">
+        Flip two cards. If they match, they stay. If they don't, they flip back — just like your confidence.<br>
+        Match <strong>all pairs</strong> in the fewest moves. Pick <strong>4×3</strong> for a warm-up, <strong>6×4</strong> if you hate yourself.<br>
+        Timer's running. Every second you waste is a second you'll never get back. No pressure.
+      </div>
+    </details>
+
+    <div class="game-message" id="memoryMessage"></div>
+    <div id="memoryBoard" style="display:grid;gap:8px;max-width:500px;margin:0 auto"></div>
+    <div class="game-stats">
+      <div class="stat"><div class="stat-value" id="memMoves">0</div><div class="stat-label">Moves</div></div>
+      <div class="stat"><div class="stat-value" id="memPairs">0</div><div class="stat-label">Pairs</div></div>
+      <div class="stat"><div class="stat-value" id="memTime">0s</div><div class="stat-label">Time</div></div>
+    </div>
+  </div>
+
+  <!-- Typing Test -->
+  <div class="game-container" id="game-typing">
+    <div class="game-header">
+      <div class="game-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M6 8h.01M10 8h.01M14 8h.01M18 8h.01M8 12h.01M12 12h.01M16 12h.01M7 16h10"/></svg>
+        Typing Speed
+      </div>
+      <div class="game-controls">
+        <button class="game-btn active" onclick="setTypingMode('30')">30s</button>
+        <button class="game-btn" onclick="setTypingMode('60')">60s</button>
+        <button class="game-btn" onclick="resetTyping()">New Test</button>
+        <button class="game-btn" onclick="goBack()">Back</button>
+      </div>
+    </div>
+
+    <details class="how-to-play">
+      <summary>How to Play (type like your life depends on it)</summary>
+      <div class="tip">
+        A word appears. You type it. That's it. That's the whole game.<br>
+        <strong>WPM</strong> = how fast you type. <strong>Accuracy</strong> = how well you type. Both matter. Like peanut butter and jelly.<br>
+        Pick <strong>30s</strong> for a sprint or <strong>60s</strong> for the full experience. The clock starts when you start typing. Tick tock, genius.
+      </div>
+    </details>
+
+    <div class="game-message" id="typingMessage"></div>
+    <div id="typingText" style="font-size:17px;line-height:1.8;text-align:left;padding:24px;background:var(--surface);border:1px solid var(--border);border-radius:12px;margin-bottom:16px;max-width:800px;margin-left:auto;margin-right:auto;white-space:pre-wrap;word-wrap:break-word;font-family:var(--font-mono)"></div>
+    <div id="typingInput" style="text-align:center;margin-bottom:20px"><textarea id="typingField" style="width:100%;max-width:800px;min-height:140px;padding:16px;border-radius:8px;border:2px solid var(--border);background:var(--surface-2);color:var(--text);font-family:var(--font-mono);font-size:16px;line-height:1.8;outline:none;resize:vertical" onfocus="startTyping()" oninput="checkTyping()" placeholder="Type the text above..." disabled></textarea></div>
+    <div class="game-stats">
+      <div class="stat"><div class="stat-value" id="typeWPM">0</div><div class="stat-label">WPM</div></div>
+      <div class="stat"><div class="stat-value" id="typeAccuracy">100</div><div class="stat-label">Accuracy</div></div>
+      <div class="stat"><div class="stat-value" id="typeTime">30</div><div class="stat-label">Seconds</div></div>
+      <div class="stat"><div class="stat-value" id="typeChars">0</div><div class="stat-label">Chars</div></div>
+    </div>
+  </div>
+
+  <!-- Snake Game -->
+  <div class="game-container" id="game-snake">
+    <div class="game-header">
+      <div class="game-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4v16"/><path d="M4 12h12"/><circle cx="18" cy="12" r="2"/></svg>
+        Snake
+      </div>
+      <div class="game-controls">
+        <button class="game-btn" onclick="resetSnake()">New Game</button>
+        <button class="game-btn" onclick="goBack()">Back</button>
+      </div>
+    </div>
+
+    <details class="how-to-play">
+      <summary>How to Play (it's snake, not brain surgery)</summary>
+      <div class="tip">
+        Use the <strong>arrow buttons</strong> or <strong>swipe</strong> to steer. Eat the <strong>food</strong> to grow. Don't eat yourself — that's a bold strategy.<br>
+        Each food = <strong>10 points</strong>. The longer you get, the harder it gets. Story of my life.<br>
+        Hit a wall or yourself? Game over. Start again. You'll get it eventually. Probably.
+      </div>
+    </details>
+
+    <div class="game-message" id="snakeMessage"></div>
+    <div style="text-align:center"><canvas id="snakeCanvas" width="400" height="400" style="border:1px solid var(--border);border-radius:12px;background:var(--surface)"></canvas></div>
+    <div class="arrow-controls">
+      <button class="arrow-btn" onclick="setSnakeDir('up')">▲</button>
+      <div class="arrow-row">
+        <button class="arrow-btn" onclick="setSnakeDir('left')">◀</button>
+        <button class="arrow-btn" onclick="setSnakeDir('down')">▼</button>
+        <button class="arrow-btn" onclick="setSnakeDir('right')">▶</button>
+      </div>
+    </div>
+    <div class="game-stats">
+      <div class="stat"><div class="stat-value" id="snakeScore">0</div><div class="stat-label">Score</div></div>
+      <div class="stat"><div class="stat-value" id="snakeLevel">1</div><div class="stat-label">Level</div></div>
+      <div class="stat"><div class="stat-value" id="snakeFruit">0</div><div class="stat-label">Fruits</div></div>
+      <div class="stat"><div class="stat-value" id="snakeBest">0</div><div class="stat-label">Best</div></div>
+    </div>
+  </div>
+
+  <!-- Tetris Game -->
+  <div class="game-container" id="game-tetris">
+    <div class="game-header">
+      <div class="game-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="8" height="8"/><rect x="13" y="3" width="8" height="8"/><rect x="3" y="13" width="8" height="8"/></svg>
+        Tetris
+      </div>
+      <div class="game-controls">
+        <button class="game-btn" onclick="resetTetris()">New Game</button>
+        <button class="game-btn" onclick="goBack()">Back</button>
+      </div>
+    </div>
+
+    <details class="how-to-play">
+      <summary>How to Play (stack 'em up, don't mess up)</summary>
+      <div class="tip">
+        <strong>◀ ▶</strong> move left/right. <strong>▼</strong> soft drop. <strong>↻</strong> rotate. The <strong>Next</strong> box shows what's coming — plan ahead, genius.<br>
+        Complete a <strong>full row</strong> to clear it. Clear multiple rows at once for <strong>massive points</strong>.<br>
+        Stack to the top? Game over. The blocks don't care about your feelings.
+      </div>
+    </details>
+
+    <div class="game-message" id="tetrisMessage"></div>
+    <div style="text-align:center;display:flex;gap:16px;justify-content:center;align-items:flex-start;flex-wrap:wrap">
+      <canvas id="tetrisCanvas" width="300" height="600" style="border:1px solid var(--border);border-radius:12px;background:var(--surface)"></canvas>
+      <div style="text-align:center">
+        <div style="color:var(--text-secondary);font-size:13px;margin-bottom:6px;text-transform:uppercase;letter-spacing:1px">Next</div>
+        <canvas id="nextTetrisCanvas" width="120" height="120" style="border:1px solid var(--border);border-radius:12px;background:var(--surface)"></canvas>
+      </div>
+    </div>
+    <div class="arrow-controls">
+      <button class="arrow-btn" onclick="tetrisRotate()">↻</button>
+      <div class="arrow-row">
+        <button class="arrow-btn" onclick="tetrisMove(-1)">◀</button>
+        <button class="arrow-btn" onclick="tetrisDrop()">▼</button>
+        <button class="arrow-btn" onclick="tetrisMove(1)">▶</button>
+      </div>
+    </div>
+    <div class="game-stats">
+      <div class="stat"><div class="stat-value" id="tetrisScore">0</div><div class="stat-label">Score</div></div>
+      <div class="stat"><div class="stat-value" id="tetrisLevel">1</div><div class="stat-label">Level</div></div>
+      <div class="stat"><div class="stat-value" id="tetrisLines">0</div><div class="stat-label">Lines</div></div>
+    </div>
+  </div>
+
+  <!-- Blackjack -->
+  <div class="game-container" id="game-blackjack">
+    <div class="game-header">
+      <div class="game-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="18" rx="2"/><text x="12" y="16" text-anchor="middle" fill="currentColor" font-size="10" font-weight="bold">♣</text></svg>
+        Blackjack
+      </div>
+      <div class="game-controls">
+        <button class="game-btn" onclick="bjDeal()">New Hand</button>
+        <button class="game-btn" onclick="goBack()">Back</button>
+      </div>
+    </div>
+    <details class="how-to-play"><summary>How to Play (21, not 22)</summary><div class="tip"><strong>Goal:</strong> Beat the dealer without going over 21. Aces = 1 or 11. Face cards = 10. Only <strong>♣ Clubs</strong> — 13 unique cards, no repeats (RE7 style). <strong>Deal</strong> → <strong>Hit</strong> → <strong>Stand</strong>. Dealer hits until 17+.</div></details>
+    <div class="bj-table" id="bjTable">
+      <div class="bj-section">Dealer</div>
+      <div class="bj-hand" id="bjDealer"></div>
+      <div class="bj-info" id="bjDInfo"></div>
+      <div class="bj-result" id="bjResult">Place your bet &amp; deal</div>
+      <div class="bj-section">Player</div>
+      <div class="bj-hand" id="bjPlayer"></div>
+      <div class="bj-info" id="bjPInfo"></div>
+      <div class="bj-controls">
+        <button class="bj-btn deal" id="bjDealBtn" onclick="bjDeal()">Deal</button>
+        <button class="bj-btn hit" id="bjHitBtn" onclick="bjHit()" disabled>Hit</button>
+        <button class="bj-btn stand" id="bjStandBtn" onclick="bjStand()" disabled>Stand</button>
+      </div>
+      <div class="bj-stats">
+        <span>Wins: <span class="v" id="bjWins">0</span></span>
+        <span>Losses: <span class="v" id="bjLosses">0</span></span>
+        <span>Draws: <span class="v" id="bjDraws">0</span></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Solitaire -->
+  <div class="game-container" id="game-solitaire">
+    <div class="game-header">
+      <div class="game-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="18" rx="2"/><text x="12" y="16" text-anchor="middle" fill="currentColor" font-size="10" font-weight="bold">♠</text></svg>
+        Solitaire
+      </div>
+      <div class="game-controls">
+        <button class="game-btn" onclick="solDeal()">New Game</button>
+        <button class="game-btn" onclick="solUndo()">Undo</button>
+        <button class="game-btn" onclick="goBack()">Back</button>
+      </div>
+    </div>
+    <details class="how-to-play"><summary>How to Play (patience pays off)</summary><div class="tip"><strong>Goal:</strong> Move all cards to the 4 foundations (top right), A→K by suit. <strong>Tableau:</strong> 7 columns, build descending alternating colors. Empty spots = Kings only. <strong>Click</strong> card to select → click destination. <strong>Double-click</strong> = auto to foundation.</div></details>
+    <div class="sol-board" id="solBoard"></div>
+  </div>
+
+  <!-- 2048 Game -->
+  <div class="game-container" id="game-2048">
+    <div class="game-header">
+      <div class="game-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M12 8v8M8 12h8"/></svg>
+        2048
+      </div>
+      <div class="game-controls">
+        <button class="game-btn" onclick="reset2048()">New Game</button>
+        <button class="game-btn" onclick="goBack()">Back</button>
+      </div>
+    </div>
+
+    <details class="how-to-play">
+      <summary>How to Play (math just got interesting)</summary>
+      <div class="tip">
+        Swipe or use the <strong>arrow buttons</strong> to slide all tiles in a direction. Same numbers <strong>merge</strong> into one.<br>
+        <strong>2+2=4</strong>. <strong>4+4=8</strong>. You get it. Keep merging until you hit <strong>2048</strong>.<br>
+        Board fills up? Game over. The tiles are like pigeons — once they settle, they don't move.
+      </div>
+    </details>
+
+    <div class="game-message" id="message2048"></div>
+    <div id="board2048" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;max-width:360px;margin:0 auto;padding:12px;background:var(--surface);border:1px solid var(--border);border-radius:12px"></div>
+    <div class="arrow-controls">
+      <button class="arrow-btn" onclick="move2048('up')">▲</button>
+      <div class="arrow-row">
+        <button class="arrow-btn" onclick="move2048('left')">◀</button>
+        <button class="arrow-btn" onclick="move2048('down')">▼</button>
+        <button class="arrow-btn" onclick="move2048('right')">▶</button>
+      </div>
+    </div>
+    <div class="game-stats">
+      <div class="stat"><div class="stat-value" id="score2048">0</div><div class="stat-label">Score</div></div>
+      <div class="stat"><div class="stat-value" id="best2048">0</div><div class="stat-label">Best</div></div>
+    </div>
+  </div>
+</div>
+
+<footer class="footer">
+  <span class="footer-text">© 2026 Omer Bin Asif</span>
+  <div class="footer-links">
+    <a href="index.html" class="footer-link">Home</a>
+    <a href="projects.html" class="footer-link">Projects</a>
+    <a href="contact.html" class="footer-link">Contact</a>
+  </div>
+</footer>
+
+<script src="project-games/js/games.js"></script>
+</body>
+</html>

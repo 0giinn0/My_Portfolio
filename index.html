@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Omer Bin Asif — AI Engineer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+:root{--bg:#0a0a0a;--surface:#111111;--surface-2:#1a1a1a;--surface-3:#242424;--text:#d0d0d0;--text-secondary:#999999;--text-muted:#666666;--border:#222222;--border-light:#2a2a2a;--accent:#b0b0b0;--accent-hover:#cccccc;--accent-glow:#f59e0b;--card-icon:rgba(255,255,255,0.06);--nav-bg:rgba(10,10,10,0.85);--nav-border:rgba(34,34,34,0.5);--shadow:0 25px 80px rgba(0,0,0,0.5);--font-mono:'SF Mono','Fira Code','Cascadia Code',monospace}
+body{font-family:var(--font-mono);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+.top-nav{position:fixed;top:0;left:0;right:0;z-index:100;background:var(--nav-bg);backdrop-filter:blur(24px) saturate(180%);-webkit-backdrop-filter:blur(24px) saturate(180%);border-bottom:1px solid var(--nav-border);transition:all .4s}
+.nav-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:14px 32px}
+.nav-brand{display:flex;align-items:center;gap:8px;text-decoration:none;color:var(--text)}
+.nav-avatar{width:32px;height:32px;border-radius:4px;background:var(--surface-2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;color:var(--text-muted);font-family:var(--font-mono)}
+.nav-name{font-size:13px;font-weight:500;letter-spacing:.02em;text-transform:uppercase}
+.nav-links{display:flex;align-items:center;gap:2px}
+.nav-link{padding:5px 12px;border-radius:4px;text-decoration:none;color:var(--text-muted);font-size:12px;font-weight:400;transition:all .2s;font-family:var(--font-mono)}
+.nav-link:hover{color:var(--text);background:var(--surface-2)}
+.nav-link.active{color:var(--accent);background:var(--surface-2)}
+.nav-actions{display:flex;align-items:center;gap:6px}
+.nav-cta{padding:6px 14px;border-radius:4px;background:transparent;color:var(--accent);border:1px solid var(--border);text-decoration:none;font-size:11px;font-weight:400;transition:all .2s;font-family:var(--font-mono);text-transform:uppercase;letter-spacing:.05em}
+.nav-cta:hover{background:var(--surface-2);border-color:var(--accent)}
+@media(max-width:768px){.nav-links{display:none}.nav-inner{padding:12px 20px}}
+.hero{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:120px 32px 80px;text-align:center}
+.hero-content{max-width:800px}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;padding:5px 12px;border-radius:4px;background:var(--surface);border:1px solid var(--border);font-size:11px;font-weight:400;color:var(--text-muted);margin-bottom:20px;text-transform:uppercase;letter-spacing:.1em}
+.hero-badge .dot{width:5px;height:5px;border-radius:50%;background:var(--accent-glow);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.hero-title{font-size:clamp(32px,6vw,56px);font-weight:600;line-height:1.1;letter-spacing:-.01em;margin-bottom:14px;text-transform:uppercase}
+.hero-title .accent{color:var(--accent);border-bottom:2px solid var(--border);padding-bottom:2px}
+.hero-sub{font-size:clamp(13px,1.6vw,15px);color:var(--text-secondary);max-width:540px;margin:0 auto 28px;line-height:1.7;font-weight:400}
+.hero-actions{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.btn{padding:10px 20px;border-radius:4px;font-family:var(--font-mono);font-size:12px;font-weight:400;cursor:pointer;transition:all .2s;text-decoration:none;display:inline-flex;align-items:center;gap:6px;text-transform:uppercase;letter-spacing:.05em}
+.btn-primary{background:var(--surface-2);color:var(--accent);border:1px solid var(--border)}
+.btn-primary:hover{background:var(--surface-3);border-color:var(--accent)}
+.btn-secondary{background:transparent;color:var(--text-muted);border:1px solid var(--border)}
+.btn-secondary:hover{color:var(--text);border-color:var(--border-light)}
+.section{max-width:1100px;margin:0 auto;padding:60px 32px}
+.section-label{font-size:11px;font-weight:400;color:var(--text-muted);text-transform:uppercase;letter-spacing:.15em;margin-bottom:6px}
+.section-title{font-size:clamp(20px,2.5vw,28px);font-weight:500;letter-spacing:-.01em;margin-bottom:28px;color:var(--text)}
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.card{padding:24px;border-radius:6px;text-decoration:none;color:var(--text);transition:all .2s;position:relative;overflow:hidden;background:var(--surface);border:1px solid var(--border);min-height:160px;display:flex;flex-direction:column}
+.card:hover{border-color:var(--border-light);background:var(--surface-2)}
+.card-xray{position:absolute;inset:0;z-index:0;pointer-events:none;border-radius:6px;overflow:hidden;background-size:cover;background-position:center;clip-path:circle(0% at 50% 50%)}
+.card > *{position:relative;z-index:1}
+.card-icon{width:40px;height:40px;border-radius:4px;background:var(--surface-3);display:flex;align-items:center;justify-content:center;margin-bottom:14px;border:1px solid var(--border)}
+.card-icon svg{width:18px;height:18px;color:var(--text-muted)}
+.card-title{font-size:15px;font-weight:500;margin-bottom:4px}
+.card-desc{font-size:12px;color:var(--text-secondary);line-height:1.6;margin-bottom:0;font-weight:400}
+.card-arrow{position:absolute;bottom:20px;right:20px;width:24px;height:24px;border-radius:3px;background:transparent;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;transition:all .2s;color:var(--text-muted);font-size:11px}
+.card:hover .card-arrow{background:var(--surface-3);border-color:var(--accent);color:var(--accent)}
+.search-section{max-width:600px;margin:0 auto;padding:0 32px 60px}
+.search-wrap{position:relative}
+.search-bar{width:100%;padding:10px 14px 10px 38px;border-radius:4px;border:1px solid var(--border);background:var(--surface);font-family:var(--font-mono);font-size:13px;color:var(--text);outline:none;transition:all .2s}
+.search-bar::placeholder{color:var(--text-muted)}
+.search-bar:focus{border-color:var(--accent);background:var(--surface-2)}
+.search-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);width:14px;height:14px;color:var(--text-muted);pointer-events:none}
+.footer{max-width:1100px;margin:0 auto;padding:28px 32px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.footer-text{font-size:11px;color:var(--text-muted)}
+.footer-links{display:flex;gap:10px}
+.footer-link{font-size:11px;color:var(--text-muted);text-decoration:none;transition:color .2s}
+.footer-link:hover{color:var(--accent)}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.animate-in{animation:fadeInUp .4s cubic-bezier(.34,1.56,.64,1) forwards;opacity:0}
+.delay-1{animation-delay:.1s}.delay-2{animation-delay:.15s}.delay-3{animation-delay:.2s}.delay-4{animation-delay:.25s}.delay-5{animation-delay:.3s}
+/* ─── Loading Screen (terminal-style entry) ─── */
+@keyframes blink{0%,49%{opacity:1}50%,100%{opacity:0}}
+@keyframes ripple{0%{transform:translate(-50%,-50%) scale(0);opacity:0.6}100%{transform:translate(-50%,-50%) scale(3.5);opacity:0}}
+@keyframes pulse-dot{0%,100%{opacity:1}50%{opacity:.3}}
+.loader-overlay{position:fixed;inset:0;z-index:9999;background:#0a0a0a;display:flex;align-items:center;justify-content:center;transition:opacity 0.8s ease,visibility 0.8s ease;opacity:1;visibility:visible}
+.loader-overlay.hidden{opacity:0;visibility:hidden;pointer-events:none}
+.loader-inner{display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:'SF Mono','Fira Code','Cascadia Code',monospace;gap:0}
+.loader-status{font-size:11px;color:#b0b0b0;letter-spacing:0.18em;text-transform:uppercase;margin-bottom:16px;height:16px}
+.loader-cursor{animation:blink 1s step-end infinite}
+.loader-track{width:240px;height:3px;background:#1e1e1e;border-radius:2px;overflow:hidden;margin-bottom:10px;border:0.5px solid #2a2a2a}
+.loader-fill{height:100%;background:#888;border-radius:2px;width:0%}
+.loader-pct{font-size:11px;color:#999;letter-spacing:0.1em;margin-bottom:32px}
+.loader-enter{display:flex;flex-direction:column;align-items:center;gap:16px;opacity:0;pointer-events:none;transition:opacity 0.8s ease}
+.loader-enter.visible{opacity:1;pointer-events:all}
+.loader-enter-label{font-size:11px;color:#b0b0b0;letter-spacing:0.18em;text-transform:uppercase}
+.loader-tap{position:relative;width:48px;height:48px;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.loader-ring{width:32px;height:32px;border-radius:50%;border:1px solid #888;transition:border-color 0.2s}
+.loader-dot{position:absolute;width:6px;height:6px;background:#aaa;border-radius:50%;top:50%;left:50%;transform:translate(-50%,-50%);transition:background 0.2s}
+.loader-ripple{position:absolute;width:32px;height:32px;border-radius:50%;border:1px solid #888;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);pointer-events:none;opacity:0}
+.loader-tap:hover .loader-ring{border-color:#ccc}
+.loader-tap:hover .loader-dot{background:#ddd}
+.loader-tap.tapping .loader-ripple{animation:ripple 0.6s ease-out forwards}
+</style>
+</head>
+<body>
+<nav class="top-nav"><div class="nav-inner"><a href="index.html" class="nav-brand"><div class="nav-avatar">OB</div><span class="nav-name">Omer Bin Asif</span></a><div class="nav-links"><a href="index.html" class="nav-link active">Home</a><a href="projects.html" class="nav-link">Work</a><a href="skills.html" class="nav-link">Skills</a><a href="journey.html" class="nav-link">Journey</a><a href="resume.html" class="nav-link">CV</a><a href="contact.html" class="nav-link">Contact</a></div><div class="nav-actions"><a href="contact.html" class="nav-cta">Let's Talk</a></div></div></nav>
+<section class="hero"><div class="hero-content animate-in delay-1"><div class="hero-badge"><span class="dot"></span> Available for projects</div><h1 class="hero-title">Hi there,<br>I'm <span class="accent">Omer</span></h1><p class="hero-sub">I build robots, design pretty things, and occasionally break both. Currently haunting the streets of Bonn, Germany.</p><div class="hero-actions"><a href="projects.html" class="btn btn-primary">View My Work →</a><a href="contact.html" class="btn btn-secondary">Get in Touch</a></div></div></section>
+<section class="section"><div class="section-label animate-in delay-2">Explore</div><h2 class="section-title animate-in delay-2">How can I help you today?</h2><div class="cards-grid"><a href="projects.html" class="card card-projects animate-in delay-3"><div class="card-xray"></div><div class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div><div class="card-title">Projects</div><div class="card-desc">A collection of things I've built that somehow work. You're welcome to judge them.</div><div class="card-arrow">→</div></a><a href="skills.html" class="card card-skills animate-in delay-3"><div class="card-xray"></div><div class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></div><div class="card-title">Skills</div><div class="card-desc">What I'm good at (besides being charming). Spoiler: it involves way too much coffee.</div><div class="card-arrow">→</div></a><a href="journey.html" class="card card-journey animate-in delay-4"><div class="card-xray"></div><div class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div><div class="card-title">Journey</div><div class="card-desc">How I went from Pakistan to Abu Dhabi to Dubai to Germany. Yes, I get around.</div><div class="card-arrow">→</div></a><a href="contact.html" class="card card-contact animate-in delay-4"><div class="card-xray"></div><div class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div><div class="card-title">Contact</div><div class="card-desc">Need someone who talks to robots for a living? I'm your guy. No judgment.</div><div class="card-arrow">→</div></a></div></section>
+<div class="search-section animate-in delay-5"><div class="search-wrap"><svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input type="text" class="search-bar" placeholder="Search projects, skills, pages..." id="searchInput"></div></div>
+<footer class="footer"><span class="footer-text">© 2026 Omer Bin Asif</span><div class="footer-links"><a href="projects.html" class="footer-link">Work</a><a href="resume.html" class="footer-link">CV</a><a href="contact.html" class="footer-link">Contact</a></div></footer>
+<div class="loader-overlay" id="loaderOverlay">
+  <div class="loader-inner">
+    <div class="loader-status" id="loaderStatus">initializing<span class="loader-cursor">_</span></div>
+    <div class="loader-track"><div class="loader-fill" id="loaderFill"></div></div>
+    <div class="loader-pct" id="loaderPct">0%</div>
+    <div class="loader-enter" id="loaderEnter">
+      <div class="loader-enter-label">click to enter</div>
+      <div class="loader-tap" id="loaderTap">
+        <div class="loader-ring"></div>
+        <div class="loader-dot"></div>
+        <div class="loader-ripple" id="loaderRipple"></div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+(function(){
+var pages=[{name:'Projects',url:'projects.html',keywords:'work portfolio'},{name:'Skills',url:'skills.html',keywords:'expertise abilities'},{name:'Journey',url:'journey.html',keywords:'about story background'},{name:'Contact',url:'contact.html',keywords:'email message calendly'},{name:'Resume',url:'resume.html',keywords:'cv curriculum vitae'},{name:'Artemis',url:'project-artemis.html',keywords:'artemis mobile app'},{name:'Flux',url:'project-flux.html',keywords:'flux login ecommerce'}];
+var si=document.getElementById('searchInput');if(si)si.addEventListener('keydown',function(e){if(e.key==='Enter'){var q=this.value.toLowerCase().trim();if(!q)return;var m=pages.find(function(p){return p.name.toLowerCase().includes(q)||p.keywords.includes(q)});if(m)window.location.href=m.url}})})();
+
+
+// Cursor-following X-Ray effect with circular lens
+document.querySelectorAll('.card-xray').forEach(function(xray){
+    xray.style.backgroundImage='url("XRAY CSS image/Dark mode.png")';
+  });
+
+document.querySelectorAll('.card').forEach(function(card){
+  var xray=card.querySelector('.card-xray');
+  if(!xray)return;
+  card.addEventListener('mouseenter',function(e){
+    var rect=card.getBoundingClientRect();
+    var x=((e.clientX-rect.left)/rect.width)*100;
+    var y=((e.clientY-rect.top)/rect.height)*100;
+    xray.style.setProperty('--mx',x+'%');
+    xray.style.setProperty('--my',y+'%');
+    xray.style.transition='clip-path .5s cubic-bezier(.34,1.56,.64,1)';
+    xray.style.clipPath='circle(35% at var(--mx,50%) var(--my,50%))';
+  });
+  card.addEventListener('mousemove',function(e){
+    var rect=card.getBoundingClientRect();
+    xray.style.transition='none';
+    xray.style.setProperty('--mx',((e.clientX-rect.left)/rect.width*100)+'%');
+    xray.style.setProperty('--my',((e.clientY-rect.top)/rect.height*100)+'%');
+  });
+  card.addEventListener('mouseleave',function(){
+    xray.style.transition='clip-path .5s cubic-bezier(.34,1.56,.64,1)';
+    xray.style.clipPath='circle(0% at 50% 50%)';
+    setTimeout(function(){xray.style.transition='';xray.style.clipPath=''},500);
+  });
+});
+
+// ─── Loading Screen ───
+(function(){
+  var statuses = [
+    { label: "initializing", at: 0 },
+    { label: "checking system requirements", at: 5 },
+    { label: "loading configuration", at: 10 },
+    { label: "fetching assets", at: 15 },
+    { label: "installing dependencies", at: 20 },
+    { label: "looking for updates", at: 25 },
+    { label: "setting up environment", at: 30 },
+    { label: "running diagnostics", at: 35 },
+    { label: "connecting to server", at: 40 },
+    { label: "authenticating", at: 45 },
+    { label: "compiling resources", at: 50 },
+    { label: "syncing data", at: 55 },
+    { label: "optimizing cache", at: 60 },
+    { label: "loading modules", at: 65 },
+    { label: "verifying integrity", at: 70 },
+    { label: "unpacking components", at: 75 },
+    { label: "registering services", at: 80 },
+    { label: "preparing interface", at: 88 },
+    { label: "almost ready", at: 95 }
+  ];
+
+  var DURATION = 4000;
+  var startTime = Date.now();
+  var statusEl = document.getElementById('loaderStatus');
+  var fillEl = document.getElementById('loaderFill');
+  var pctEl = document.getElementById('loaderPct');
+  var enterEl = document.getElementById('loaderEnter');
+  var overlay = document.getElementById('loaderOverlay');
+  var tapEl = document.getElementById('loaderTap');
+  var lastStatusIdx = -1;
+
+  function setStatus(text) {
+    statusEl.innerHTML = text + '<span class="loader-cursor">_</span>';
+  }
+
+  function tick() {
+    var elapsed = Date.now() - startTime;
+    var t = Math.min(elapsed / DURATION, 1);
+
+    var pct;
+    if (t < 0.4) {
+      pct = t * 0.55 / 0.4;
+    } else if (t < 0.75) {
+      pct = 0.55 + (t - 0.4) * 0.2 / 0.35;
+    } else {
+      pct = 0.75 + (t - 0.75) * 0.25 / 0.25;
+    }
+    pct = Math.min(pct, 1);
+    var display = Math.round(pct * 100);
+
+    fillEl.style.width = display + '%';
+    pctEl.textContent = display + '%';
+
+    for (var i = statuses.length - 1; i >= 0; i--) {
+      if (display >= statuses[i].at && i !== lastStatusIdx) {
+        lastStatusIdx = i;
+        setStatus(statuses[i].label);
+        break;
+      }
+    }
+
+    if (t < 1) {
+      requestAnimationFrame(tick);
+    } else {
+      fillEl.style.width = '100%';
+      pctEl.textContent = '100%';
+      setStatus('done');
+      setTimeout(function() { enterEl.classList.add('visible'); }, 800);
+    }
+  }
+
+  requestAnimationFrame(tick);
+
+  function handleTap() {
+    tapEl.classList.remove('tapping');
+    void tapEl.querySelector('.loader-ripple').offsetWidth;
+    tapEl.classList.add('tapping');
+    setTimeout(function() { tapEl.classList.remove('tapping'); }, 700);
+    // Fade out
+    overlay.classList.add('hidden');
+    // Enable scrolling on body
+    document.body.style.overflow = '';
+  }
+
+  tapEl.addEventListener('click', handleTap);
+
+  // Prevent scroll while loading screen is visible
+  document.body.style.overflow = 'hidden';
+})();
+</script>
+</body>
+</html>

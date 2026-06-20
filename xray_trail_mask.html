@@ -1,0 +1,354 @@
+
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  .xray-outer {
+    background: #111;
+    border-radius: 12px;
+    padding: 20px;
+    font-family: var(--font-mono);
+  }
+  .presets {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+  .preset-btn {
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 6px 14px;
+    border-radius: 4px;
+    border: 1px solid #333;
+    background: transparent;
+    color: #555;
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s;
+    font-family: var(--font-mono);
+  }
+  .preset-btn:hover { border-color: #666; color: #999; }
+  .preset-btn.active { border-color: #888; color: #ccc; }
+  .xray-stage {
+    position: relative;
+    width: 100%;
+    height: 420px;
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: crosshair;
+  }
+  .layer-base, .layer-reveal, .layer-mask {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+  .layer-mask { pointer-events: none; }
+  .label {
+    position: absolute;
+    bottom: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.2);
+    pointer-events: none;
+    white-space: nowrap;
+    transition: opacity 0.4s;
+  }
+  .controls {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-top: 14px;
+    flex-wrap: wrap;
+  }
+  .ctrl {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+    min-width: 160px;
+  }
+  .ctrl label {
+    font-size: 11px;
+    color: #555;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .ctrl input[type=range] { flex: 1; }
+  .ctrl span {
+    font-size: 11px;
+    color: #555;
+    min-width: 36px;
+    text-align: right;
+  }
+</style>
+
+<h2 class="sr-only">X-ray hover effect where the trail reveals the layer beneath</h2>
+
+<div class="xray-outer">
+  <div class="presets" id="presets"></div>
+  <div class="xray-stage" id="stage">
+    <canvas class="layer-base" id="base"></canvas>
+    <canvas class="layer-reveal" id="reveal"></canvas>
+    <canvas class="layer-mask" id="maskcanvas"></canvas>
+    <div class="label" id="hint">move cursor to reveal</div>
+  </div>
+  <div class="controls">
+    <div class="ctrl">
+      <label>brush size</label>
+      <input type="range" min="10" max="120" value="38" step="1" id="radius">
+      <span id="radius-out">38px</span>
+    </div>
+    <div class="ctrl">
+      <label>trail fade</label>
+      <input type="range" min="20" max="120" value="55" step="1" id="traillen">
+      <span id="trail-out">55</span>
+    </div>
+  </div>
+</div>
+
+<script>
+const presets = [
+  {
+    name: "dark / gold",
+    base: (ctx, w, h) => {
+      ctx.fillStyle="#111008"; ctx.fillRect(0,0,w,h);
+      for(let i=0;i<60;i++){
+        ctx.beginPath(); ctx.arc(Math.random()*w,Math.random()*h,Math.random()*1.5+0.5,0,Math.PI*2);
+        ctx.fillStyle=`rgba(255,220,80,${Math.random()*0.12+0.03})`; ctx.fill();
+      }
+      ctx.font="500 72px monospace"; ctx.fillStyle="rgba(255,220,80,0.06)";
+      ctx.textAlign="center"; ctx.fillText("BENEATH",w/2,h/2+26);
+    },
+    reveal: (ctx, w, h) => {
+      ctx.fillStyle="#0a0800"; ctx.fillRect(0,0,w,h);
+      for(let i=0;i<200;i++){
+        ctx.beginPath(); ctx.arc(Math.random()*w,Math.random()*h,Math.random()*2+0.5,0,Math.PI*2);
+        ctx.fillStyle=`rgba(255,200,40,${Math.random()*0.7+0.1})`; ctx.fill();
+      }
+      ctx.font="500 72px monospace"; ctx.fillStyle="rgba(255,200,40,0.6)";
+      ctx.textAlign="center"; ctx.fillText("BENEATH",w/2,h/2+26);
+    }
+  },
+  {
+    name: "grid / neon",
+    base: (ctx, w, h) => {
+      ctx.fillStyle="#0a0a0a"; ctx.fillRect(0,0,w,h);
+      ctx.strokeStyle="rgba(255,255,255,0.06)"; ctx.lineWidth=1;
+      for(let x=0;x<w;x+=40){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,h);ctx.stroke();}
+      for(let y=0;y<h;y+=40){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke();}
+      ctx.font="500 72px monospace"; ctx.fillStyle="rgba(255,255,255,0.07)";
+      ctx.textAlign="center"; ctx.fillText("SURFACE",w/2,h/2+26);
+    },
+    reveal: (ctx, w, h) => {
+      ctx.fillStyle="#050510"; ctx.fillRect(0,0,w,h);
+      ctx.strokeStyle="rgba(100,200,255,0.5)"; ctx.lineWidth=1.5;
+      for(let x=0;x<w;x+=40){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,h);ctx.stroke();}
+      for(let y=0;y<h;y+=40){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke();}
+      ctx.font="500 72px monospace"; ctx.fillStyle="rgba(80,180,255,0.5)";
+      ctx.textAlign="center"; ctx.fillText("SURFACE",w/2,h/2+26);
+      ctx.fillStyle="rgba(80,180,255,0.12)"; ctx.fillRect(0,0,w,h);
+    }
+  },
+  {
+    name: "noise / red",
+    base: (ctx, w, h) => {
+      ctx.fillStyle="#0f0a0a"; ctx.fillRect(0,0,w,h);
+      for(let y=0;y<h;y+=3){ ctx.fillStyle=`rgba(255,255,255,${Math.random()*0.02})`; ctx.fillRect(0,y,w,1); }
+      ctx.font="bold 80px serif"; ctx.fillStyle="rgba(255,60,60,0.07)";
+      ctx.textAlign="center"; ctx.fillText("STRUCTURE",w/2,h/2+28);
+    },
+    reveal: (ctx, w, h) => {
+      ctx.fillStyle="#200808"; ctx.fillRect(0,0,w,h);
+      const idata=ctx.createImageData(w,h);
+      for(let i=0;i<idata.data.length;i+=4){
+        const v=Math.random()*40;
+        idata.data[i]=180+v; idata.data[i+1]=v/4; idata.data[i+2]=v/4; idata.data[i+3]=Math.random()*60+10;
+      }
+      ctx.putImageData(idata,0,0);
+      ctx.font="bold 80px serif"; ctx.fillStyle="rgba(255,60,60,0.85)";
+      ctx.textAlign="center"; ctx.fillText("STRUCTURE",w/2,h/2+28);
+    }
+  },
+  {
+    name: "concrete / blueprint",
+    base: (ctx, w, h) => {
+      ctx.fillStyle="#1a1a1a"; ctx.fillRect(0,0,w,h);
+      const idata=ctx.createImageData(w,h);
+      for(let i=0;i<idata.data.length;i+=4){
+        const v=100+Math.random()*30;
+        idata.data[i]=v; idata.data[i+1]=v; idata.data[i+2]=v; idata.data[i+3]=18;
+      }
+      ctx.putImageData(idata,0,0);
+      ctx.strokeStyle="rgba(255,255,255,0.04)"; ctx.lineWidth=1;
+      for(let i=0;i<h;i+=6){ctx.beginPath();ctx.moveTo(0,i);ctx.lineTo(w,i);ctx.stroke();}
+    },
+    reveal: (ctx, w, h) => {
+      ctx.fillStyle="#061420"; ctx.fillRect(0,0,w,h);
+      ctx.strokeStyle="rgba(40,120,255,0.25)"; ctx.lineWidth=0.5;
+      for(let x=0;x<w;x+=20){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,h);ctx.stroke();}
+      for(let y=0;y<h;y+=20){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke();}
+      ctx.strokeStyle="rgba(40,120,255,0.8)"; ctx.lineWidth=1;
+      const cx=w/2,cy=h/2;
+      ctx.strokeRect(cx-120,cy-60,240,120);
+      ctx.beginPath();ctx.moveTo(cx-160,cy);ctx.lineTo(cx+160,cy);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(cx,cy-100);ctx.lineTo(cx,cy+100);ctx.stroke();
+      ctx.beginPath();ctx.arc(cx,cy,80,0,Math.PI*2);ctx.stroke();
+      ctx.font="11px monospace"; ctx.fillStyle="rgba(40,140,255,0.7)";
+      ctx.fillText("∅ 160",cx+86,cy-6); ctx.fillText("240",cx-112,cy-68);
+    }
+  },
+  {
+    name: "sand / circuit",
+    base: (ctx, w, h) => {
+      ctx.fillStyle="#1c1610"; ctx.fillRect(0,0,w,h);
+      const idata=ctx.createImageData(w,h);
+      for(let i=0;i<idata.data.length;i+=4){
+        const v=Math.random()*25;
+        idata.data[i]=180+v; idata.data[i+1]=150+v; idata.data[i+2]=100+v; idata.data[i+3]=22;
+      }
+      ctx.putImageData(idata,0,0);
+    },
+    reveal: (ctx, w, h) => {
+      ctx.fillStyle="#0a0f08"; ctx.fillRect(0,0,w,h);
+      ctx.strokeStyle="rgba(80,255,120,0.7)"; ctx.lineWidth=1.5;
+      [[[80,100],[80,200],[200,200]],[[200,200],[200,300],[400,300]],
+       [[400,300],[400,180],[560,180]],[[300,100],[300,200],[500,200],[500,320],[580,320]],
+       [[120,320],[250,320],[250,160],[440,160]]].forEach(p=>{
+        ctx.beginPath(); p.forEach(([x,y],i)=>i===0?ctx.moveTo(x,y):ctx.lineTo(x,y)); ctx.stroke();
+      });
+      [[80,100],[200,200],[400,300],[300,100],[440,160],[580,320],[120,320]].forEach(([x,y])=>{
+        ctx.beginPath();ctx.arc(x,y,4,0,Math.PI*2);ctx.fillStyle="#80ff90";ctx.fill();
+      });
+    }
+  }
+];
+
+const stage = document.getElementById("stage");
+const baseCanvas = document.getElementById("base");
+const revealCanvas = document.getElementById("reveal");
+const maskCanvas = document.getElementById("maskcanvas");
+const hint = document.getElementById("hint");
+const presetsEl = document.getElementById("presets");
+
+let W, H, currentPreset = 0;
+let brushRadius = 38, maxTrail = 55;
+let trail = [];
+let mouseX = -999, mouseY = -999;
+let inside = false;
+let smoothX = -999, smoothY = -999;
+
+function resize() {
+  W = stage.offsetWidth; H = stage.offsetHeight;
+  baseCanvas.width = revealCanvas.width = maskCanvas.width = W;
+  baseCanvas.height = revealCanvas.height = maskCanvas.height = H;
+  drawScenes();
+}
+
+function drawScenes() {
+  const p = presets[currentPreset];
+  p.base(baseCanvas.getContext("2d"), W, H);
+  p.reveal(revealCanvas.getContext("2d"), W, H);
+}
+
+function setPreset(i) {
+  currentPreset = i;
+  document.querySelectorAll(".preset-btn").forEach((b,j)=>b.classList.toggle("active",j===i));
+  drawScenes();
+}
+
+presets.forEach((p,i)=>{
+  const btn = document.createElement("button");
+  btn.className = "preset-btn"+(i===0?" active":"");
+  btn.textContent = p.name;
+  btn.onclick = ()=>setPreset(i);
+  presetsEl.appendChild(btn);
+});
+
+stage.addEventListener("mousemove", e => {
+  const r = stage.getBoundingClientRect();
+  mouseX = e.clientX - r.left;
+  mouseY = e.clientY - r.top;
+  inside = true;
+  hint.style.opacity = "0";
+});
+
+stage.addEventListener("mouseleave", () => {
+  inside = false;
+  hint.style.opacity = "1";
+});
+
+document.getElementById("radius").addEventListener("input", e => {
+  brushRadius = parseInt(e.target.value);
+  document.getElementById("radius-out").textContent = brushRadius+"px";
+});
+document.getElementById("traillen").addEventListener("input", e => {
+  maxTrail = parseInt(e.target.value);
+  document.getElementById("trail-out").textContent = maxTrail;
+});
+
+function lerp(a, b, t) { return a + (b-a)*t; }
+
+function buildMaskURL() {
+  const mc = maskCanvas;
+  const mctx = mc.getContext("2d");
+  mctx.clearRect(0, 0, W, H);
+
+  for (let i = 0; i < trail.length; i++) {
+    const t = i / (trail.length - 1 || 1);
+    const alpha = t * t;
+    const r = brushRadius * (0.4 + t * 0.6);
+    const grd = mctx.createRadialGradient(trail[i].x, trail[i].y, 0, trail[i].x, trail[i].y, r);
+    grd.addColorStop(0,   `rgba(0,0,0,${(alpha).toFixed(3)})`);
+    grd.addColorStop(0.5, `rgba(0,0,0,${(alpha * 0.6).toFixed(3)})`);
+    grd.addColorStop(1,   "rgba(0,0,0,0)");
+    mctx.fillStyle = grd;
+    mctx.beginPath();
+    mctx.arc(trail[i].x, trail[i].y, r, 0, Math.PI*2);
+    mctx.fill();
+  }
+
+  const url = mc.toDataURL();
+  revealCanvas.style.webkitMaskImage = `url(${url})`;
+  revealCanvas.style.maskImage = `url(${url})`;
+  revealCanvas.style.webkitMaskSize = `${W}px ${H}px`;
+  revealCanvas.style.maskSize = `${W}px ${H}px`;
+  revealCanvas.style.webkitMaskRepeat = "no-repeat";
+  revealCanvas.style.maskRepeat = "no-repeat";
+}
+
+function clearMask() {
+  revealCanvas.style.webkitMaskImage = "none";
+  revealCanvas.style.maskImage = "none";
+}
+
+function animate() {
+  requestAnimationFrame(animate);
+
+  if (inside) {
+    smoothX = smoothX < -900 ? mouseX : lerp(smoothX, mouseX, 0.18);
+    smoothY = smoothY < -900 ? mouseY : lerp(smoothY, mouseY, 0.18);
+    trail.push({ x: smoothX, y: smoothY });
+  }
+
+  if (trail.length > maxTrail) trail.splice(0, trail.length - maxTrail);
+
+  if (trail.length > 0) {
+    buildMaskURL();
+  } else {
+    clearMask();
+  }
+
+  if (!inside) {
+    trail.splice(0, Math.ceil(trail.length * 0.06) + 1);
+    if (trail.length === 0) { smoothX = -999; smoothY = -999; }
+  }
+}
+
+resize();
+window.addEventListener("resize", resize);
+animate();
+</script>

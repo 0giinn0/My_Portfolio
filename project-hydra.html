@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hydra AI — Chatbot Project</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0a0a;--surface:#111111;--surface-2:#1a1a1a;--surface-3:#242424;--text:#d0d0d0;--text-secondary:#999999;--text-muted:#666666;--border:#222222;--border-light:#2a2a2a;--nav-bg:rgba(10,10,10,0.85);--nav-border:rgba(34,34,34,0.5);--font-mono:'SF Mono','Fira Code','Cascadia Code',monospace;--accent:#8b5cf6;--accent-light:#a78bfa;--green:#22c55e;--blue:#3b82f6;--pink:#ec4899;--orange:#f97316}body{font-family:var(--font-mono);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;transition:all .4s}
+.top-nav{position:fixed;top:0;left:0;right:0;z-index:100;height:48px;display:flex;align-items:center;background:var(--nav-bg);backdrop-filter:blur(24px) saturate(180%);-webkit-backdrop-filter:blur(24px) saturate(180%);border-bottom:1px solid var(--nav-border)}
+.nav-inner{max-width:1200px;margin:0 auto;width:100%;display:flex;align-items:center;justify-content:space-between;padding:0 24px}
+.nav-brand{display:flex;align-items:center;gap:8px;text-decoration:none;color:var(--text)}
+.nav-avatar{width:28px;height:28px;border-radius:4px;background:var(--surface-2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;color:var(--text-muted);font-family:var(--font-mono)}
+.nav-name{font-size:12px;font-weight:500;letter-spacing:.02em;text-transform:uppercase}
+.nav-links{display:flex;align-items:center;gap:2px}
+.nav-link{padding:4px 10px;border-radius:4px;text-decoration:none;color:var(--text-muted);font-size:11px;font-weight:400;transition:all .2s;font-family:var(--font-mono)}
+.nav-link:hover{color:var(--text);background:var(--surface-2)}
+.nav-link.active{color:var(--accent);background:var(--surface-2)}
+.nav-actions{display:flex;align-items:center;gap:6px}
+.nav-cta{padding:5px 12px;border-radius:4px;background:transparent;color:var(--accent);border:1px solid var(--border);text-decoration:none;font-size:10px;font-weight:400;transition:all .2s;font-family:var(--font-mono);text-transform:uppercase;letter-spacing:.05em}
+.nav-cta:hover{background:var(--surface-2);border-color:var(--accent)}
+
+.container{max-width:1100px;margin:0 auto;padding:80px 32px 40px}
+.mono{font-family:'JetBrains Mono',monospace}
+
+/* Theme Toggle */
+.page-label{font-size:12px;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:.2em;margin-bottom:12px;display:flex;align-items:center;gap:12px}
+.page-label::before{content:'';width:32px;height:1px;background:var(--accent)}
+.page-title{font-size:clamp(28px,5vw,48px);font-weight:900;letter-spacing:-.03em;margin-bottom:8px}
+.page-title .accent{color:var(--accent)}
+.page-sub{font-size:18px;color:var(--text-secondary);max-width:600px;line-height:1.7;margin-bottom:40px}
+
+/* Main Layout */
+.app-layout{display:grid;grid-template-columns:1fr 380px;gap:32px;align-items:start}
+@media(max-width:900px){.app-layout{grid-template-columns:1fr}}
+
+/* Chat Container */
+.chat-container{background:var(--surface);border:1px solid var(--border);border-radius:24px;overflow:hidden;height:640px;display:flex;flex-direction:column}
+        .commands-panel{padding:16px;background:var(--bg-secondary);border-bottom:1px solid var(--border);display:none;max-height:250px;overflow-y:auto}
+        .commands-panel.show{display:block}
+        .commands-panel h3{font-size:13px;font-weight:600;margin-bottom:12px;color:var(--text-primary)}
+        .commands-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+        .command-item{display:flex;align-items:center;gap:6px;padding:6px 8px;border-radius:8px;background:var(--bg-card);border:1px solid var(--border);cursor:pointer;transition:all 0.2s}
+        .command-item:hover{border-color:var(--accent-primary);transform:translateY(-1px)}
+        .command-item .cmd{font-family:var(--font-mono);font-size:11px;color:var(--accent-primary);white-space:nowrap}
+        .command-item .desc{font-size:10px;color:var(--text-secondary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+        .cmd-help{position:absolute;right:100px;top:16px;padding:6px 12px;background:var(--bg-tertiary);border:1px solid var(--border);border-radius:8px;color:var(--text-secondary);cursor:pointer;font-size:12px;font-family:var(--font-mono);transition:all 0.2s;z-index:10}
+        .cmd-help:hover{background:var(--accent-primary);color:white;border-color:var(--accent-primary)}
+        .keyword-ref{position:fixed;bottom:20px;right:20px;width:300px;max-height:400px;background:var(--surface);border:1px solid var(--border);border-radius:16px;box-shadow:0 10px 40px rgba(0,0,0,0.3);display:none;z-index:100;overflow:hidden}
+        .keyword-ref.show{display:block;animation:slideUp 0.3s}
+        .keyword-ref-header{padding:12px 16px;background:var(--accent-primary);color:white;font-weight:600;font-size:13px;display:flex;justify-content:space-between;align-items:center}
+        .keyword-ref-body{padding:12px;max-height:340px;overflow-y:auto}
+.container{max-width:1100px;margin:0 auto;padding:80px 32px 40px}
+        .keyword-ref-category{margin-bottom:12px}
+        .keyword-ref-category-title{font-size:11px;font-weight:600;color:var(--accent-primary);text-transform:uppercase;margin-bottom:6px}
+        .keyword-ref-item{display:flex;align-items:center;gap:8px;padding:4px 0;font-size:12px}
+        .keyword-ref-keyword{font-family:var(--font-mono);color:var(--text);background:var(--bg-tertiary);padding:2px 6px;border-radius:4px;font-size:10px}
+        .keyword-ref-desc{color:var(--text-secondary);font-size:11px}
+        .keyword-toggle{position:fixed;bottom:20px;right:20px;width:48px;height:48px;border-radius:50%;background:var(--accent-primary);color:white;border:none;cursor:pointer;font-size:20px;box-shadow:0 4px 20px rgba(0,0,0,0.3);z-index:99;transition:all 0.3s}
+        .keyword-toggle:hover{transform:scale(1.1)}
+.chat-header{padding:20px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:16px}
+.chat-avatar{width:48px;height:48px;border-radius:16px;background:linear-gradient(135deg,var(--accent),var(--pink));display:flex;align-items:center;justify-content:center;font-size:20px}
+.chat-header-info{flex:1}
+.chat-header-name{font-size:18px;font-weight:700}
+.chat-header-status{font-size:12px;color:var(--green);display:flex;align-items:center;gap:6px}
+.chat-header-status::before{content:'';width:8px;height:8px;border-radius:50%;background:var(--green);animation:pulse 2s infinite}
+#aiStatus{transition:all 0.3s;font-size:11px}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+.chat-header-actions{display:flex;gap:8px}
+.header-action{width:36px;height:36px;border-radius:10px;background:var(--surface-2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;transition:all .2s}
+.header-action:hover{border-color:var(--accent);transform:scale(1.05)}
+
+/* Messages */
+.chat-messages{flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:16px}
+.message-group{display:flex;gap:12px;max-width:85%}
+.message-group.user{align-self:flex-end;flex-direction:row-reverse}
+.message-avatar{width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex-shrink:0}
+.message-avatar.ai{background:linear-gradient(135deg,var(--accent),var(--pink))}
+.message-avatar.human{background:linear-gradient(135deg,var(--blue),var(--green))}
+.message-content{flex:1}
+.message-name{font-size:11px;font-weight:600;color:var(--text-muted);margin-bottom:4px}
+.message-group.user .message-name{text-align:right}
+.message-bubble{padding:14px 18px;border-radius:18px;font-size:14px;line-height:1.6}
+.message-group:not(.user) .message-bubble{background:var(--surface-2);border:1px solid var(--border);border-bottom-left-radius:4px}
+.message-group.user .message-bubble{background:var(--accent);color:#fff;border-bottom-right-radius:4px}
+.message-time{font-size:10px;color:var(--text-muted);margin-top:6px}
+.message-group.user .message-time{text-align:right}
+
+/* Typing Indicator */
+.typing-indicator{display:none;align-items:center;gap:8px;padding:0 20px;margin-top:8px}
+.typing-indicator.active{display:flex}
+.typing-dots{display:flex;gap:4px}
+.typing-dot{width:8px;height:8px;border-radius:50%;background:var(--text-muted);animation:typingBounce 1.4s infinite}
+.typing-dot:nth-child(2){animation-delay:.2s}
+.typing-dot:nth-child(3){animation-delay:.4s}
+@keyframes typingBounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-8px)}}
+.typing-text{font-size:12px;color:var(--text-muted)}
+
+/* Input Area */
+.chat-input-area{padding:16px 20px;border-top:1px solid var(--border);background:var(--surface)}
+.chat-suggestions{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.suggestion-chip{padding:8px 14px;border-radius:20px;background:var(--surface-2);border:1px solid var(--border);font-size:12px;font-weight:500;color:var(--text-secondary);cursor:pointer;transition:all .2s}
+.suggestion-chip:hover{border-color:var(--accent);color:var(--accent);transform:translateY(-2px)}
+.chat-input-row{display:flex;gap:12px;align-items:end}
+.chat-input{flex:1;padding:14px 18px;border-radius:14px;background:var(--surface-2);border:1px solid var(--border);color:var(--text);font-family:'Inter',sans-serif;font-size:14px;outline:none;resize:none;max-height:120px;min-height:48px;line-height:1.5}
+.chat-input:focus{border-color:var(--accent)}
+.chat-send{width:48px;height:48px;border-radius:14px;background:var(--accent);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;transition:all .2s;flex-shrink:0}
+.chat-send:hover{transform:scale(1.05);background:var(--accent-light)}
+.chat-send:disabled{opacity:.5;cursor:not-allowed;transform:none}
+
+/* Sidebar */
+.sidebar{display:flex;flex-direction:column;gap:20px}
+.sidebar-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:24px}
+.sidebar-title{font-size:14px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.sidebar-title .icon{font-size:18px}
+
+/* Features */
+.feature-list{display:flex;flex-direction:column;gap:12px}
+.feature-item{display:flex;align-items:center;gap:12px;padding:12px;background:var(--surface-2);border-radius:12px}
+.feature-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.feature-text{flex:1}
+.feature-name{font-size:13px;font-weight:600}
+.feature-desc{font-size:11px;color:var(--text-muted)}
+
+/* Stats */
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.stat-box{padding:16px;background:var(--surface-2);border-radius:12px;text-align:center}
+.stat-value{font-size:24px;font-weight:800;color:var(--accent)}
+.stat-label{font-size:10px;color:var(--text-muted);text-transform:uppercase;margin-top:4px}
+
+/* Topics */
+.topics-grid{display:flex;flex-wrap:wrap;gap:8px}
+.topic-tag{padding:8px 14px;border-radius:10px;background:var(--surface-2);border:1px solid var(--border);font-size:12px;font-weight:500;cursor:pointer;transition:all .2s}
+.topic-tag:hover{border-color:var(--accent);color:var(--accent);transform:translateY(-2px)}
+
+/* Footer */
+.footer-link{display:block;text-align:center;margin-top:48px;color:var(--accent);text-decoration:none;font-weight:600;font-size:14px}
+.footer-link:hover{text-decoration:underline}
+</style>
+</head>
+<body>
+
+
+<div class="container">
+  <div class="page-label">AI Project</div>
+  <h1 class="page-title">Echo <span class="accent">AI</span></h1>
+  <p class="page-sub">An intelligent chatbot with natural conversation, smart responses, and beautiful design. Built with modern AI principles.</p>
+  
+  <div class="app-layout">
+    <!-- Chat Interface -->
+    <div class="chat-container">
+      <div class="chat-header">
+        <div class="chat-avatar">🤖</div>
+        <div class="chat-header-info">
+          <div class="chat-header-name">Hydra AI</div>
+          <div class="chat-header-status"><span id="aiStatus">🔴 Using Keywords</span></div>
+        </div>
+        <div class="chat-header-actions">
+          <div class="header-action" onclick="toggleCommands()" title="Show commands">⌨️</div>
+          <div class="header-action" onclick="clearChat()" title="Clear chat">🗑️</div>
+          <div class="header-action" onclick="exportChat()" title="Export chat">📥</div>
+        </div>
+      </div>
+      
+      <!-- Commands Panel -->
+      <div class="commands-panel" id="commandsPanel">
+        <h3>🎯 Use Commands (type in chat)</h3>
+        <div class="commands-grid">
+          <div class="command-item" onclick="sendSuggestion('/joke')"><span class="cmd">/joke</span><span class="desc">Random joke</span></div>
+          <div class="command-item" onclick="sendSuggestion('/knockknock')"><span class="cmd">/knockknock</span><span class="desc">Knock knock</span></div>
+          <div class="command-item" onclick="sendSuggestion('/riddle')"><span class="cmd">/riddle</span><span class="desc">Brain teaser</span></div>
+          <div class="command-item" onclick="sendSuggestion('/poem')"><span class="cmd">/poem</span><span class="desc">Write a poem</span></div>
+          <div class="command-item" onclick="sendSuggestion('/python')"><span class="cmd">/python</span><span class="desc">Python basics</span></div>
+          <div class="command-item" onclick="sendSuggestion('/javascript')"><span class="cmd">/javascript</span><span class="desc">JS basics</span></div>
+          <div class="command-item" onclick="sendSuggestion('/cpp')"><span class="cmd">/cpp</span><span class="desc">C++ basics</span></div>
+          <div class="command-item" onclick="sendSuggestion('/csharp')"><span class="cmd">/csharp</span><span class="desc">C# basics</span></div>
+          <div class="command-item" onclick="sendSuggestion('/react')"><span class="cmd">/react</span><span class="desc">React tutorial</span></div>
+          <div class="command-item" onclick="sendSuggestion('/sql')"><span class="cmd">/sql</span><span class="desc">SQL basics</span></div>
+          <div class="command-item" onclick="sendSuggestion('/git')"><span class="cmd">/git</span><span class="desc">Git commands</span></div>
+          <div class="command-item" onclick="sendSuggestion('/oop')"><span class="cmd">/oop</span><span class="desc">OOP principles</span></div>
+          <div class="command-item" onclick="sendSuggestion('/algorithms')"><span class="cmd">/algorithms</span><span class="desc">Algorithms</span></div>
+          <div class="command-item" onclick="sendSuggestion('/datastructures')"><span class="cmd">/datastructures</span><span class="desc">Data structures</span></div>
+          <div class="command-item" onclick="sendSuggestion('/debug')"><span class="cmd">/debug</span><span class="desc">Debugging tips</span></div>
+          <div class="command-item" onclick="sendSuggestion('/api')"><span class="cmd">/api</span><span class="desc">REST APIs</span></div>
+          <div class="command-item" onclick="sendSuggestion('/htmlcss')"><span class="cmd">/htmlcss</span><span class="desc">HTML/CSS</span></div>
+          <div class="command-item" onclick="sendSuggestion('/nodejs')"><span class="cmd">/nodejs</span><span class="desc">Node.js</span></div>
+          <div class="command-item" onclick="sendSuggestion('/webdev')"><span class="cmd">/webdev</span><span class="desc">Web dev roadmap</span></div>
+          <div class="command-item" onclick="sendSuggestion('/space')"><span class="cmd">/space</span><span class="desc">Space facts</span></div>
+          <div class="command-item" onclick="sendSuggestion('/math')"><span class="cmd">/math</span><span class="desc">Math tricks</span></div>
+          <div class="command-item" onclick="sendSuggestion('/history')"><span class="cmd">/history</span><span class="desc">History facts</span></div>
+          <div class="command-item" onclick="sendSuggestion('/help')"><span class="cmd">/help</span><span class="desc">Show all topics</span></div>
+        </div>
+      </div>
+      
+      <div class="chat-messages" id="chatMessages">
+        <!-- Welcome Message -->
+        <div class="message-group">
+          <div class="message-avatar ai">🤖</div>
+          <div class="message-content">
+            <div class="message-name">Hydra AI</div>
+            <div class="message-bubble">Hey there! 👋 I'm Hydra, your AI assistant. I can help you with questions, creative writing, coding, math, and much more. Click the 📚 button to see all keywords! What would you like to chat about?</div>
+            <div class="message-time">Just now</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="typing-indicator" id="typingIndicator">
+        <div class="typing-dots">
+          <div class="typing-dot"></div>
+          <div class="typing-dot"></div>
+          <div class="typing-dot"></div>
+        </div>
+        <div class="typing-text">Hydra is thinking...</div>
+      </div>
+      
+      <div class="chat-input-area">
+        <div class="chat-suggestions" id="suggestions">
+          <div class="suggestion-chip" onclick="sendSuggestion('Tell me a joke')">😄 Joke</div>
+          <div class="suggestion-chip" onclick="sendSuggestion('Knock knock joke')">🚪 Knock Knock</div>
+          <div class="suggestion-chip" onclick="sendSuggestion('Teach me Python')">🐍 Python</div>
+          <div class="suggestion-chip" onclick="sendSuggestion('JavaScript basics')">🌐 JavaScript</div>
+          <div class="suggestion-chip" onclick="sendSuggestion('C++ tutorial')">⚡ C++</div>
+          <div class="suggestion-chip" onclick="sendSuggestion('C# for Unity')">🎮 C#</div>
+          <div class="suggestion-chip" onclick="sendSuggestion('Explain OOP')">🏗️ OOP</div>
+          <div class="suggestion-chip" onclick="sendSuggestion('Git commands')">📝 Git</div>
+          <div class="suggestion-chip" onclick="sendSuggestion('SQL basics')">🗄️ SQL</div>
+          <div class="suggestion-chip" onclick="sendSuggestion('React tutorial')">⚛️ React</div>
+          <div class="suggestion-chip" onclick="sendSuggestion('Data structures')">📚 Data Structures</div>
+        </div>
+        <div class="chat-input-row">
+          <textarea class="chat-input" id="chatInput" placeholder="Type your message..." rows="1" onkeypress="handleKeyPress(event)" oninput="autoResize(this)"></textarea>
+          <button class="chat-send" id="sendBtn" onclick="sendMessage()">➤</button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="sidebar-card">
+        <div class="sidebar-title"><span class="icon">✨</span> Features</div>
+        <div class="feature-list">
+          <div class="feature-item">
+            <div class="feature-icon" style="background:rgba(139,92,246,0.15)">🧠</div>
+            <div class="feature-text"><div class="feature-name">Smart Responses</div><div class="feature-desc">Context-aware answers</div></div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon" style="background:rgba(59,130,246,0.15)">💬</div>
+            <div class="feature-text"><div class="feature-name">Natural Chat</div><div class="feature-desc">Human-like conversation</div></div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon" style="background:rgba(236,72,153,0.15)">🎨</div>
+            <div class="feature-text"><div class="feature-name">Creative Writing</div><div class="feature-desc">Poems, stories, lyrics</div></div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon" style="background:rgba(34,197,94,0.15)">💻</div>
+            <div class="feature-text"><div class="feature-name">Code Teacher</div><div class="feature-desc">Python, JS, C++, C#, React</div></div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon" style="background:rgba(249,115,22,0.15)">📊</div>
+            <div class="feature-text"><div class="feature-name">Data & Algorithms</div><div class="feature-desc">SQL, Git, data structures</div></div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon" style="background:rgba(34,197,94,0.15)">💻</div>
+            <div class="feature-text"><div class="feature-name">Code Teacher</div><div class="feature-desc">Python, JS, C++, C#, React, SQL</div></div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon" style="background:rgba(249,115,22,0.15)">📊</div>
+            <div class="feature-text"><div class="feature-name">Data Analysis</div><div class="feature-desc">Numbers & insights</div></div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon" style="background:rgba(236,72,153,0.15)">🎬</div>
+            <div class="feature-text"><div class="feature-name">Entertainment</div><div class="feature-desc">Movies, music, sports</div></div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon" style="background:rgba(34,197,94,0.15)">🌍</div>
+            <div class="feature-text"><div class="feature-name">General Knowledge</div><div class="feature-desc">History, science, travel</div></div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon" style="background:rgba(139,92,246,0.15)">💡</div>
+            <div class="feature-text"><div class="feature-name">Life Advice</div><div class="feature-desc">Health, business, philosophy</div></div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="sidebar-card">
+        <div class="sidebar-title"><span class="icon">📊</span> Session Stats</div>
+        <div class="stats-grid">
+          <div class="stat-box"><div class="stat-value" id="msgCount">1</div><div class="stat-label">Messages</div></div>
+          <div class="stat-box"><div class="stat-value" id="wordCount">0</div><div class="stat-label">Words</div></div>
+          <div class="stat-box"><div class="stat-value" id="avgResponse">0.8s</div><div class="stat-label">Avg Response</div></div>
+          <div class="stat-box"><div class="stat-value" id="satisfaction">😊</div><div class="stat-label">Mood</div></div>
+        </div>
+      </div>
+      
+      <div class="sidebar-card">
+        <div class="sidebar-title"><span class="icon">🎯</span> Try Asking</div>
+        <div class="topics-grid">
+          <div class="topic-tag" onclick="sendSuggestion('Python basics')">🐍 Python</div>
+          <div class="topic-tag" onclick="sendSuggestion('JavaScript ES6')">🌐 JavaScript</div>
+          <div class="topic-tag" onclick="sendSuggestion('C++ classes')">⚡ C++</div>
+          <div class="topic-tag" onclick="sendSuggestion('C# Unity tutorial')">🎮 C#</div>
+          <div class="topic-tag" onclick="sendSuggestion('HTML CSS basics')">🎨 HTML/CSS</div>
+          <div class="topic-tag" onclick="sendSuggestion('React hooks')">⚛️ React</div>
+          <div class="topic-tag" onclick="sendSuggestion('Node.js express')">📦 Node.js</div>
+          <div class="topic-tag" onclick="sendSuggestion('Git commands')">📝 Git</div>
+          <div class="topic-tag" onclick="sendSuggestion('SQL queries')">🗄️ SQL</div>
+          <div class="topic-tag" onclick="sendSuggestion('REST API')">🔌 APIs</div>
+          <div class="topic-tag" onclick="sendSuggestion('Data structures')">📚 Data Structures</div>
+          <div class="topic-tag" onclick="sendSuggestion('Algorithms sorting')">🧠 Algorithms</div>
+          <div class="topic-tag" onclick="sendSuggestion('Debugging tips')">🐛 Debugging</div>
+          <div class="topic-tag" onclick="sendSuggestion('OOP principles')">🏗️ OOP</div>
+          <div class="topic-tag" onclick="sendSuggestion('Web development roadmap')">🌐 Web Dev</div>
+          <div class="topic-tag" onclick="sendSuggestion('Tell me a joke')">😄 Jokes</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <a href="index.html" class="footer-link">← Back to Portfolio</a>
+</div>
+
+<!-- Keyword Reference Panel -->
+<button class="keyword-toggle" id="keywordToggle" onclick="toggleKeywordRef()">📚</button>
+<div class="keyword-ref" id="keywordRef">
+  <div class="keyword-ref-header">
+    <span>📚 Keyword Reference</span>
+    <span onclick="toggleKeywordRef()" style="cursor:pointer">✕</span>
+  </div>
+  <div class="keyword-ref-body">
+    <div class="keyword-ref-category">
+      <div class="keyword-ref-category-title">😄 Fun</div>
+      <div class="keyword-ref-item"><span class="keyword-ref-keyword">joke</span><span class="keyword-ref-desc">Random joke</span></div>
+      <div class="keyword-ref-item"><span class="keyword-ref-keyword">knock knock</span><span class="keyword-ref-desc">Knock knock joke</span></div>
+      <div class="keyword-ref-item"><span class="keyword-ref-keyword">riddle</span><span class="keyword-ref-desc">Brain teaser</span></div>
+      <div class="keyword-ref-item"><span class="keyword-ref-keyword">poem</span><span class="keyword-ref-desc">Write poetry</span></div>
+    </div>
+    <div class="keyword-ref-category">
+      <div class="keyword-ref-category-title">💻 Coding</div>
+      <div class="keyword-ref-item"><span class="keyword-ref-keyword">python</span><span class="keyword-ref-desc">Python tutorial</span></div>
+      <div class="keyword-ref-item"><span class="keyword-ref-keyword">javascript</span><span class="keyword-ref-desc">JS basics</span></div>
+      <div class="keyword-ref-item"><span class="keyword-ref-keyword">c++</span><span class="keyword-ref-desc">C++ tutorial</span></div>
+      <div class="keyword-ref-item"><span class="keyword-ref-keyword">c#</span><span class="keyword-ref-desc">C# / Unity</span></div>
+      <div class="keyword-ref-item"><span class="keyword-ref-keyword">react</span><span class="keyword-ref-desc">React tutorial</span></div>
+      <div class="keyword-ref-item"><span class="keyword-ref-keyword">sql</span><span class="keyword-ref-desc">SQL basics</span></div>
+      <div class="keyword-ref-item"><span class="keyword-ref-keyword">git</span><span class="keyword-ref-desc">Git commands</span></div>
+      <div class="keyword-ref-item"><span class="keyword-ref-keyword">oop</span><span class="keyword-ref-desc">Object-oriented</span></div>
+      <div class="keyword-ref-item"><span class="keyword-ref-keyword">api</span><span class="keyword-ref-desc">REST APIs</span></div>
+      <div class="keyword-ref-item"><span class="keyword-ref-keyword">html css</span><span class="keyword-ref-desc">Web design</span></div>
+      <div class="keyword-ref-item"><span class="keyword-ref-keyword">node</span><span class="keyword-ref-desc">Node.js</span></div>
+      <div class="keyword-ref-item"><span class="keyword-ref-keyword">data structures</span><span class="keyword-ref-desc">Arrays, stacks...</span></div>
+      <div class="keyword-ref-item"><span class="keyword-ref-keyword">algorithm</span><span class="keyword-ref-desc">Sorting, search...</span></div>
+    </div>
+    <div class="keyword-ref-category">
+      <div class="keyword-ref-category-title">🧠 Knowledge</div>
+      <div class="keyword-ref-item"><span class="keyword-ref-keyword">space</span><span class="keyword-ref-desc">Space facts</span></div>
+      <div class="keyword-ref-item"><span class="keyword-ref-keyword">math</span><span class="keyword-ref-desc">Math tricks</span></div>
+      <div class="keyword-ref-item"><span class="keyword-ref-keyword">history</span><span class="keyword-ref-desc">History facts</span></div>
+      <div class="keyword-ref-item"><span class="keyword-ref-keyword">science</span><span class="keyword-ref-desc">Physics, chemistry</span></div>
+      <div class="keyword-ref-item"><span class="keyword-ref-keyword">philosophy</span><span class="keyword-ref-desc">Deep questions</span></div>
+    </div>
+    <div class="keyword-ref-category">
+      <div class="keyword-ref-category-title">🎯 Topics</div>
+      <div class="keyword-ref-item"><span class="keyword-ref-keyword">movie</span><span class="keyword-ref-desc">Film recommendations</span></div>
+      <div class="keyword-ref-item"><span class="keyword-ref-keyword">music</span><span class="keyword-ref-desc">Music genres</span></div>
+      <div class="keyword-ref-item"><span class="keyword-ref-keyword">sport</span><span class="keyword-ref-desc">Sports talk</span></div>
+      <div class="keyword-ref-item"><span class="keyword-ref-keyword">food</span><span class="keyword-ref-desc">Cooking tips</span></div>
+      <div class="keyword-ref-item"><span class="keyword-ref-keyword">travel</span><span class="keyword-ref-desc">Destinations</span></div>
+      <div class="keyword-ref-item"><span class="keyword-ref-keyword">health</span><span class="keyword-ref-desc">Wellness tips</span></div>
+      <div class="keyword-ref-item"><span class="keyword-ref-keyword">business</span><span class="keyword-ref-desc">Startup advice</span></div>
+      <div class="keyword-ref-item"><span class="keyword-ref-keyword">psychology</span><span class="keyword-ref-desc">Mind & behavior</span></div>
+    </div>
+    <div class="keyword-ref-category">
+      <div class="keyword-ref-category-title">⌨️ Commands (use /)</div>
+      <div class="keyword-ref-item"><span class="keyword-ref-keyword">/help</span><span class="keyword-ref-desc">Show all commands</span></div>
+      <div class="keyword-ref-item"><span class="keyword-ref-keyword">/joke</span><span class="keyword-ref-desc">Force joke</span></div>
+      <div class="keyword-ref-item"><span class="keyword-ref-keyword">/python</span><span class="keyword-ref-desc">Force Python</span></div>
+      <div class="keyword-ref-item"><span class="keyword-ref-keyword">/knockknock</span><span class="keyword-ref-desc">Force knock knock</span></div>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { env, pipeline } from 'https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.4.1';
+
+env.allowLocalModels = false;
+
+window.aiReady = false;
+window.aiGenerator = null;
+window.aiStatus = 'idle';
+
+function updateAIStatusUI(status) {
+  var el = document.getElementById('aiStatus');
+  if (!el) return;
+  window.aiStatus = status;
+  if (status === 'ready') {
+    el.innerHTML = '🟢 AI Ready';
+    el.style.color = 'var(--accent)';
+  } else if (status === 'loading') {
+    el.innerHTML = '🟡 Loading AI...';
+    el.style.color = '#f59e0b';
+  } else if (status === 'error') {
+    el.innerHTML = '🔴 Keywords Only';
+    el.style.color = '#ef4444';
+  }
+}
+
+async function initAI() {
+  updateAIStatusUI('loading');
+  try {
+    window.aiGenerator = await pipeline('text-generation', 'Xenova/gpt2', {
+      device: 'wasm'
+    });
+    window.aiReady = true;
+    updateAIStatusUI('ready');
+    console.log('AI ready!');
+  } catch (e) {
+    console.error('AI init failed:', e);
+    updateAIStatusUI('error');
+  }
+}
+
+window.generateAIResponse = async function(userMessage) {
+  if (!window.aiReady) return null;
+  try {
+    const prompt = 'Human: ' + userMessage + '\nAssistant:';
+    const output = await window.aiGenerator(prompt, {
+      max_new_tokens: 80,
+      temperature: 0.6,
+      top_p: 0.9,
+      repetition_penalty: 1.2
+    });
+    if (output && output[0] && output[0].generated_text) {
+      let response = output[0].generated_text;
+      // Extract only after "Assistant:"
+      const idx = response.lastIndexOf('Assistant:');
+      if (idx !== -1) {
+        response = response.substring(idx + 10);
+      } else {
+        response = response.replace(prompt, '');
+      }
+      // Clean up
+      response = response.split('\n')[0].trim();
+      if (response.length > 15 && response.length < 300) {
+        return response;
+      }
+    }
+  } catch (e) {
+    console.error('AI error:', e);
+  }
+  return null;
+};
+
+// Start loading after page loads
+setTimeout(initAI, 1000);
+</script>
+
+<script>
+// Stats
+var totalMessages=1;
+var totalWords=0;
+var totalResponseTime=0;
+
+// AI Responses Database
+var responses={
+  greeting:['Hey there! How can I help you today? 😊','Hello! What\'s on your mind?','Hi! Ready to chat about anything?','Welcome! Ask me anything!','Hey! Great to see you! What can I do for you?','Hi there! What\'s up?','Hey! What can I help you with today? 💡','Hi! Ready to learn or chat? 🎯','Hello! I\'m here to help! Ask away! 👂','Hey! What\'s on your mind today? 🌟'],
+  joke:[
+    // Dad Jokes
+    'Why don\'t scientists trust atoms? Because they make up everything! 😄',
+    'I told my wife she was drawing her eyebrows too high. She looked surprised!',
+    'What do you call a fake noodle? An impasta! 🍝',
+    'Why did the scarecrow win an award? He was outstanding in his field! 🌾',
+    'I\'m reading a book about anti-gravity. It\'s impossible to put down!',
+    'What do you call a bear with no teeth? A gummy bear! 🐻',
+    'Why don\'t eggs tell jokes? They\'d crack each other up! 🥚',
+    'What did the ocean say to the beach? Nothing, it just waved! 🌊',
+    'Why do cows have hooves instead of feet? Because they lactose! 🐄',
+    'What do you call a cheese that isn\'t yours? Nacho cheese! 🧀',
+    'Why did the bicycle fall over? Because it was two-tired! 🚲',
+    'What\'s orange and sounds like a parrot? A carrot! 🥕',
+    'Why don\'t oysters share their pearls? Because they\'re shellfish! 🦪',
+    'What do you call a dog that does magic tricks? A Labracadabrador! 🐕',
+    'Why can\'t a nose be 12 inches long? Because then it would be a foot! 👃',
+    'What did one wall say to the other wall? I\'ll meet you at the corner! 🏠',
+    'Why did the student eat his homework? Because the teacher told him it was a piece of cake! 🎂',
+    'What do you call a sleeping dinosaur? A dino-snore! 🦕',
+    'What\'s the best thing about Switzerland? I don\'t know, but the flag is a big plus! 🇨🇭',
+    'Why do ducks have feathers? To cover their butt quacks! 🦆',
+    'I used to hate facial hair, but then it grew on me.',
+    'What do you call a fish without eyes? A fsh! 🐟',
+    'Why do seagulls fly over the sea? Because if they flew over the bay, they\'d be bagels! 🥯',
+    'What did the grape do when it got stepped on? Nothing, it just let out a little wine! 🍷',
+    'Why don\'t skeletons fight each other? They don\'t have the guts! 💀',
+    'I\'m on a seafood diet. I see food and I eat it! 🍽️',
+    'What do you call a dog that lives in the city? A urban husky!',
+    'Why did the man miss the funeral? He wasn\'t a mourning person! 😢',
+    'What\'s a ninja\'s favorite type of shoes? Sneakers! 🥷',
+    'Why did the coffee file a police report? It got mugged! ☕',
+    // Tech Jokes
+    'I told my computer I needed a break... now it won\'t stop sending me vacation ads.',
+    'Why do programmers prefer dark mode? Because light attracts bugs! 🐛',
+    'What\'s a computer\'s favorite snack? Microchips! 🍪',
+    'Why was the computer cold? It left its Windows open! 🪟',
+    'What do you call a computer that sings? A-Dell! 🎵',
+    'Why do Java developers wear glasses? Because they can\'t C#! 👓',
+    'How do trees access the internet? They log in! 🌲',
+    'Why did the programmer quit his job? Because he didn\'t get arrays! 💰',
+    'What\'s a robot\'s favorite type of music? Heavy metal! 🤖',
+    'Why do programmers hate nature? It has too many bugs! 🐞',
+    'What do you call a computer hero? A screen saver! 🦸',
+    'Why was the JavaScript developer sad? Because he didn\'t Node how to Express himself! 😢',
+    'What\'s a computer\'s least favorite food? Spam! 📧',
+    'Why did the developer go broke? He used up all his cache! 💸',
+    'How does a computer get drunk? It takes screenshots! 📸',
+    // Food Jokes
+    'What do you call a sad strawberry? A blueberry! 🫐',
+    'Why did the banana go to the doctor? Because it wasn\'t peeling well! 🍌',
+    'What do you call a fake apple? An impasta! 🍎',
+    'Why did the cookie go to the hospital? Because it felt crummy! 🍪',
+    'What did the lettuce say to the celery? You\'re stalk-ing me! 🥬',
+    'Why did the orange lose the race? It ran out of juice! 🍊',
+    'What do you call a chicken who crosses the road twice? Poly poultry! 🐔',
+    'Why did the mushroom go to the party? Because he was a fungi! 🍄',
+    'What do you call a bear that loves honey? A Bee-aver! 🍯',
+    'Why did the watermelon break up with the cantaloupe? Because it saw them melon-doly! 🍉',
+    // Animal Jokes
+    'What do you call an alligator in a vest? An investigator! 🐊',
+    'Why do elephants never use computers? They\'re afraid of the mouse! 🐘',
+    'What do you call a sleeping bull? A bulldozer! 🐂',
+    'Why don\'t cats play poker in the jungle? Too many cheetahs! 🐆',
+    'What do you call a fish with no eyes? A fsh! 🐟',
+    'Why do cows wear bells? Because their horns don\'t work! 🔔',
+    'What do you call a dog that\'s always calm? A hot dog! 🌭',
+    'Why do birds fly south in winter? Because it\'s too far to walk! 🐦',
+    'What do you call a lazy kangaroo? Pouch potato! 🦘',
+    'Why do elephants paint their toenails red? To hide in cherry trees! 🌳',
+    // Science Jokes
+    'Why can\'t you trust atoms? They make up everything! ⚛️',
+    'What did the biologist wear on a first date? Designer genes! 🧬',
+    'Why did the physics professor break up with the biology professor? There was no chemistry! 💕',
+    'What do you do with a dead chemist? Barium! ⚗️',
+    'Why are quantum physicists so bad at sex? When they find the position, they can\'t get the momentum! 🔬',
+    'What did the scientist say when he found 2 isotopes of helium? HeHe! 😄',
+    'Why can you never trust atoms? They make up literally everything!',
+    'What do you call an acid with attitude? A-mean-o acid! 🧪',
+    // Work & Office
+    'I\'m reading a book about anti-gravity. It\'s impossible to put down!',
+    'Why did the man bring a ladder to work? To reach the high notes! 🎵',
+    'What do you call a meeting of really tall people? A high-five! 🖐️',
+    'Why did the employee get fired from the calendar factory? He took a day off! 📅',
+    'What do you call a boss who microwaves fish in the break room? A MONSTER! 🐟',
+    'Why do workers at the shoe factory get fired? They get a bad rep! 👟',
+    // Random
+    'Why did the man bring a pencil to bed? To draw his dreams! ✏️',
+    'What do you call a mountain goat that\'s always late? A laggoat! 🐐',
+    'Why do wizards learn math? To increase their spell power! 🧙',
+    'What did the big chimney say to the small chimney? You\'re too young to smoke! 🏭',
+    'Why did the picture go to prison? It was framed! 🖼️',
+    'What do you call a dog that lives in an igloo? An eskimo-pup! 🐕‍🦺',
+    'Why did the man bring a bar of soap to work? He wanted to make a clean living! 🧼',
+    'What do you call a cold dog sitting on a rabbit? A chili dog on a bun! 🌭',
+    'Why did the tomato turn red? Because it saw the salad dressing! 🍅',
+    'What do you call a dog that can do magic? A Labracadabrador! 🎩'
+  ],
+  features:['I can help you with:\n\n🧠 Answer questions on any topic\n📝 Creative writing (poems, stories)\n💻 Code explanation & debugging\n🔬 Science & tech explanations\n📊 Math & calculations\n😄 Tell jokes\n🎯 And much more!\n\nJust ask anything!'],
+  thanks:['You\'re welcome! 😊','Happy to help!','Anytime! Let me know if you need anything else.','No problem at all! 🙌','Glad I could help!','My pleasure! 😄','Don\'t mention it! 🌟','Always here to help! 💪','That\'s what I\'m here for! 🚀'],
+  goodbye:['Goodbye! Have a great day! 👋','See you later! Take care!','Bye! Come back anytime!','Have a wonderful day! ✨','Catch you later! 🙌','Until next time!'],
+  default:['That\'s an interesting question! Let me think about that...\n\nBased on my understanding, I\'d say the answer involves considering multiple perspectives. Would you like me to elaborate on any specific aspect?','Great question! Here\'s what I think:\n\nThe key factors to consider are context, application, and your specific needs. Each situation is unique, so the best approach depends on your goals.','I\'d be happy to help with that! Here\'s my take:\n\nThere are several ways to approach this. The most important thing is to start with the basics and build from there. Want me to explain step by step?','Hmm, that\'s a thoughtful question! 🤔\n\nLet me break it down for you. The answer depends on several factors, but the main ones are context and application. Want me to go deeper?','Interesting! Here\'s my perspective:\n\nThis is actually a common question, and the answer often surprises people. The key is to look at it from multiple angles. Shall I explain?','Let me share what I know! 📚\n\nThis is a nuanced topic. The short answer is: it depends. The longer answer involves understanding the context and your specific goals. Want me to dive deeper?','Good question! Let me break it down:\n\n1. **First**, consider the basics\n2. **Then**, think about your specific needs\n3. **Finally**, apply best practices\n\nWould you like me to elaborate on any of these steps?','I love this question! 💡\n\nThe answer isn\'t straightforward, but here\'s how I\'d approach it: start with the fundamentals, understand the trade-offs, and then make an informed decision. Want specifics?'],
+  context:['Great follow-up! Based on what you\'re asking, here\'s what I\'d suggest:\n\nThe key is to understand the fundamentals first, then build on that knowledge. Think of it like building a house - you need a strong foundation before adding the fancy stuff! 🏗️','I see what you\'re getting at! Let me give you a more detailed explanation:\n\nThis topic has several layers. At its core, it\'s about understanding how different components work together. The beauty is in the details! 🎯','That makes sense! Here\'s the context you need:\n\nThink of it this way - every expert was once a beginner. The key is to break down complex topics into manageable chunks. Want me to walk you through it?','Absolutely! Let me add some context:\n\nThis is one of those topics that seems complex at first, but once you understand the core principles, everything clicks. It\'s like learning to ride a bike! 🚲'],
+  opinion:['That\'s a great topic for discussion! Here\'s my take:\n\nEveryone has different perspectives, and that\'s what makes conversations interesting. I\'d say the best approach is to consider multiple viewpoints and form your own informed opinion. What do you think? 🤔','Interesting perspective! Here\'s what I think:\n\nThere\'s no single "right" answer here. The beauty of this topic is that it invites discussion and debate. I\'d love to hear your thoughts on it!','Great question for debate! 💭\n\nHere\'s how I see it: the best answer often depends on context, experience, and personal goals. What works for one person might not work for another. That\'s okay!'],
+  explain:['Let me explain that clearly! 📝\n\nThink of it like this: [concept] is a fundamental building block. Once you understand this, everything else becomes easier. Want me to break it down step by step?','Here\'s a simple explanation: 🎯\n\nImagine you\'re building with LEGO blocks. Each piece has a purpose, and when you put them together correctly, you create something amazing. That\'s how this concept works!','Let me break this down for you: 💡\n\n**Step 1:** Understand the basics\n**Step 2:** See how it connects to bigger concepts\n**Step 3:** Apply it in practice\n\nWant me to elaborate on any step?','Here\'s the simple version: 🌟\n\nAt its core, this is about understanding the relationship between different parts. Once you see the pattern, everything clicks! Want me to show you?'],
+  coding:['Here\'s a quick coding tip! 💻\n\n```\n// Clean code principle\nconst formatDate = (date) => {\n  return new Intl.DateTimeFormat(\'en-US\').format(date);\n};\n```\n\nAlways aim for readable, maintainable code. What language are you working with?','Here\'s a pro tip! 💡\n\n```\n// Use optional chaining\nconst city = user?.address?.city ?? "Unknown";\n```\n\nThis prevents errors when accessing nested properties!','Code tip! 🖥️\n\n```\n// Destructuring makes code cleaner\nconst { name, age, city } = person;\n```\n\nMuch cleaner than person.name, person.age, etc.!'],
+  science:['Great science question! 🔬\n\nThe fundamental principle here involves understanding how energy and matter interact at the smallest scales. Quantum mechanics tells us that particles can exist in multiple states simultaneously until observed.\n\nWant me to dive deeper into any specific area?','Fascinating topic! 🔬\n\nHere\'s the mind-blowing part: at the quantum level, particles can be in multiple places at once! It\'s only when we measure them that they "choose" a position.\n\nWant to know more?','Science is amazing! 🧬\n\nDid you know that your body contains enough carbon to make about 9,000 pencils? Or that humans share 60% of their DNA with bananas?\n\nWhat else would you like to know?'],
+  poetry:['Here\'s a little poem for you 📝\n\n*Digital dreams in silicon streams,*\n*Binary hearts and electric themes,*\n*In the world of code and light,*\n*We build our future, day and night.*\n\nWould you like me to write something specific?','Here you go! 📜\n\n*The morning sun paints gold on steel,*\n*As city wakes to sounds unreal,*\n*In every face a story lives,*\n*In every heart, the world forgives.*\n\nWant a poem about something specific?','Poetry time! ✨\n\n*Roses are red,*\n*Violets are blue,*\n*I\'m an AI,*\n*And I\'m here for you!*\n\nOkay, that was cheesy 😄 Want something more serious?'],
+  space:['Space is incredible! 🚀\n\nSome mind-blowing facts:\n• The observable universe is 93 billion light-years across\n• There are more stars than grains of sand on Earth\n• A day on Venus is longer than its year\n• Neutron stars can spin 600 times per second\n\nWhat aspect of space interests you most?','Let\'s talk space! 🌌\n\nHere\'s something wild: if you could fly a plane to space, it would only take about an hour! The "edge" of space is just 100km up.\n\nWhat else do you want to know?','Space facts! 🪐\n\n• The Sun makes up 99.86% of our solar system\n• There are more galaxies than stars in the Milky Way\n• Light from the Sun takes 8 minutes to reach Earth\n• Saturn\'s rings are mostly ice and rock\n\nCool, right? Ask me more!'],
+  quantum:['Quantum computing explained simply! ⚛️\n\nClassical computers use bits (0 or 1).\nQuantum computers use qubits (0 AND 1 at the same time!).\n\nThis "superposition" lets quantum computers solve certain problems exponentially faster. Think of it like exploring all paths in a maze simultaneously, instead of one at a time.\n\nApplications: cryptography, drug discovery, climate modeling!','Quantum physics is mind-bending! 🌀\n\nHere\'s the deal: at the quantum level, particles don\'t follow normal rules. They can be in two places at once, tunnel through walls, and even affect each other instantly across the universe!\n\nWant to dive deeper?'],
+  neural:['Neural networks work like the brain! 🧠\n\n1. **Input Layer** - receives data\n2. **Hidden Layers** - process information\n3. **Output Layer** - gives results\n\nEach "neuron" connects to others, with weights that adjust during training. The network learns by:\n• Making a guess\n• Checking if it\'s wrong\n• Adjusting weights\n• Repeating millions of times\n\nIt\'s like teaching a child through examples!','AI explained! 🤖\n\nNeural networks are inspired by the human brain. They have layers of "neurons" that process information:\n\n• Input: raw data\n• Hidden: pattern recognition\n• Output: decisions\n\nThe magic? They LEARN from mistakes, just like us!'],
+  blockchain:['Blockchain demystified! ⛓️\n\nImagine a digital ledger that:\n• Everyone can see\n• No one can change\n• Is duplicated across thousands of computers\n\nEach "block" contains transactions and links to the previous block. Changing one block would require changing ALL subsequent blocks on ALL computers — practically impossible!\n\nThis is why it\'s secure and trustless.','Blockchain 101! 🔗\n\nThink of it like a Google Doc that everyone can see but no one can edit. Once something is written, it\'s permanent.\n\nUses: cryptocurrency, supply chain, voting systems, and more!'],
+  productivity:['Top productivity tips! 🎯\n\n1. **Pomodoro Technique** - 25 min work, 5 min break\n2. **Two-Minute Rule** - If it takes <2 min, do it now\n3. **Time Blocking** - Schedule specific tasks\n4. **Deep Work** - No distractions for focused periods\n5. **Review Daily** - What worked? What didn\'t?\n\nThe key is consistency, not perfection! Which tip would you like to try first?','Productivity hack! ⚡\n\nTry the 2-minute rule: if something takes less than 2 minutes, do it immediately. This prevents small tasks from piling up!\n\nAlso: batch similar tasks together, take regular breaks, and always start with the hardest thing in the morning!'],
+  knockknock:['Knock knock! 🚪\n\n*Knock knock.*\nWho\'s there?\n*Boo.*\nBoo who?\n*Don\'t cry, it\'s just a joke!* 😄\n\nWant another one?','Knock knock! 🚪\n\n*Knock knock.*\nWho\'s there?\n*Atch.*\nAtch who?\n*Bless you!* 🤧\n\nAnother?','Knock knock! 🚪\n\n*Knock knock.*\nWho\'s there?\n*Cow says.*\nCow says who?\n*No, a cow says MOO!* 🐄\n\n😄','Knock knock! 🚪\n\n*Knock knock.*\nWho\'s there?\n*Interrupting cow.*\nInterrupting cow who—\n*MOO!* 🐄\n\nHaha! Another?','Knock knock! 🚪\n\n*Knock knock.*\nWho\'s there?\n*Nobel.*\nNobel who?\n*Nobel, that\'s why I knocked!* 😄\n\nWant more?','Knock knock! 🚪\n\n*Knock knock.*\nWho\'s there?\n*Cash.*\nCash who?\n*No thanks, I\'ll just have soup!* 🍜\n\nGet it? 😄','Knock knock! 🚪\n\n*Knock knock.*\nWho\'s there?\n*Orange.*\nOrange who?\n*Orange you glad I didn\'t say banana?* 🍊\n\nClassic!','Knock knock! 🚪\n\n*Knock knock.*\nWho\'s there?\n*Letty.*\nLetty who?\n*Letty in, it\'s cold out here!* ❄️\n\n😄'],
+  riddle:['Here\'s a riddle for you! 🤔\n\n*I have cities, but no houses live there.*\n*I have mountains, but no trees grow there.*\n*I have water, but no fish swim there.*\n*I have roads, but no cars drive there.*\n\nWhat am I?\n\n... A map! 🗺️\n\nWant another riddle?','Riddle time! 🧩\n\n*I speak without a mouth and hear without ears.*\n*I have no body, but I come alive with the wind.*\n\nWhat am I?\n\n... An echo! 🗣️\n\nTry another?','Another riddle! 🤔\n\n*I can fly without wings.*\n*I can cry without eyes.*\n*Wherever I go, darkness flies.*\n\nWhat am I?\n\n... A cloud! ☁️'],
+  programming:['Best programming languages in 2024! 💻\n\n🥇 **Python** - AI, ML, data science\n🥈 **JavaScript** - web development\n🥉 **TypeScript** - large-scale apps\n\nOther great picks:\n• **Rust** - systems programming\n• **Go** - backend services\n• **Swift** - iOS apps\n• **Kotlin** - Android apps\n\nThe best language depends on what you want to build! What\'s your goal?','Want to learn coding? 🖥️\n\nStart with:\n• **Python** - easiest to learn, most versatile\n• **JavaScript** - build websites\n• **HTML/CSS** - web design basics\n\nPro tip: Build projects, not just tutorials! What interests you?'],
+  python:['**Python Basics** 🐍\n\n```python\n# Variables\nname = "Hydra"\nage = 25\nis_cool = True\n\n# Lists\nfruits = ["apple", "banana", "cherry"]\nfruits.append("date")\n\n# For Loop\nfor fruit in fruits:\n    print(fruit)\n\n# Function\ndef greet(name):\n    return f"Hello, {name}!"\n```\n\nPython is perfect for beginners!','**Python Intermediate** 🐍\n\n```python\n# List Comprehension\nsquares = [x**2 for x in range(10)]\n\n# Dictionary\nperson = {"name": "Hydra", "age": 25}\n\n# Lambda\ndouble = lambda x: x * 2\n\n# Error Handling\ntry:\n    result = 10 / 0\nexcept ZeroDivisionError:\n    print("Cannot divide by zero!")\nfinally:\n    print("Done")\n```\n\nReady for more advanced topics?','**Python Data Science** 📊\n\n```python\nimport pandas as pd\nimport numpy as np\n\n# Create DataFrame\ndf = pd.DataFrame({\n    "name": ["A", "B", "C"],\n    "score": [85, 92, 78]\n})\n\n# Basic operations\nprint(df.describe())\nhigh_scores = df[df["score"] > 80]\n```\n\nPython is the king of data science!'],
+  javascript:['**JavaScript Basics** 🌐\n\n```javascript\n// Variables\nlet name = "Hydra";      // can change\nconst age = 25;          // can\'t change\n\n// Arrow Function\nconst greet = (name) => {\n    return `Hello, ${name}!`\n};\n\n// Array Methods\nconst nums = [1, 2, 3, 4, 5];\nconst doubled = nums.map(n => n * 2);\nconst evens = nums.filter(n => n % 2 === 0);\n```\n\nJavaScript is everywhere!','**ES6+ Features** ⚡\n\n```javascript\n// Destructuring\nconst { name, age } = person;\nconst [first, second] = [1, 2, 3];\n\n// Spread Operator\nconst newArr = [...oldArr, 4, 5];\nconst newObj = { ...oldObj, new: "value" };\n\n// Async/Await\nasync function fetchData() {\n    const res = await fetch(url);\n    const data = await res.json();\n    return data;\n}\n\n// Optional Chaining\nconst city = user?.address?.city ?? "Unknown";\n```\n\nES6 made JavaScript beautiful!','**DOM Manipulation** 🎯\n\n```javascript\n// Select Elements\nconst btn = document.querySelector("#myBtn");\nconst items = document.querySelectorAll(".item");\n\n// Event Listeners\nbtn.addEventListener("click", () => {\n    alert("Clicked!");\n});\n\n// Change Content\ndocument.getElementById("title").textContent = "New Title";\n\n// Create Elements\nconst div = document.createElement("div");\ndiv.innerHTML = "<p>Hello!</p>";\ndocument.body.appendChild(div);\n```\n\nDOM is how JS controls the page!'],
+  cpp:['**C++ Basics** ⚡\n\n```cpp\n#include <iostream>\n#include <vector>\n#include <string>\nusing namespace std;\n\nint main() {\n    string name = "Hydra";\n    int age = 25;\n    cout << "Hello, " << name << endl;\n    return 0;\n}\n```\n\nC++ is powerful but complex!','**C++ Classes** 🏗️\n\n```cpp\nclass Person {\nprivate:\n    string name;\n    int age;\n\npublic:\n    Person(string n, int a) : name(n), age(a) {}\n    void greet() {\n        cout << "Hi, I\'m " << name << endl;\n    }\n    string getName() { return name; }\n};\n\nPerson p("Hydra", 25);\np.greet();\n```\n\nC++ uses classes for OOP!','**C++ STL** 📚\n\n```cpp\n#include <vector>\n#include <map>\n#include <algorithm>\n\n// Vector\nvector<int> nums = {1, 2, 3, 4, 5};\nnums.push_back(6);\n\n// Map\nmap<string, int> ages;\nages["Hydra"] = 25;\n\n// Sort\nsort(nums.begin(), nums.end());\n\n// Lambda\nfor_each(nums.begin(), nums.end(), [](int n) {\n    cout << n << " ";\n});\n```\n\nSTL makes C++ powerful!'],
+  csharp:['**C# Basics** 🎮\n\n```csharp\nusing System;\n\nstring name = "Hydra";\nint age = 25;\nConsole.WriteLine($"Hello, {name}!");\n```\n\nC# is clean and modern!','**C# Classes** 🏗️\n\n```csharp\npublic class Person {\n    public string Name { get; set; }\n    public int Age { get; set; }\n\n    public Person(string name, int age) {\n        Name = name;\n        Age = age;\n    }\n\n    public void Greet() {\n        Console.WriteLine($"Hi, I\'m {Name}");\n    }\n}\n\nvar person = new Person("Hydra", 25);\nperson.Greet();\n```\n\nC# has beautiful syntax!','**Unity C#** 🎮\n\n```csharp\nusing UnityEngine;\n\npublic class Player : MonoBehaviour {\n    public float speed = 5f;\n\n    void Update() {\n        float move = Input.GetAxis("Horizontal");\n        transform.Translate(Vector2.right * move * speed * Time.deltaTime);\n    }\n}\n```\n\nC# powers Unity games!'],
+  functions:['**Functions Explained** ⚙️\n\n**Python:**\n```python\ndef greet(name, greeting="Hello"):\n    return f"{greeting}, {name}!"\n```\n\n**JavaScript:**\n```javascript\nfunction greet(name, greeting = "Hello") {\n    return `${greeting}, ${name}!`\n}\n// Arrow function\nconst greet2 = (name) => `Hello, ${name}!`\n```\n\n**C++:**\n```cpp\nstring greet(string name, string greeting = "Hello") {\n    return greeting + ", " + name + "!";\n}\n```\n\nFunctions are reusable code blocks!'],
+  loops:['**Loops Explained** 🔄\n\n**Python:**\n```python\nfor i in range(5):      # 0,1,2,3,4\n    print(i)\n\nfor fruit in ["apple", "banana"]:\n    print(fruit)\n\nwhile True:\n    break\n```\n\n**JavaScript:**\n```javascript\nfor (let i = 0; i < 5; i++) {\n    console.log(i);\n}\n["apple", "banana"].forEach(f => console.log(f));\n```\n\n**C++:**\n```cpp\nfor (int i = 0; i < 5; i++) {\n    cout << i;\n}\n```\n\nLoops repeat code efficiently!'],
+  arrays:['**Arrays & Lists** 📋\n\n**Python (Lists):**\n```python\narr = [1, 2, 3]\narr.append(4)\narr.remove(2)\nlen(arr)\n```\n\n**JavaScript (Arrays):**\n```javascript\nlet arr = [1, 2, 3];\narr.push(4);\narr.pop();\narr.length;\n```\n\n**C++ (Vectors):**\n```cpp\nvector<int> arr = {1, 2, 3};\narr.push_back(4);\narr.pop_back();\narr.size();\n```\n\nArrays store multiple values!'],
+  oop:['**OOP Principles** 🏗️\n\n**1. Encapsulation:**\n```python\nclass BankAccount:\n    def __init__(self):\n        self.__balance = 0\n    def deposit(self, amount):\n        self.__balance += amount\n```\n\n**2. Inheritance:**\n```python\nclass Animal:\n    def speak(self): pass\n\nclass Dog(Animal):\n    def speak(self):\n        return "Woof!"\n```\n\n**3. Polymorphism:**\n```python\n# Same method, different behavior\ndog.speak()  # "Woof!"\ncat.speak()  # "Meow!"\n```\n\n**4. Abstraction:** Hide complexity, show only what\'s needed!'],
+  htmlcss:['**HTML/CSS Basics** 🌐\n\n```html\n<!-- HTML -->\n<div class="container">\n  <h1>Hello!</h1>\n  <p>World</p>\n</div>\n\n<!-- CSS -->\n<style>\n.container {\n    max-width: 1200px;\n    margin: 0 auto;\n    padding: 20px;\n}\nh1 {\n    color: #333;\n    font-size: 2rem;\n}\n</style>\n```\n\nHTML structures, CSS styles!'],
+  react:['**React Basics** ⚛️\n\n```jsx\nimport React, { useState } from \'react\';\n\nfunction App() {\n    const [count, setCount] = useState(0);\n\n    return (\n        <div>\n            <h1>Count: {count}</h1>\n            <button onClick={() => setCount(count + 1)}>\n                Click me\n            </button>\n        </div>\n    );\n}\n\nexport default App;\n```\n\nReact uses components and hooks!'],
+  nodejs:['**Node.js Basics** 📦\n\n```javascript\n// Import modules\nconst express = require(\'express\');\nconst app = express();\n\n// Routes\napp.get(\'/\', (req, res) => {\n    res.send(\'Hello World!\');\n});\n\n// Start server\napp.listen(3000, () => {\n    console.log(\'Server running on port 3000\');\n});\n```\n\nNode.js brings JS to the backend!'],
+  git:['**Git Commands** 📝\n\n```bash\n# Initialize\ngit init\n\n# Add files\ngit add .\n\n# Commit\ngit commit -m "Initial commit"\n\n# Push\ngit push origin main\n\n# Pull\ngit pull origin main\n\n# Create branch\ngit checkout -b feature\n\n# Merge\ngit merge feature\n```\n\nGit tracks your code changes!'],
+  sql:['**SQL Basics** 🗄️\n\n```sql\n-- Create table\nCREATE TABLE users (\n    id INT PRIMARY KEY,\n    name VARCHAR(100),\n    email VARCHAR(100)\n);\n\n-- Insert\nINSERT INTO users VALUES (1, \'Hydra\', \'hydra@example.com\');\n\n-- Select\nSELECT * FROM users WHERE name = \'Hydra\';\n\n-- Update\nUPDATE users SET name = \'Updated\' WHERE id = 1;\n\n-- Delete\nDELETE FROM users WHERE id = 1;\n```\n\nSQL manages your data!'],
+  apis:['**APIs Explained** 🔌\n\n**Fetch API (JavaScript):**\n```javascript\n// GET request\nfetch(\'https://api.example.com/data\')\n    .then(res => res.json())\n    .then(data => console.log(data));\n\n// POST request\nfetch(\'https://api.example.com/data\', {\n    method: \'POST\',\n    headers: { \'Content-Type\': \'application/json\' },\n    body: JSON.stringify({ name: \'Hydra\' })\n});\n```\n\nAPIs let apps talk to each other!'],
+  debugging:['**Debugging Tips** 🐛\n\n**Python:**\n```python\n# Print debugging\nprint(f"Variable: {variable}")\n\n# pdb debugger\nimport pdb; pdb.set_trace()\n```\n\n**JavaScript:**\n```javascript\nconsole.log("Debug:", variable);\ndebugger;  // Breakpoint\n```\n\n**C++:**\n```cpp\ncout << "Debug: " << variable << endl;\n```\n\n**General Tips:**\n1. Read the error message carefully\n2. Check line numbers\n3. Print variables at each step\n4. Comment out code to isolate issues\n5. Take a break - fresh eyes help!'],
+  datastructures:['**Data Structures** 📚\n\n**Arrays:** Fast access, slow insertion\n\n**Linked Lists:** Slow access, fast insertion\n\n**Stacks (LIFO):**\n```python\nstack = []\nstack.append(1)  # Push\nstack.pop()      # Pop\n```\n\n**Queues (FIFO):**\n```python\nfrom collections import deque\nqueue = deque()\nqueue.append(1)    # Enqueue\nqueue.popleft()   # Dequeue\n```\n\n**Hash Maps:** Fast lookup by key\n```python\nmap = {"key": "value"}\nmap["key"]  # O(1) access\n```\n\nChoose the right structure for the job!'],
+  algorithms:['**Algorithms** 🧠\n\n**Sorting (Python):**\n```python\narr = [3, 1, 4, 1, 5]\narr.sort()          # In-place\nsorted_arr = sorted(arr)  # New list\n```\n\n**Binary Search:**\ndef binary_search(arr, target):\n    left, right = 0, len(arr) - 1\n    while left <= right:\n        mid = (left + right) // 2\n        if arr[mid] == target: return mid\n        elif arr[mid] < target: left = mid + 1\n        else: right = mid - 1\n    return -1\n\n**Big O Notation:**\n• O(1) - Constant\n• O(log n) - Logarithmic\n• O(n) - Linear\n• O(n²) - Quadratic'],
+  webdev:['**Web Development** 🌐\n\n**Frontend Stack:**\n1. HTML/CSS (basics)\n2. JavaScript (interactivity)\n3. React/Vue/Angular (frameworks)\n\n**Backend Stack:**\n1. Node.js (JavaScript)\n2. Python (Django/Flask)\n3. Go/Rust (performance)\n\n**Databases:**\n1. PostgreSQL (SQL)\n2. MongoDB (NoSQL)\n3. Redis (caching)\n\n**DevOps:**\n1. Git (version control)\n2. Docker (containers)\n3. AWS/Vercel (hosting)\n\nWhere do you want to start?'],
+  math:['Math is beautiful! 📐\n\n**Key areas:**\n• **Algebra** - equations and variables\n• **Calculus** - rates of change\n• **Statistics** - data and probability\n• **Linear Algebra** - vectors and matrices\n\nMath is the language of the universe! What area interests you?','Fun math fact! 🔢\n\nDid you know? 0.999... = 1\n\nHere\'s why: If 0.999... was less than 1, there would be a number between them. But there isn\'t! So they must be equal.\n\nMath can be mind-bending! Want to know more?','Math trick! 🧮\n\nTo multiply by 11:\n• 23 × 11 = 253 (2, 2+3, 3)\n• 45 × 11 = 495 (4, 4+5, 5)\n• 67 × 11 = 737 (6, 6+7, 7)\n\nTry it yourself! It works for 2-digit numbers!'],
+  history:['History is fascinating! 📚\n\n**Key events that shaped the world:**\n• 1776 - American Independence\n• 1789 - French Revolution\n• 1969 - Moon Landing\n• 1989 - Fall of Berlin Wall\n\nWhich period interests you most?','History repeats itself! 🔄\n\n**Fun facts:**\n• Ancient Egyptians built pyramids 4,500 years ago\n• Romans had shopping malls and fast food\n• Vikings never wore horned helmets\n• Cleopatra lived closer to iPhones than pyramids!\n\nWant to explore any era?'],
+  philosophy:['Philosophy is deep! 🤔\n\n**Famous thought experiments:**\n• The Ship of Theseus\n• Plato\'s Cave\n• Trolley Problem\n• Brain in a Vat\n\nThese questions have puzzled thinkers for millennia! Which one interests you?','Philosophical question! 🧠\n\n**"What is the meaning of life?"**\n\nDifferent perspectives:\n• **Existentialists:** We create our own meaning\n• **Religious:** Serve a higher purpose\n• **Hedonists:** Pursue happiness\n• **Nihilists:** There is no inherent meaning\n\nWhat do YOU think?'],
+  movies:['Movie lover? 🎬\n\n**All-time greats:**\n• The Shawshank Redemption\n• The Godfather\n• The Dark Knight\n• Inception\n• Interstellar\n\nWhat genre do you prefer? I can recommend more!','Movie trivia! 🍿\n\n• The Lion King is based on Hamlet\n• Toy Story was the first fully CGI movie\n• The matrix used 100 million gallons of paint\n• Inception\'s hallway fight took 3 weeks to film\n\nWant more movie facts?'],
+  music:['Music is universal! 🎵\n\n**Genres to explore:**\n• Classical - Bach, Mozart, Beethoven\n• Jazz - Miles Davis, Coltrane\n• Rock - Beatles, Queen, Led Zeppelin\n• Electronic - Daft Punk, Aphex Twin\n• Hip-Hop - Kendrick, Kanye, Tyler\n\nWhat\'s your vibe?','Music facts! 🎸\n\n• "Bohemian Rhapsody" took 3 weeks to record\n• Jimi Hendrix was left-handed\n• The Beatles\' first hit was "Love Me Do"\n• Beethoven went deaf but kept composing\n\nWant to discuss any artist or genre?'],
+  sports:['Sports talk! ⚽\n\n**Popular sports:**\n• Football/Soccer - most popular globally\n• Basketball - NBA, international\n• Tennis - Grand Slams\n• Cricket - huge in Asia, UK, Australia\n• MMA/UFC - combat sports\n\nWhat sport are you into?','Sports history! 🏆\n\n• Olympics started 776 BC in Greece\n• Basketball was invented in 1891\n• The FIFA World Cup has 3.5 billion viewers\n• Usain Bolt\'s top speed: 27.8 mph\n\nWant to discuss any sport or athlete?'],
+  health:['Health tips! 💪\n\n**Daily essentials:**\n• 8 glasses of water\n• 7-9 hours of sleep\n• 30 mins exercise\n• Balanced nutrition\n• Mental health breaks\n\nWhat aspect of health interests you?','Mental health matters! 🧠\n\n**Tips for wellbeing:**\n• Practice gratitude daily\n• Connect with others\n• Take breaks from screens\n• Exercise regularly\n• Talk about your feelings\n\nRemember: It\'s okay to not be okay!'],
+  food:['Food is art! 🍽️\n\n**Cuisines to try:**\n• Italian - pasta, pizza, risotto\n• Japanese - sushi, ramen, tempura\n• Mexican - tacos, mole, ceviche\n• Indian - curry, biryani, naan\n• Thai - pad thai, green curry\n\nWhat\'s your favorite cuisine?','Cooking tips! 👨‍🍳\n\n1. **Season as you go** - layer flavors\n2. **Mise en place** - prep everything first\n3. **Taste constantly** - adjust seasoning\n4. **Don\'t overcrowd** the pan\n5. **Rest your meat** after cooking\n\nWant a specific recipe?'],
+  travel:['Travel is amazing! ✈️\n\n**Must-visit places:**\n• Tokyo - culture meets future\n• Paris - romance and art\n• New York - the city that never sleeps\n• Bali - tropical paradise\n• Iceland - nature\'s wonderland\n\nWhere do you dream of going?','Travel tips! 🧳\n\n1. Book flights on Tuesday (cheapest)\n2. Pack light - you can buy anything\n3. Learn basic local phrases\n4. Get travel insurance\n5. Eat where locals eat\n\nPro tip: Travel off-season for better prices!'],
+  psychology:['Psychology is fascinating! 🧠\n\n**Interesting effects:**\n• **Dunning-Kruger** - beginners overestimate skills\n• **Anchoring** - first info influences decisions\n• **Confirmation bias** - we seek agreeing info\n• **Placebo effect** - belief can heal\n\nWant to explore any of these?','Human behavior is complex! 🤔\n\n**Why we do what we do:**\n• Social proof - follow the crowd\n• Loss aversion - fear > desire\n• Reciprocity - return favors\n• Scarcity - want what\'s rare\n\nUnderstanding these helps you make better decisions!'],
+  environment:['Climate matters! 🌍\n\n**Key issues:**\n• Global warming +1.1°C since 1900\n• Plastic pollution in oceans\n• Deforestation - 10M hectares/year\n• Biodiversity loss accelerating\n\n**What you can do:**\n• Reduce, reuse, recycle\n• Eat less meat\n• Use public transport\n• Support sustainable brands\n\nEvery action counts!'],
+  business:['Business 101! 💼\n\n**Key concepts:**\n• **Revenue** - money coming in\n• **Profit** - revenue minus costs\n• **ROI** - return on investment\n• **MVP** - minimum viable product\n\nWant to discuss startups, marketing, or strategy?','Entrepreneurship tips! 🚀\n\n1. Solve a real problem\n2. Start small, scale fast\n3. Know your customer\n4. Cash flow is king\n5. Build a strong team\n\nRemember: Every expert was once a beginner!'],
+  help:['🎯 **Available Commands:**\n\nType these in the chat:\n\n**Jokes & Fun:**\n• `/joke` - Random joke\n• `/knockknock` - Knock knock joke\n• `/riddle` - Brain teaser\n• `/poem` - Write a poem\n\n**Coding:**\n• `/python` - Python basics\n• `/javascript` - JavaScript basics\n• `/cpp` - C++ basics\n• `/csharp` - C# basics\n• `/react` - React tutorial\n• `/sql` - SQL basics\n• `/git` - Git commands\n• `/oop` - OOP principles\n• `/algorithms` - Algorithms\n• `/datastructures` - Data structures\n• `/debug` - Debugging tips\n• `/api` - REST APIs\n• `/htmlcss` - HTML/CSS\n• `/nodejs` - Node.js\n• `/webdev` - Web dev roadmap\n\n**Knowledge:**\n• `/space` - Space facts\n• `/math` - Math tricks\n• `/history` - History facts\n\nOr just type naturally! I\'ll understand! 🚀']
+};
+
+// Smart response matching
+function getResponse(input){
+  var lower=input.toLowerCase().trim();
+  
+  // Handle slash commands
+  if(lower.startsWith('/')){
+    var cmd=lower.slice(1);
+    var cmdMap={
+      'joke':responses.joke,
+      'knockknock':responses.knockknock,
+      'riddle':responses.riddle,
+      'poem':responses.poetry,
+      'python':responses.python,
+      'javascript':responses.javascript,
+      'js':responses.javascript,
+      'cpp':responses.cpp,
+      'csharp':responses.csharp,
+      'react':responses.react,
+      'sql':responses.sql,
+      'git':responses.git,
+      'oop':responses.oop,
+      'algorithms':responses.algorithms,
+      'datastructures':responses.datastructures,
+      'debug':responses.debugging,
+      'api':responses.apis,
+      'htmlcss':responses.htmlcss,
+      'nodejs':responses.nodejs,
+      'space':responses.space,
+      'math':responses.math,
+      'history':responses.history,
+      'help':responses.help
+    };
+    if(cmdMap[cmd]) return randomItem(cmdMap[cmd]);
+    return 'Unknown command: /'+cmd+'\n\nType /help to see all commands!';
+  }
+  
+  // Keyword matching
+  if(lower.match(/\b(hi|hello|hey|greetings|howdy)\b/)) return randomItem(responses.greeting);
+  if(lower.match(/\b(knock knock|knock-knock)\b/)) return randomItem(responses.knockknock);
+  if(lower.match(/\b(joke|funny|laugh|hilarious)\b/)) return randomItem(responses.joke);
+  if(lower.match(/\b(feature|what can you do|capabilities|help)\b/)) return responses.features[0];
+  if(lower.match(/\b(thank|thanks|thx|ty)\b/)) return randomItem(responses.thanks);
+  if(lower.match(/\b(bye|goodbye|see you|later)\b/)) return randomItem(responses.goodbye);
+  if(lower.match(/\b(python|python tutorial|learn python|python basics)\b/)) return responses.python[0];
+  if(lower.match(/\b(javascript|js tutorial|learn javascript|es6|dom)\b/)) return responses.javascript[0];
+  if(lower.match(/\b(c\+\+|cpp|learn c\+\+)\b/)) return responses.cpp[0];
+  if(lower.match(/\b(c#|csharp|c sharp|learn c#|unity)\b/)) return responses.csharp[0];
+  if(lower.match(/\b(function|functions|method|methods)\b/)) return responses.functions[0];
+  if(lower.match(/\b(loop|loops|for loop|while loop|for each)\b/)) return responses.loops[0];
+  if(lower.match(/\b(array|arrays|list|lists|vector|vectors)\b/)) return responses.arrays[0];
+  if(lower.match(/\b(oop|object oriented|class|classes|inheritance|polymorphism)\b/)) return responses.oop[0];
+  if(lower.match(/\b(html|css|stylesheet|web design|frontend)\b/)) return responses.htmlcss[0];
+  if(lower.match(/\b(react|reactjs|react js|hooks|component)\b/)) return responses.react[0];
+  if(lower.match(/\b(node|nodejs|node js|express|backend)\b/)) return responses.nodejs[0];
+  if(lower.match(/\b(git|github|version control|commit|branch)\b/)) return responses.git[0];
+  if(lower.match(/\b(sql|database|mysql|postgresql|query)\b/)) return responses.sql[0];
+  if(lower.match(/\b(api|apis|rest|fetch|http)\b/)) return responses.apis[0];
+  if(lower.match(/\b(debug|debugging|error|bug|fix)\b/)) return responses.debugging[0];
+  if(lower.match(/\b(data structure|data structures|stack|queue|linked list|hash)\b/)) return responses.datastructures[0];
+  if(lower.match(/\b(algorithm|algorithms|sorting|search|big o|complexity)\b/)) return responses.algorithms[0];
+  if(lower.match(/\b(web dev|web development|full stack|frontend|backend)\b/)) return responses.webdev[0];
+  if(lower.match(/\b(code|coding|programming|debug)\b/)) return responses.coding[0];
+  if(lower.match(/\b(science|physics|chemistry|biology)\b/)) return responses.science[0];
+  if(lower.match(/\b(poem|poetry|haiku|verse|lyric)\b/)) return responses.poetry[0];
+  if(lower.match(/\b(space|universe|stars|galaxy|planet|nasa)\b/)) return responses.space[0];
+  if(lower.match(/\b(quantum|qubit|superposition)\b/)) return responses.quantum[0];
+  if(lower.match(/\b(neural|network|brain|ai|machine learning|deep learning)\b/)) return responses.neural[0];
+  if(lower.match(/\b(blockchain|crypto|bitcoin|ethereum)\b/)) return responses.blockchain[0];
+  if(lower.match(/\b(productivity|productive|focus|time management)\b/)) return responses.productivity[0];
+  if(lower.match(/\b(riddle|puzzle|guess)\b/)) return responses.riddle[0];
+  if(lower.match(/\b(best language|programming language|learn code|start coding)\b/)) return responses.programming[0];
+  if(lower.match(/\b(math|algebra|calculus|statistics|geometry|equation)\b/)) return responses.math[0];
+  if(lower.match(/\b(history|historical|ancient|war|civilization|empire)\b/)) return responses.history[0];
+  if(lower.match(/\b(philosophy|philosophical|meaning of life|existence|ethics|moral)\b/)) return responses.philosophy[0];
+  if(lower.match(/\b(movie|film|cinema|watch|directors|oscar)\b/)) return responses.movies[0];
+  if(lower.match(/\b(music|song|band|artist|album|concert|playlist)\b/)) return responses.music[0];
+  if(lower.match(/\b(sport|football|basketball|tennis|soccer|nba|fifa|cricket)\b/)) return responses.sports[0];
+  if(lower.match(/\b(health|exercise|diet|sleep|wellness|fitness|mental health)\b/)) return responses.health[0];
+  if(lower.match(/\b(food|cook|recipe|cuisine|restaurant|eat|meal)\b/)) return responses.food[0];
+  if(lower.match(/\b(travel|trip|vacation|visit|country|flight|hotel)\b/)) return responses.travel[0];
+  if(lower.match(/\b(psychology|behavior|mind|brain|cognitive|bias)\b/)) return responses.psychology[0];
+  if(lower.match(/\b(climate|environment|pollution|sustainable|green|nature)\b/)) return responses.environment[0];
+  if(lower.match(/\b(business|startup|entrepreneur|marketing|company|money|invest)\b/)) return responses.business[0];
+  
+  // Context-aware responses
+  if(lower.match(/\b(explain|tell me about|what is|what are|how does|how do)\b/)) return randomItem(responses.explain);
+  if(lower.match(/\b(what do you think|opinion|your take|your view)\b/)) return randomItem(responses.opinion);
+  if(lower.match(/\b(tell me more|elaborate|go deeper|details|detail)\b/)) return randomItem(responses.context);
+  if(lower.match(/\b(why|reason|cause|because)\b/)) return randomItem(responses.explain);
+  if(lower.match(/\b(how to|how can i|how do i|guide me)\b/)) return randomItem(responses.explain);
+  if(lower.match(/\b(what\'s the best|recommend|suggestion|advice)\b/)) return randomItem(responses.context);
+  if(lower.match(/\b(example|show me|demonstrate|sample)\b/)) return randomItem(responses.explain);
+  
+  // Help keyword
+  if(lower.match(/\b(help|commands|what can you do|features)\b/)) return randomItem(responses.help);
+  
+  return randomItem(responses.default);
+}
+
+function randomItem(arr){return arr[Math.floor(Math.random()*arr.length)]}
+
+// Message handling
+function sendMessage(){
+  var input=document.getElementById('chatInput');
+  var text=input.value.trim();
+  if(!text)return;
+  
+  addMessage(text,'user');
+  input.value='';
+  input.style.height='auto';
+  
+  document.getElementById('suggestions').style.display='none';
+  
+  showTyping();
+  
+  var responseTime=800+Math.random()*1500;
+  
+  // Check for keyword match first
+  var response=getResponse(text);
+  var isKeywordResponse=!response.includes('interesting question');
+  
+  if(isKeywordResponse || text.startsWith('/')){
+    // Use keyword response
+    setTimeout(function(){
+      hideTyping();
+      addMessage(response,'ai');
+      updateStats(text,response,responseTime);
+    },responseTime);
+  }else if(window.aiReady){
+    // Use AI for non-keyword responses
+    showTyping();
+    window.generateAIResponse(text).then(function(aiResponse){
+      hideTyping();
+      if(aiResponse){
+        addMessage('🤖 '+aiResponse,'ai');
+      }else{
+        addMessage(response,'ai');
+      }
+      updateStats(text,aiResponse||response,responseTime);
+    });
+  }else{
+    // Fallback to default response
+    setTimeout(function(){
+      hideTyping();
+      addMessage(response,'ai');
+      updateStats(text,response,responseTime);
+    },responseTime);
+  }
+}
+
+function sendSuggestion(text){
+  document.getElementById('chatInput').value=text;
+  sendMessage();
+}
+
+function toggleCommands(){
+  document.getElementById('commandsPanel').classList.toggle('show');
+}
+
+function toggleKeywordRef(){
+  document.getElementById('keywordRef').classList.toggle('show');
+}
+
+function addMessage(text,sender){
+  var msgs=document.getElementById('chatMessages');
+  var div=document.createElement('div');
+  div.className='message-group'+(sender==='user'?' user':'');
+  
+  var now=new Date();
+  var time=now.getHours()+':'+(now.getMinutes()<10?'0':'')+now.getMinutes();
+  
+  div.innerHTML=(sender==='ai'?'<div class="message-avatar ai">🤖</div>':'<div class="message-avatar human">👤</div>')+
+    '<div class="message-content">'+
+    '<div class="message-name">'+(sender==='ai'?'Hydra AI':'You')+'</div>'+
+    '<div class="message-bubble">'+formatMessage(text)+'</div>'+
+    '<div class="message-time">'+time+'</div>'+
+    '</div>';
+  
+  msgs.appendChild(div);
+  msgs.scrollTop=msgs.scrollHeight;
+}
+
+function formatMessage(text){
+  return text.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/`(.*?)`/g,'<code style="background:var(--surface-3);padding:2px 6px;border-radius:4px;font-family:JetBrains Mono,monospace;font-size:13px">$1</code>');
+}
+
+function showTyping(){document.getElementById('typingIndicator').classList.add('active')}
+function hideTyping(){document.getElementById('typingIndicator').classList.remove('active')}
+
+function handleKeyPress(e){
+  if(e.key==='Enter'&&!e.shiftKey){
+    e.preventDefault();
+    sendMessage();
+  }
+}
+
+function autoResize(el){
+  el.style.height='auto';
+  el.style.height=Math.min(el.scrollHeight,120)+'px';
+}
+
+function updateStats(userMsg,aiMsg,responseTime){
+  totalMessages+=2;
+  totalWords+=userMsg.split(' ').length+aiMsg.split(' ').length;
+  totalResponseTime+=responseTime;
+  
+  document.getElementById('msgCount').textContent=totalMessages;
+  document.getElementById('wordCount').textContent=totalWords;
+  document.getElementById('avgResponse').textContent=Math.round(totalResponseTime/((totalMessages-1)/2)/100)/10+'s';
+}
+
+function clearChat(){
+  var msgs=document.getElementById('chatMessages');
+  msgs.innerHTML='<div class="message-group"><div class="message-avatar ai">🤖</div><div class="message-content"><div class="message-name">Hydra AI</div><div class="message-bubble">Chat cleared! How can I help you? 🔄</div><div class="message-time">Just now</div></div></div>';
+  totalMessages=1;totalWords=0;totalResponseTime=0;
+  document.getElementById('msgCount').textContent='1';
+  document.getElementById('wordCount').textContent='0';
+  document.getElementById('avgResponse').textContent='0.8s';
+  document.getElementById('suggestions').style.display='flex';
+}
+
+function exportChat(){
+  var msgs=document.querySelectorAll('.message-bubble');
+  var text='Chat with Hydra AI\n================\n\n';
+  msgs.forEach(function(m,i){
+    text+=(i%2===0?'Hydra: ':'You: ')+m.textContent+'\n\n';
+  });
+  var blob=new Blob([text],{type:'text/plain'});
+  var a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='echo-chat.txt';
+  a.click();
+}
+</script>
+</body>
+</html>

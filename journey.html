@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Journey — Omer Bin Asif</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0a0a;--surface:#111111;--surface-2:#1a1a1a;--surface-3:#242424;--text:#d0d0d0;--text-secondary:#999999;--text-muted:#666666;--border:#222222;--border-light:#2a2a2a;--accent:#b0b0b0;--accent-hover:#cccccc;--pk:#3a7a44;--uae:#3a7a7a;--de:#7a7a3a;--lu:#7a3a7a;--nl:#3a5a7a;--om:#7a5a3a;--qa:#3a7a5a;--nav-bg:rgba(10,10,10,0.85);--nav-border:rgba(34,34,34,0.5);--shadow:0 25px 80px rgba(0,0,0,0.5);--font-mono:'SF Mono','Fira Code','Cascadia Code',monospace}
+body{font-family:var(--font-mono);background:var(--bg);color:var(--text);min-height:100vh}
+
+/* Top Nav - Minimal Line */
+.top-nav{position:fixed;top:0;left:0;right:0;z-index:100;height:48px;display:flex;align-items:center;background:var(--nav-bg);backdrop-filter:blur(24px) saturate(180%);-webkit-backdrop-filter:blur(24px) saturate(180%);border-bottom:1px solid var(--nav-border)}
+.nav-inner{max-width:1200px;margin:0 auto;width:100%;display:flex;align-items:center;justify-content:space-between;padding:0 24px}
+.nav-brand{display:flex;align-items:center;gap:8px;text-decoration:none;color:var(--text)}
+.nav-avatar{width:28px;height:28px;border-radius:4px;background:var(--surface-2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;color:var(--text-muted);font-family:var(--font-mono)}
+.nav-name{font-size:12px;font-weight:500;letter-spacing:.02em;text-transform:uppercase}
+.nav-links{display:flex;align-items:center;gap:2px}
+.nav-link{padding:4px 10px;border-radius:4px;text-decoration:none;color:var(--text-muted);font-size:11px;font-weight:400;transition:all .2s;font-family:var(--font-mono)}
+.nav-link:hover{color:var(--text);background:var(--surface-2)}
+.nav-link.active{color:var(--accent);background:var(--surface-2)}
+.nav-actions{display:flex;align-items:center;gap:6px}
+.nav-cta{padding:5px 12px;border-radius:4px;background:transparent;color:var(--accent);border:1px solid var(--border);text-decoration:none;font-size:10px;font-weight:400;transition:all .2s;font-family:var(--font-mono);text-transform:uppercase;letter-spacing:.05em}
+.nav-cta:hover{background:var(--surface-2);border-color:var(--accent)}
+.nav-inner{padding:0 12px}}
+
+/* Page Layout */
+html{scroll-padding-top:60px}
+.page{max-width:1200px;margin:0 auto;padding:120px 32px 60px}
+.page-header{text-align:center;margin-bottom:40px}
+.page-label{font-size:11px;font-weight:400;color:var(--text-muted);text-transform:uppercase;letter-spacing:.15em;margin-bottom:6px}
+.page-title{font-size:clamp(22px,4vw,40px);font-weight:600;letter-spacing:-.01em;margin-bottom:10px;text-transform:uppercase}
+.page-title .accent{color:var(--accent)}
+.page-sub{font-size:14px;color:var(--text-secondary);max-width:560px;margin:0 auto;line-height:1.7}
+
+/* 3D Globe */
+.globe-container{margin-bottom:32px;text-align:center}
+.globe-wrapper{width:100%;max-width:480px;height:360px;margin:0 auto;position:relative}
+.globe-label{text-align:center;margin-top:12px;font-size:12px;color:var(--text-muted)}
+.globe-hint{text-align:center;font-size:11px;color:var(--text-muted);margin-top:6px;opacity:0.6}
+
+/* Chapters */
+.chapters{display:flex;flex-direction:column;gap:16px;max-width:640px;margin:0 auto}
+.chapter{padding:24px;background:var(--surface);border:1px solid var(--border);border-radius:6px;transition:all .2s;position:relative;overflow:hidden}
+.chapter:hover{border-color:var(--border-light)}
+.chapter::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%}
+.chapter.pk::before{background:var(--pk)}.chapter.uae::before{background:var(--uae)}.chapter.de::before{background:var(--de)}.chapter.lu::before{background:var(--lu)}.chapter.nl::before{background:var(--nl)}.chapter.om::before{background:var(--om)}.chapter.qa::before{background:var(--qa)}
+.chapter-header{margin-bottom:12px}
+.chapter-title{font-size:18px;font-weight:500;margin-bottom:3px}
+.chapter-text{font-size:14px;color:var(--text-secondary);line-height:1.7;margin-bottom:12px}
+.chapter-quote{padding:14px 18px;border-radius:4px;background:var(--surface-2);border-left:3px solid var(--accent);font-size:13px;font-style:italic;color:var(--text-secondary);line-height:1.6}
+.chapter-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.chapter-tag{padding:4px 10px;border-radius:3px;font-size:11px;font-weight:400;background:var(--surface-2);color:var(--text-muted);border:1px solid var(--border)}
+
+/* Footer */
+.footer{max-width:1100px;margin:0 auto;padding:28px 32px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.footer-text{font-size:11px;color:var(--text-muted)}
+.footer-links{display:flex;gap:10px}
+.footer-link{font-size:11px;color:var(--text-muted);text-decoration:none}
+.footer-link:hover{color:var(--accent)}
+
+@keyframes fadeInUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.animate-in{animation:fadeInUp .4s cubic-bezier(.34,1.56,.64,1) forwards;opacity:0}
+.delay-1{animation-delay:.1s}.delay-2{animation-delay:.12s}.delay-3{animation-delay:.16s}.delay-4{animation-delay:.2s}
+</style>
+
+</head>
+<body>
+<nav class="top-nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-brand"><div class="nav-avatar">OB</div><span class="nav-name">Omer Bin Asif</span></a>
+    <div class="nav-links">
+      <a href="index.html" class="nav-link">Home</a>
+      <a href="projects.html" class="nav-link">Work</a>
+      <a href="skills.html" class="nav-link">Skills</a>
+      <a href="journey.html" class="nav-link active">Journey</a>
+      <a href="resume.html" class="nav-link">CV</a>
+      <a href="contact.html" class="nav-link">Contact</a>
+    </div>
+    <div class="nav-actions">
+      <a href="contact.html" class="nav-cta">Let's Talk</a>
+    </div>
+  </div>
+</nav>
+
+<div class="page">
+  <header class="page-header animate-in delay-1">
+    <div class="page-label">The Journey</div>
+    <h1 class="page-title">An engineer's <span class="accent">path</span></h1>
+    <p class="page-sub">From Pakistan to Abu Dhabi, Dubai to Germany — a journey across cultures and continents that shaped who I am today.</p>
+  </header>
+
+  <div class="chapters-content">
+      <!-- 3D Globe -->
+      <div class="globe-container animate-in delay-2">
+        <div class="globe-wrapper" id="globe"></div>
+        <div class="globe-label">🌍 Pakistan → UAE → Germany → Luxembourg → Netherlands → Oman → Qatar</div>
+        <div class="globe-hint">Drag to rotate • Countries highlighted in gold</div>
+      </div>
+
+      <!-- Chapters -->
+      <div class="chapters">
+        <div class="chapter pk animate-in delay-2" id="ch-pk">
+          <div class="chapter-header">
+            <div class="chapter-title">Pakistan — Roots & Heritage</div>
+          </div>
+          <div class="chapter-text">Originally from Pakistan, my roots run deep in a culture rich with tradition, family values, and a passion for learning. The Pakistani spirit of resilience and adaptability has shaped who I am today. Growing up between cultures gave me a unique perspective — the ability to navigate different worlds and find common ground.</div>
+          <div class="chapter-quote">Pakistan taught me that identity isn't about where you are — it's about where you come from and the values you carry with you.</div>
+          <div class="chapter-tags"><span class="chapter-tag">🇵🇰 Heritage</span><span class="chapter-tag">Family Values</span><span class="chapter-tag">Resilience</span></div>
+        </div>
+
+        <div class="chapter uae animate-in delay-3" id="ch-uae-1">
+          <div class="chapter-header">
+            <div class="chapter-title">Abu Dhabi — Where It Began</div>
+          </div>
+          <div class="chapter-text">Born in Abu Dhabi, I experienced the incredible diversity of the UAE from the very start. Growing up in a city where East meets West, where tradition coexists with cutting-edge innovation, shaped my worldview. The cosmopolitan environment taught me to appreciate different perspectives and cultures.</div>
+          <div class="chapter-quote">Abu Dhabi is a city of ambition — where the impossible becomes possible, and where I first dreamed of building something meaningful.</div>
+          <div class="chapter-tags"><span class="chapter-tag">🇦🇪 Birthplace</span><span class="chapter-tag">Diversity</span><span class="chapter-tag">Innovation</span></div>
+        </div>
+
+        <div class="chapter uae animate-in delay-3" id="ch-uae-2">
+          <div class="chapter-header">
+            <div class="chapter-title">Dubai — Design & Discovery</div>
+          </div>
+          <div class="chapter-text">Dubai was where I found my passion for design and technology. At Arab Unity School and later in Design and Technology programs, I discovered the power of visual communication and creative problem-solving. The fast-paced, innovation-driven environment of Dubai pushed me to constantly learn and evolve.</div>
+          <div class="chapter-quote">Dubai taught me that speed and quality aren't mutually exclusive — you can move fast and still deliver excellence.</div>
+          <div class="chapter-tags"><span class="chapter-tag">🏫 Arab Unity School</span><span class="chapter-tag">Design & Tech</span><span class="chapter-tag">Pre-Engineering</span></div>
+        </div>
+
+        <div class="chapter de animate-in delay-4" id="ch-de">
+          <div class="chapter-header">
+            <div class="chapter-title">Germany — The AI Journey</div>
+          </div>
+          <div class="chapter-text">Now based in Bonn, Germany, I'm pursuing my Bachelor's degree in Artificial Intelligence at IUBH. Germany's tradition of engineering excellence and systematic thinking aligns perfectly with my goals. From freelance design work to English tutoring, every experience has led me here — to the intersection of AI and human-centered design.</div>
+          <div class="chapter-quote">Germany is where I'm transforming from a designer into an AI engineer — building systems that don't just look good, but think and learn.</div>
+          <div class="chapter-tags"><span class="chapter-tag">🇩🇪 IUBH</span><span class="chapter-tag">AI Bachelor</span><span class="chapter-tag">Bonn</span><span class="chapter-tag">Engineering</span></div>
+        </div>
+
+        <div class="chapter lu animate-in delay-4" id="ch-lu">
+          <div class="chapter-header">
+            <div class="chapter-title">Luxembourg — Crossroads of Europe</div>
+          </div>
+          <div class="chapter-text">Luxembourg sits at the heart of Europe — a small country with outsized influence. Visiting Luxembourg revealed a world where multilingualism is the norm, where finance meets technology, and where European identity is most tangible.</div>
+          <div class="chapter-quote">Luxembourg taught me that the smallest places can have the biggest ideas — it's where cultures converge and innovation thrives.</div>
+          <div class="chapter-tags"><span class="chapter-tag">🇱🇺 Europe</span><span class="chapter-tag">Cross-Cultural</span><span class="chapter-tag">Innovation</span></div>
+        </div>
+
+        <div class="chapter nl animate-in delay-4" id="ch-nl">
+          <div class="chapter-header">
+            <div class="chapter-title">Netherlands — Design & Vision</div>
+          </div>
+          <div class="chapter-text">The Netherlands has always been a beacon for design thinking and engineering precision. From the iconic Dutch design tradition to the thriving tech ecosystem of Amsterdam, visiting the Netherlands reinforced my passion for human-centered technology.</div>
+          <div class="chapter-quote">The Netherlands showed me that great design isn't about complexity — it's about clarity, purpose, and the courage to simplify.</div>
+          <div class="chapter-tags"><span class="chapter-tag">🇳🇱 Design</span><span class="chapter-tag">Engineering</span><span class="chapter-tag">Amsterdam</span><span class="chapter-tag">Innovation</span></div>
+        </div>
+
+        <div class="chapter om animate-in delay-4" id="ch-om">
+          <div class="chapter-header">
+            <div class="chapter-title">Oman — Heritage & Horizon</div>
+          </div>
+          <div class="chapter-text">Oman is where tradition meets ambition. From the ancient souks of Muscat to the futuristic vision of Oman Vision 2040, the country embodies a respect for heritage while racing toward innovation. The warmth of Omani hospitality left a lasting impression.</div>
+          <div class="chapter-quote">Oman reminded me that progress doesn't mean forgetting where you came from — it means carrying your roots forward.</div>
+          <div class="chapter-tags"><span class="chapter-tag">🇴🇲 Heritage</span><span class="chapter-tag">Vision 2040</span><span class="chapter-tag">Muscat</span><span class="chapter-tag">Hospitality</span></div>
+        </div>
+
+        <div class="chapter qa animate-in delay-4" id="ch-qa">
+          <div class="chapter-header">
+            <div class="chapter-title">Qatar — Ambition in the Desert</div>
+          </div>
+          <div class="chapter-text">Qatar is a nation building the future at breathtaking speed. From the museums of Doha to the innovations at Education City, Qatar shows what happens when vision meets resources. It's a place that pushes you to think bigger.</div>
+          <div class="chapter-quote">Qatar taught me that the desert isn't empty — it's full of possibility, waiting for the right idea to take root.</div>
+          <div class="chapter-tags"><span class="chapter-tag">🇶🇦 Education City</span><span class="chapter-tag">Innovation</span><span class="chapter-tag">Doha</span><span class="chapter-tag">Vision</span></div>
+        </div>
+      </div>
+    </div>
+</div>
+
+<footer class="footer">
+  <span class="footer-text">© 2026 Omer Bin Asif</span>
+  <div class="footer-links">
+    <a href="index.html" class="footer-link">Home</a>
+    <a href="resume.html" class="footer-link">CV</a>
+    <a href="contact.html" class="footer-link">Contact</a>
+  </div>
+</footer>
+
+<script>
+</script>
+<script src="https://cdn.jsdelivr.net/npm/topojson-client@3"></script>
+<script src="https://cdn.jsdelivr.net/npm/globe.gl"></script>
+<script>
+(function(){
+  'use strict';
+
+  var container = document.getElementById('globe');
+  if (!container) return;
+
+  var VISITED_IDS = [586, 784, 276, 442, 528, 512, 634]; // Pakistan, UAE, Germany, Luxembourg, Netherlands, Oman, Qatar
+
+  var CITIES = [
+    { lat: 33.6844, lng: 73.0479, label: 'Islamabad', color: '#f59e0b' },
+    { lat: 24.8607, lng: 67.0011, label: 'Karachi', color: '#f59e0b' },
+    { lat: 24.4539, lng: 54.3773, label: 'Abu Dhabi', color: '#10b981' },
+    { lat: 25.2048, lng: 55.2708, label: 'Dubai', color: '#10b981' },
+    { lat: 50.7374, lng: 7.0982, label: 'Bonn', color: '#3b82f6' },
+    { lat: 52.5200, lng: 13.4050, label: 'Berlin', color: '#3b82f6' },
+    { lat: 49.6117, lng: 6.1319, label: 'Luxembourg', color: '#8b5cf6' },
+    { lat: 52.3676, lng: 4.9041, label: 'Amsterdam', color: '#60a5fa' },
+    { lat: 23.5880, lng: 58.3829, label: 'Muscat', color: '#f97316' },
+    { lat: 25.2854, lng: 51.5310, label: 'Doha', color: '#10b981' }
+  ];
+
+  var ARCS = [
+    { startLat: 33.6844, startLng: 73.0479, endLat: 24.4539, endLng: 54.3773, color: '#f59e0b' },
+    { startLat: 24.4539, startLng: 54.3773, endLat: 25.2048, endLng: 55.2708, color: '#10b981' },
+    { startLat: 25.2048, startLng: 55.2708, endLat: 50.7374, endLng: 7.0982, color: '#3b82f6' },
+    { startLat: 50.7374, startLng: 7.0982, endLat: 49.6117, endLng: 6.1319, color: '#8b5cf6' },
+    { startLat: 50.7374, startLng: 7.0982, endLat: 52.3676, endLng: 4.9041, color: '#60a5fa' },
+    { startLat: 25.2048, startLng: 55.2708, endLat: 23.5880, endLng: 58.3829, color: '#f97316' },
+    { startLat: 25.2048, startLng: 55.2708, endLat: 25.2854, endLng: 51.5310, color: '#10b981' }
+  ];
+
+  // ─── Fetch world data, then build globe ───
+  fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json')
+    .then(function(r) { return r.json(); })
+    .then(function(top) {
+      var countries = topojson.feature(top, top.objects.countries).features;
+
+      var globe = new Globe(container)
+        .width(container.clientWidth)
+        .height(container.clientHeight)
+        .backgroundColor('#0a0a0a')
+        .globeImageUrl('https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-dark.jpg')
+        .showGraticules(true)
+        .showAtmosphere(true)
+        .atmosphereColor('#f59e0b')
+        .atmosphereAltitude(0.15)
+        .polygonsData(countries)
+        .polygonCapColor(function(f) {
+          return VISITED_IDS.includes(Number(f.id)) ? 'rgba(245,158,11,0.85)' : 'rgba(58,58,74,0.5)';
+        })
+        .polygonSideColor(function() { return 'rgba(0,0,0,0.02)'; })
+        .polygonStrokeColor(function(f) {
+          return VISITED_IDS.includes(Number(f.id)) ? '#fbbf24' : '#4a4a5a';
+        })
+        .polygonAltitude(0.005)
+        .pointsData(CITIES)
+        .pointLat('lat')
+        .pointLng('lng')
+        .pointColor('color')
+        .pointAltitude(0.07)
+        .pointRadius(0.4)
+        .pointsMerge(true)
+        .labelsData(CITIES)
+        .labelLat('lat')
+        .labelLng('lng')
+        .labelText('label')
+        .labelColor('color')
+        .labelSize(0.45)
+        .labelDotRadius(0.2)
+        .labelDotOrientation(function() { return 'bottom'; })
+        .arcsData(ARCS)
+        .arcStartLat('startLat')
+        .arcStartLng('startLng')
+        .arcEndLat('endLat')
+        .arcEndLng('endLng')
+        .arcColor('color')
+        .arcAltitude(0.25)
+        .arcDashLength(0.35)
+        .arcDashGap(0.5)
+        .arcDashAnimateTime(2500);
+
+      // Auto-rotate via built-in OrbitControls
+      var controls = globe.controls();
+      controls.autoRotate = true;
+      controls.autoRotateSpeed = 0.8;
+      controls.enableZoom = false;
+
+      // Resize handler
+      function resize() {
+        globe.width(container.clientWidth).height(container.clientHeight);
+      }
+      window.addEventListener('resize', resize);
+    })
+    .catch(function(e) { console.warn('Globe data load failed:', e); });
+})();
+</script>
+</body>
+</html>

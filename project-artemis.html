@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Project Artemis — Mobile App UI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0a0a;--surface:#111111;--surface-2:#1a1a1a;--surface-3:#242424;--text:#d0d0d0;--text-secondary:#999999;--text-muted:#666666;--border:#222222;--border-light:#2a2a2a;--nav-bg:rgba(10,10,10,0.85);--nav-border:rgba(34,34,34,0.5);--font-mono:'SF Mono','Fira Code','Cascadia Code',monospace;--accent:#f59e0b;--green:#22c55e;--red:#ef4444;--blue:#3b82f6;--purple:#8b5cf6;--pink:#ec4899;--teal:#14b8a6}body{font-family:var(--font-mono);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;transition:all .4s}
+.top-nav{position:fixed;top:0;left:0;right:0;z-index:100;height:48px;display:flex;align-items:center;background:var(--nav-bg);backdrop-filter:blur(24px) saturate(180%);-webkit-backdrop-filter:blur(24px) saturate(180%);border-bottom:1px solid var(--nav-border)}
+.nav-inner{max-width:1200px;margin:0 auto;width:100%;display:flex;align-items:center;justify-content:space-between;padding:0 24px}
+.nav-brand{display:flex;align-items:center;gap:8px;text-decoration:none;color:var(--text)}
+.nav-avatar{width:28px;height:28px;border-radius:4px;background:var(--surface-2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;color:var(--text-muted);font-family:var(--font-mono)}
+.nav-name{font-size:12px;font-weight:500;letter-spacing:.02em;text-transform:uppercase}
+.nav-links{display:flex;align-items:center;gap:2px}
+.nav-link{padding:4px 10px;border-radius:4px;text-decoration:none;color:var(--text-muted);font-size:11px;font-weight:400;transition:all .2s;font-family:var(--font-mono)}
+.nav-link:hover{color:var(--text);background:var(--surface-2)}
+.nav-link.active{color:var(--accent);background:var(--surface-2)}
+.nav-actions{display:flex;align-items:center;gap:6px}
+.nav-cta{padding:5px 12px;border-radius:4px;background:transparent;color:var(--accent);border:1px solid var(--border);text-decoration:none;font-size:10px;font-weight:400;transition:all .2s;font-family:var(--font-mono);text-transform:uppercase;letter-spacing:.05em}
+.nav-cta:hover{background:var(--surface-2);border-color:var(--accent)}
+
+.container{max-width:1100px;margin:0 auto;padding:80px 32px 40px}
+.page-label{font-size:12px;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:.2em;margin-bottom:12px;display:flex;align-items:center;gap:12px}
+.page-label::before{content:'';width:32px;height:1px;background:var(--accent)}
+.page-title{font-size:clamp(28px,5vw,42px);font-weight:900;letter-spacing:-.02em;margin-bottom:8px}
+.page-title .accent{color:var(--accent)}
+.page-sub{font-size:16px;color:var(--text-secondary);max-width:600px;line-height:1.7;margin-bottom:40px}
+.app-showcase{display:grid;grid-template-columns:380px 1fr;gap:48px;align-items:start}
+@media(max-width:900px){.app-showcase{grid-template-columns:1fr}}
+.phone-frame{width:380px;height:780px;background:#000;border-radius:56px;padding:12px;box-shadow:0 25px 80px rgba(0,0,0,0.5),inset 0 0 0 2px #333;position:sticky;top:24px;margin:0 auto}
+.phone-notch{width:120px;height:28px;background:#000;border-radius:0 0 20px 20px;position:absolute;top:12px;left:50%;transform:translateX(-50%);z-index:10}
+.phone-screen{width:100%;height:100%;background:var(--surface);border-radius:44px;overflow:hidden;position:relative;display:flex;flex-direction:column}
+.app-header{padding:40px 20px 16px;background:var(--surface);border-bottom:1px solid var(--border)}
+.app-header-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+.app-greeting{font-size:13px;color:var(--text-muted)}
+.app-name{font-size:20px;font-weight:800}
+.app-header-icons{display:flex;gap:8px}
+.app-icon-btn{width:36px;height:36px;border-radius:10px;background:var(--surface-2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px}
+.app-content{flex:1;overflow-y:auto;overflow-x:hidden}
+.app-tab-content{display:none;padding:16px}
+.app-tab-content.active{display:block}
+.app-bottom-nav{display:flex;justify-content:space-around;padding:12px 8px;background:var(--surface);border-top:1px solid var(--border)}
+.nav-item{display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 16px;border-radius:12px;cursor:pointer;transition:all .2s;font-size:10px;color:var(--text-muted);font-weight:500}
+.nav-item:hover{background:var(--surface-2)}
+.nav-item.active{color:var(--accent)}
+.nav-item .nav-icon{font-size:20px}
+
+/* Feed */
+.feed-post{background:var(--surface-2);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:12px}
+.feed-post-header{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.feed-avatar{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:#fff}
+.feed-user-name{font-size:14px;font-weight:600}
+.feed-user-time{font-size:11px;color:var(--text-muted)}
+.feed-post-text{font-size:14px;color:var(--text-secondary);line-height:1.6;margin-bottom:12px}
+.feed-post-image{width:100%;height:160px;border-radius:12px;margin-bottom:12px}
+.feed-post-actions{display:flex;gap:16px;padding-top:12px;border-top:1px solid var(--border)}
+.feed-action{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text-muted);cursor:pointer;transition:all .2s;padding:4px 8px;border-radius:8px}
+.feed-action:hover{color:var(--accent);background:var(--surface-3)}
+.feed-action.liked{color:var(--red)}
+.feed-action.liked .heart-icon{animation:heartPop .3s ease}
+@keyframes heartPop{0%{transform:scale(1)}50%{transform:scale(1.3)}100%{transform:scale(1)}}
+
+/* Comments Panel */
+.comments-panel{display:none;margin-top:12px;padding-top:12px;border-top:1px solid var(--border)}
+.comments-panel.open{display:block}
+.comment{display:flex;gap:8px;margin-bottom:10px}
+.comment-avatar{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0}
+.comment-body{flex:1}
+.container{max-width:1100px;margin:0 auto;padding:80px 32px 40px}
+.comment-name{font-size:12px;font-weight:600}
+.comment-text{font-size:12px;color:var(--text-secondary);line-height:1.4}
+.comment-time{font-size:10px;color:var(--text-muted);margin-top:2px}
+.comment-input-row{display:flex;gap:8px;margin-top:8px}
+.comment-input{flex:1;padding:8px 12px;border-radius:10px;background:var(--surface-3);border:1px solid var(--border);color:var(--text);font-family:'Inter',sans-serif;font-size:12px;outline:none}
+.comment-input:focus{border-color:var(--accent)}
+.comment-submit{padding:8px 12px;border-radius:10px;background:var(--accent);border:none;color:#fff;font-size:12px;font-weight:600;cursor:pointer}
+
+/* Share Toast */
+.share-toast{position:fixed;bottom:40px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--accent);color:#fff;padding:12px 24px;border-radius:12px;font-size:14px;font-weight:600;z-index:1000;transition:transform .3s ease;pointer-events:none}
+.share-toast.show{transform:translateX(-50%) translateY(0)}
+
+/* Stats */
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+.stat-card{background:var(--surface-2);border:1px solid var(--border);border-radius:16px;padding:16px}
+.stat-value{font-size:28px;font-weight:800;color:var(--accent)}
+.stat-label{font-size:12px;color:var(--text-muted);margin-top:4px}
+.stat-chart{background:var(--surface-2);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:12px}
+.stat-chart-title{font-size:14px;font-weight:600;margin-bottom:12px}
+.chart-bar{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.chart-bar-label{font-size:11px;color:var(--text-muted);width:30px}
+.chart-bar-fill{height:8px;border-radius:4px;transition:width .5s ease}
+.chart-bar-value{font-size:11px;color:var(--text-secondary)}
+
+/* Chat */
+.chat-list{display:flex;flex-direction:column;gap:8px}
+.chat-item{display:flex;align-items:center;gap:12px;padding:12px;background:var(--surface-2);border:1px solid var(--border);border-radius:14px;cursor:pointer;transition:all .2s}
+.chat-item:hover{border-color:var(--accent)}
+.chat-avatar{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:#fff;flex-shrink:0}
+.chat-info{flex:1;min-width:0}
+.chat-name{font-size:14px;font-weight:600}
+.chat-last{font-size:12px;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chat-meta{text-align:right;flex-shrink:0}
+.chat-time{font-size:11px;color:var(--text-muted)}
+.chat-unread{width:20px;height:20px;border-radius:50%;background:var(--accent);color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:4px}
+.chat-room{display:none;flex-direction:column;height:100%}
+.chat-room.active{display:flex}
+.chat-room-header{display:flex;align-items:center;gap:12px;padding:12px;border-bottom:1px solid var(--border);background:var(--surface)}
+.chat-back{font-size:20px;cursor:pointer;padding:4px}
+.chat-messages{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:8px}
+.message{max-width:80%;padding:12px 16px;border-radius:18px;font-size:14px;line-height:1.5;word-wrap:break-word}
+.message.sent{background:var(--accent);color:#fff;align-self:flex-end;border-bottom-right-radius:4px}
+.message.received{background:var(--surface-2);border:1px solid var(--border);align-self:flex-start;border-bottom-left-radius:4px}
+.message-time{font-size:10px;opacity:0.7;margin-top:4px;text-align:right}
+.chat-input-area{display:flex;gap:8px;padding:12px;background:var(--surface);border-top:1px solid var(--border)}
+.chat-input{flex:1;padding:12px 16px;border-radius:24px;background:var(--surface-2);border:1px solid var(--border);color:var(--text);font-family:'Inter',sans-serif;font-size:14px;outline:none}
+.chat-input:focus{border-color:var(--accent)}
+.chat-send{width:44px;height:44px;border-radius:50%;background:var(--accent);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;transition:transform .2s}
+.chat-send:hover{transform:scale(1.05)}
+
+/* Profile Modal */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:200;align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:var(--surface);border-radius:24px;padding:32px;width:90%;max-width:360px;max-height:80vh;overflow-y:auto}
+.modal-title{font-size:20px;font-weight:800;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center}
+.modal-close{width:32px;height:32px;border-radius:8px;background:var(--surface-2);border:none;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center}
+.modal-field{margin-bottom:16px}
+.modal-label{font-size:12px;font-weight:600;color:var(--text-muted);margin-bottom:6px;display:block}
+.modal-input{width:100%;padding:12px 16px;border-radius:12px;background:var(--surface-2);border:1px solid var(--border);color:var(--text);font-family:'Inter',sans-serif;font-size:14px;outline:none}
+.modal-input:focus{border-color:var(--accent)}
+.modal-textarea{width:100%;padding:12px 16px;border-radius:12px;background:var(--surface-2);border:1px solid var(--border);color:var(--text);font-family:'Inter',sans-serif;font-size:14px;outline:none;resize:none;height:80px}
+.modal-textarea:focus{border-color:var(--accent)}
+.modal-btn{width:100%;padding:14px;border-radius:12px;background:var(--accent);border:none;color:#fff;font-family:'Inter',sans-serif;font-size:14px;font-weight:600;cursor:pointer;margin-top:8px}
+.modal-btn:hover{opacity:0.9}
+
+/* Settings */
+.settings-group{margin-bottom:20px}
+.settings-group-title{font-size:12px;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:.1em;margin-bottom:12px}
+.settings-item{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;background:var(--surface-2);border:1px solid var(--border);border-radius:14px;margin-bottom:8px;cursor:pointer}
+.settings-item:hover{border-color:var(--accent)}
+.settings-item-left{display:flex;align-items:center;gap:12px}
+.settings-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;background:var(--surface-3)}
+.settings-label{font-size:14px;font-weight:500}
+.settings-desc{font-size:11px;color:var(--text-muted)}
+.toggle{width:48px;height:28px;border-radius:14px;background:var(--surface-3);border:2px solid var(--border);cursor:pointer;position:relative;transition:all .3s}
+.toggle.active{background:var(--accent);border-color:var(--accent)}
+.toggle::after{content:'';position:absolute;top:2px;left:2px;width:20px;height:20px;border-radius:50%;background:#fff;transition:transform .3s}
+.toggle.active::after{transform:translateX(20px)}
+.settings-input{padding:10px 14px;border-radius:10px;background:var(--surface-3);border:1px solid var(--border);color:var(--text);font-family:'Inter',sans-serif;font-size:14px;width:140px;text-align:right;outline:none}
+.settings-input:focus{border-color:var(--accent)}
+
+/* Details Section */
+.details-section{margin-top:48px}
+.detail-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:28px;margin-bottom:16px}
+.detail-card h3{font-size:20px;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:10px}
+.detail-card p{font-size:14px;color:var(--text-secondary);line-height:1.7}
+.detail-card ul{padding-left:20px;margin-top:12px}
+.detail-card li{font-size:14px;color:var(--text-secondary);line-height:1.8}
+.detail-tag{display:inline-block;padding:4px 10px;border-radius:8px;background:var(--surface-2);font-size:11px;font-weight:600;color:var(--accent);margin-right:6px;margin-top:8px}
+.footer-link{display:block;text-align:center;margin-top:48px;color:var(--accent);text-decoration:none;font-weight:600;font-size:14px}
+.footer-link:hover{text-decoration:underline}
+</style>
+</head>
+<body>
+
+<!-- Share Toast -->
+<div class="share-toast" id="shareToast">✓ Link copied to clipboard!</div>
+
+<!-- Profile Edit Modal -->
+<div class="modal-overlay" id="profileModal">
+  <div class="modal">
+    <div class="modal-title">Edit Profile <button class="modal-close" onclick="closeProfile()">×</button></div>
+    <div class="modal-field"><label class="modal-label">Display Name</label><input class="modal-input" id="profileName" value="Artemis User"></div>
+    <div class="modal-field"><label class="modal-label">Bio</label><textarea class="modal-textarea" id="profileBio">Building cool things with code ✨</textarea></div>
+    <div class="modal-field"><label class="modal-label">Location</label><input class="modal-input" id="profileLocation" value="Bonn, Germany"></div>
+    <div class="modal-field"><label class="modal-label">Website</label><input class="modal-input" id="profileWebsite" value="omerbinasif.dev"></div>
+    <button class="modal-btn" onclick="saveProfile()">Save Changes</button>
+  </div>
+</div>
+
+<div class="container">
+  <div class="page-label">Mobile App</div>
+  <h1 class="page-title">Project <span class="accent">Artemis</span></h1>
+  <p class="page-sub">A fully interactive mobile application UI with working chat, analytics dashboard, and customisable settings.</p>
+  
+  <div class="app-showcase">
+    <div class="phone-frame">
+      <div class="phone-notch"></div>
+      <div class="phone-screen">
+        <div class="app-header">
+          <div class="app-header-top">
+            <div>
+              <div class="app-greeting">Good morning 👋</div>
+              <div class="app-name" id="headerName">Artemis User</div>
+            </div>
+            <div class="app-header-icons">
+              <div class="app-icon-btn">🔔</div>
+              <div class="app-icon-btn">🔍</div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="app-content">
+          <!-- Feed Tab -->
+          <div class="app-tab-content active" id="tab-feed">
+            <div class="feed-post" id="post-1">
+              <div class="feed-post-header">
+                <div class="feed-avatar" style="background:linear-gradient(135deg,#3b82f6,#8b5cf6)">A</div>
+                <div><div class="feed-user-name">Alex Chen</div><div class="feed-user-time">2 hours ago</div></div>
+              </div>
+              <div class="feed-post-text">Just finished the new design system for our mobile app. The consistency across screens is 🔥</div>
+              <div class="feed-post-image" style="background:linear-gradient(135deg,#3b82f6,#8b5cf6)"></div>
+              <div class="feed-post-actions">
+                <div class="feed-action liked" onclick="toggleLike(this,'post-1')"><span class="heart-icon">❤️</span> <span class="like-count">24</span></div>
+                <div class="feed-action" onclick="toggleComments('comments-1')"><span>💬</span> <span class="comment-count">3</span></div>
+                <div class="feed-action" onclick="sharePost()"><span>↗️</span> Share</div>
+              </div>
+              <div class="comments-panel" id="comments-1">
+                <div class="comment"><div class="comment-avatar" style="background:linear-gradient(135deg,#ec4899,#f43f5e)">S</div><div class="comment-body"><div class="comment-name">Sarah Kim</div><div class="comment-text">This looks incredible! Love the colour palette 🎨</div><div class="comment-time">1h ago</div></div></div>
+                <div class="comment"><div class="comment-avatar" style="background:linear-gradient(135deg,#22c55e,#14b8a6)">M</div><div class="comment-body"><div class="comment-name">Mike Rivera</div><div class="comment-text">Great work! The attention to detail is amazing</div><div class="comment-time">45m ago</div></div></div>
+                <div class="comment"><div class="comment-avatar" style="background:linear-gradient(135deg,#f59e0b,#f97316)">J</div><div class="comment-body"><div class="comment-name">Jamie Lee</div><div class="comment-text">Can't wait to see this in production! 🚀</div><div class="comment-time">30m ago</div></div></div>
+                <div class="comment-input-row"><input class="comment-input" placeholder="Write a comment..." onkeypress="if(event.key==='Enter')addComment(this,'comments-1')"><button class="comment-submit" onclick="addComment(this.previousElementSibling,'comments-1')">Post</button></div>
+              </div>
+            </div>
+            
+            <div class="feed-post" id="post-2">
+              <div class="feed-post-header">
+                <div class="feed-avatar" style="background:linear-gradient(135deg,#ec4899,#f43f5e)">S</div>
+                <div><div class="feed-user-name">Sarah Kim</div><div class="feed-user-time">5 hours ago</div></div>
+              </div>
+              <div class="feed-post-text">Working on something special for the team retreat. Can't wait to share! 🎨</div>
+              <div class="feed-post-actions">
+                <div class="feed-action" onclick="toggleLike(this,'post-2')"><span class="heart-icon">🤍</span> <span class="like-count">12</span></div>
+                <div class="feed-action" onclick="toggleComments('comments-2')"><span>💬</span> <span class="comment-count">2</span></div>
+                <div class="feed-action" onclick="sharePost()"><span>↗️</span> Share</div>
+              </div>
+              <div class="comments-panel" id="comments-2">
+                <div class="comment"><div class="comment-avatar" style="background:linear-gradient(135deg,#3b82f6,#8b5cf6)">A</div><div class="comment-body"><div class="comment-name">Alex Chen</div><div class="comment-text">Ooh mysterious! 👀</div><div class="comment-time">4h ago</div></div></div>
+                <div class="comment"><div class="comment-avatar" style="background:linear-gradient(135deg,#8b5cf6,#ec4899)">L</div><div class="comment-body"><div class="comment-name">Lisa Park</div><div class="comment-text">So excited for this!</div><div class="comment-time">3h ago</div></div></div>
+                <div class="comment-input-row"><input class="comment-input" placeholder="Write a comment..." onkeypress="if(event.key==='Enter')addComment(this,'comments-2')"><button class="comment-submit" onclick="addComment(this.previousElementSibling,'comments-2')">Post</button></div>
+              </div>
+            </div>
+            
+            <div class="feed-post" id="post-3">
+              <div class="feed-post-header">
+                <div class="feed-avatar" style="background:linear-gradient(135deg,#22c55e,#14b8a6)">M</div>
+                <div><div class="feed-user-name">Mike Rivera</div><div class="feed-user-time">Yesterday</div></div>
+              </div>
+              <div class="feed-post-text">Shipped the new update today! Performance improvements across the board 📈</div>
+              <div class="feed-post-actions">
+                <div class="feed-action" onclick="toggleLike(this,'post-3')"><span class="heart-icon">🤍</span> <span class="like-count">31</span></div>
+                <div class="feed-action" onclick="toggleComments('comments-3')"><span>💬</span> <span class="comment-count">4</span></div>
+                <div class="feed-action" onclick="sharePost()"><span>↗️</span> Share</div>
+              </div>
+              <div class="comments-panel" id="comments-3">
+                <div class="comment"><div class="comment-avatar" style="background:linear-gradient(135deg,#f59e0b,#f97316)">J</div><div class="comment-body"><div class="comment-name">Jamie Lee</div><div class="comment-text">The app feels so much faster now! 🔥</div><div class="comment-time">20h ago</div></div></div>
+                <div class="comment"><div class="comment-avatar" style="background:linear-gradient(135deg,#3b82f6,#8b5cf6)">A</div><div class="comment-body"><div class="comment-name">Alex Chen</div><div class="comment-text">Nice work Mike! The battery usage is way better</div><div class="comment-time">18h ago</div></div></div>
+                <div class="comment"><div class="comment-avatar" style="background:linear-gradient(135deg,#ec4899,#f43f5e)">S</div><div class="comment-body"><div class="comment-name">Sarah Kim</div><div class="comment-text">This is amazing progress! 💪</div><div class="comment-time">16h ago</div></div></div>
+                <div class="comment"><div class="comment-avatar" style="background:linear-gradient(135deg,#14b8a6,#06b6d4)">R</div><div class="comment-body"><div class="comment-name">Ryan Torres</div><div class="comment-text">Finally! The loading times are incredible now</div><div class="comment-time">12h ago</div></div></div>
+                <div class="comment-input-row"><input class="comment-input" placeholder="Write a comment..." onkeypress="if(event.key==='Enter')addComment(this,'comments-3')"><button class="comment-submit" onclick="addComment(this.previousElementSibling,'comments-3')">Post</button></div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Stats Tab -->
+          <div class="app-tab-content" id="tab-stats">
+            <div class="stats-grid">
+              <div class="stat-card"><div class="stat-value">12.4k</div><div class="stat-label">Total Views</div></div>
+              <div class="stat-card"><div class="stat-value">3.2k</div><div class="stat-label">Engagements</div></div>
+              <div class="stat-card"><div class="stat-value">847</div><div class="stat-label">New Followers</div></div>
+              <div class="stat-card"><div class="stat-value">92%</div><div class="stat-label">Satisfaction</div></div>
+            </div>
+            <div class="stat-chart">
+              <div class="stat-chart-title">Weekly Activity</div>
+              <div class="chart-bar"><span class="chart-bar-label">Mon</span><div class="chart-bar-fill" style="width:75%;background:var(--accent)"></div><span class="chart-bar-value">1.2k</span></div>
+              <div class="chart-bar"><span class="chart-bar-label">Tue</span><div class="chart-bar-fill" style="width:90%;background:var(--green)"></div><span class="chart-bar-value">1.5k</span></div>
+              <div class="chart-bar"><span class="chart-bar-label">Wed</span><div class="chart-bar-fill" style="width:60%;background:var(--blue)"></div><span class="chart-bar-value">0.9k</span></div>
+              <div class="chart-bar"><span class="chart-bar-label">Thu</span><div class="chart-bar-fill" style="width:85%;background:var(--purple)"></div><span class="chart-bar-value">1.4k</span></div>
+              <div class="chart-bar"><span class="chart-bar-label">Fri</span><div class="chart-bar-fill" style="width:95%;background:var(--pink)"></div><span class="chart-bar-value">1.6k</span></div>
+            </div>
+          </div>
+          
+          <!-- Chat Tab -->
+          <div class="app-tab-content" id="tab-chat">
+            <div class="chat-list" id="chatList">
+              <div class="chat-item" onclick="openChat('alex','Alex Chen','#3b82f6')">
+                <div class="chat-avatar" style="background:linear-gradient(135deg,#3b82f6,#8b5cf6)">A</div>
+                <div class="chat-info"><div class="chat-name">Alex Chen</div><div class="chat-last">Sounds great! Let's do it</div></div>
+                <div class="chat-meta"><div class="chat-time">2m</div><div class="chat-unread">2</div></div>
+              </div>
+              <div class="chat-item" onclick="openChat('sarah','Sarah Kim','#ec4899')">
+                <div class="chat-avatar" style="background:linear-gradient(135deg,#ec4899,#f43f5e)">S</div>
+                <div class="chat-info"><div class="chat-name">Sarah Kim</div><div class="chat-last">The designs look amazing!</div></div>
+                <div class="chat-meta"><div class="chat-time">15m</div></div>
+              </div>
+              <div class="chat-item" onclick="openChat('mike','Mike Rivera','#22c55e')">
+                <div class="chat-avatar" style="background:linear-gradient(135deg,#22c55e,#14b8a6)">M</div>
+                <div class="chat-info"><div class="chat-name">Mike Rivera</div><div class="chat-last">Meeting at 3pm tomorrow?</div></div>
+                <div class="chat-meta"><div class="chat-time">1h</div></div>
+              </div>
+              <div class="chat-item" onclick="openChat('team','Team Channel','#8b5cf6')">
+                <div class="chat-avatar" style="background:linear-gradient(135deg,#8b5cf6,#ec4899)">T</div>
+                <div class="chat-info"><div class="chat-name">Team Channel</div><div class="chat-last">Lisa: Great work everyone! 🎉</div></div>
+                <div class="chat-meta"><div class="chat-time">30m</div><div class="chat-unread">5</div></div>
+              </div>
+            </div>
+            <div class="chat-room" id="chatRoom">
+              <div class="chat-room-header">
+                <div class="chat-back" onclick="closeChat()">←</div>
+                <div class="chat-avatar" id="chatRoomAvatar" style="width:32px;height:32px;font-size:14px"></div>
+                <div><div id="chatRoomName" style="font-weight:600;font-size:14px"></div><div id="chatRoomStatus" style="font-size:11px;color:var(--green)">Online</div></div>
+              </div>
+              <div class="chat-messages" id="chatMessages"></div>
+              <div class="chat-input-area">
+                <input class="chat-input" id="chatInput" placeholder="Type a message..." onkeypress="if(event.key==='Enter')sendMessage()">
+                <button class="chat-send" onclick="sendMessage()">➤</button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Settings Tab -->
+          <div class="app-tab-content" id="tab-settings">
+            <div class="settings-group">
+              <div class="settings-group-title">Account</div>
+              <div class="settings-item" onclick="openProfile()">
+                <div class="settings-item-left"><div class="settings-icon">👤</div><div><div class="settings-label">Edit Profile</div><div class="settings-desc">Name, photo, bio</div></div></div>
+                <div style="color:var(--text-muted)">→</div>
+              </div>
+            </div>
+            <div class="settings-group">
+              <div class="settings-group-title">Preferences</div>
+              <div class="settings-item">
+                <div class="settings-item-left"><div class="settings-icon">🔔</div><div><div class="settings-label">Push Notifications</div><div class="settings-desc">Get notified about activity</div></div></div>
+                <div class="toggle active" onclick="toggleSwitch(this)"></div>
+              </div>
+              <div class="settings-item">
+                <div class="settings-item-left"><div class="settings-icon">🌙</div><div><div class="settings-label">Dark Mode</div><div class="settings-desc">Toggle appearance</div></div></div>
+                <div class="toggle" id="darkModeToggle" onclick="toggleSwitch(this)"></div>
+              </div>
+              <div class="settings-item">
+                <div class="settings-item-left"><div class="settings-icon">🌐</div><div><div class="settings-label">Language</div><div class="settings-desc">App language</div></div></div>
+                <input class="settings-input" value="English">
+              </div>
+            </div>
+            <div class="settings-group">
+              <div class="settings-group-title">Data</div>
+              <div class="settings-item">
+                <div class="settings-item-left"><div class="settings-icon">📊</div><div><div class="settings-label">Analytics</div><div class="settings-desc">View usage data</div></div></div>
+                <div class="toggle active" onclick="toggleSwitch(this)"></div>
+              </div>
+              <div class="settings-item">
+                <div class="settings-item-left"><div class="settings-icon">☁️</div><div><div class="settings-label">Auto Sync</div><div class="settings-desc">Sync data in background</div></div></div>
+                <div class="toggle" onclick="toggleSwitch(this)"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="app-bottom-nav">
+          <div class="nav-item active" onclick="switchTab('feed',this)"><span class="nav-icon">🏠</span>Feed</div>
+          <div class="nav-item" onclick="switchTab('stats',this)"><span class="nav-icon">📊</span>Stats</div>
+          <div class="nav-item" onclick="switchTab('chat',this)"><span class="nav-icon">💬</span>Chat</div>
+          <div class="nav-item" onclick="switchTab('settings',this)"><span class="nav-icon">⚙️</span>Settings</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="details-section">
+      <div class="detail-card">
+        <h3>🏠 Social Feed</h3>
+        <p>A beautifully designed feed where users can share updates, photos, and engage with the community.</p>
+        <ul>
+          <li>Real-time feed updates</li>
+          <li>Like and comment interactions</li>
+          <li>Image and text posts</li>
+          <li>Share functionality</li>
+        </ul>
+        <span class="detail-tag">Social</span><span class="detail-tag">Real-time</span>
+      </div>
+      <div class="detail-card">
+        <h3>📊 Analytics Dashboard</h3>
+        <p>Comprehensive analytics view showing key metrics and weekly activity trends.</p>
+        <ul>
+          <li>Total views, engagements, followers</li>
+          <li>Weekly activity bar chart</li>
+          <li>Colour-coded data visualisation</li>
+        </ul>
+        <span class="detail-tag">Analytics</span><span class="detail-tag">Charts</span>
+      </div>
+      <div class="detail-card">
+        <h3>💬 Real-time Chat</h3>
+        <p>Fully functional messaging system with conversation list and individual chat rooms.</p>
+        <ul>
+          <li>Conversation list with previews</li>
+          <li>Send messages with Enter key</li>
+          <li>Auto-replies after sending</li>
+          <li>Online status indicators</li>
+        </ul>
+        <span class="detail-tag">Messaging</span><span class="detail-tag">Interactive</span>
+      </div>
+      <div class="detail-card">
+        <h3>⚙️ Settings</h3>
+        <p>Comprehensive settings panel with toggle switches that save to local storage.</p>
+        <ul>
+          <li>Editable profile (name, bio, location)</li>
+          <li>Push notification toggles</li>
+          <li>Dark mode switch</li>
+          <li>Language selection</li>
+        </ul>
+        <span class="detail-tag">Settings</span><span class="detail-tag">Persistence</span>
+      </div>
+    </div>
+  </div>
+  <a href="index.html" class="footer-link">← Back to Portfolio</a>
+</div>
+
+<script>
+// Tab Switching
+function switchTab(tab,el){
+  document.querySelectorAll('.app-tab-content').forEach(function(t){t.classList.remove('active')});
+  document.querySelectorAll('.nav-item').forEach(function(n){n.classList.remove('active')});
+  document.getElementById('tab-'+tab).classList.add('active');
+  el.classList.add('active');
+  if(tab==='chat'){
+    document.getElementById('chatList').style.display='flex';
+    document.getElementById('chatRoom').classList.remove('active');
+  }
+}
+
+// Toggle Switch
+function toggleSwitch(el){
+  el.classList.toggle('active');
+  // If it's the dark mode toggle, also change theme
+  if(el.id==='darkModeToggle'){  }
+  // Save toggle states
+  saveToggles();
+}
+
+// Save/Load toggle states
+function saveToggles(){
+  var toggles=document.querySelectorAll('.toggle');
+  var states=[];
+  toggles.forEach(function(t,i){states.push(t.classList.contains('active'))});
+}
+function loadToggles(){
+  try{
+    var s=localStorage.getItem('omer-toggles');
+    if(s){
+      var states=JSON.parse(s);
+      var toggles=document.querySelectorAll('.toggle');
+      toggles.forEach(function(t,i){
+        if(states[i])t.classList.add('active');
+        else t.classList.remove('active');
+      });
+    }
+  }catch(e){}
+}
+loadToggles();
+
+// Like Function
+function toggleLike(el,postId){
+  var countEl=el.querySelector('.like-count');
+  var heartEl=el.querySelector('.heart-icon');
+  var count=parseInt(countEl.textContent);
+  if(el.classList.contains('liked')){
+    el.classList.remove('liked');
+    heartEl.textContent='🤍';
+    countEl.textContent=count-1;
+  }else{
+    el.classList.add('liked');
+    heartEl.textContent='❤️';
+    countEl.textContent=count+1;
+    heartEl.style.animation='none';
+    setTimeout(function(){heartEl.style.animation='heartPop .3s ease'},10);
+  }
+}
+
+// Comments
+function toggleComments(id){
+  var panel=document.getElementById(id);
+  panel.classList.toggle('open');
+}
+
+function addComment(input,commentsId){
+  var text=input.value.trim();
+  if(!text)return;
+  var panel=document.getElementById(commentsId);
+  var inputRow=panel.querySelector('.comment-input-row');
+  var comment=document.createElement('div');
+  comment.className='comment';
+  comment.innerHTML='<div class="comment-avatar" style="background:linear-gradient(135deg,var(--accent),#f97316)">Y</div><div class="comment-body"><div class="comment-name">You</div><div class="comment-text">'+text+'</div><div class="comment-time">Just now</div></div>';
+  panel.insertBefore(comment,inputRow);
+  input.value='';
+  var countEl=panel.closest('.feed-post').querySelector('.comment-count');
+  countEl.textContent=parseInt(countEl.textContent)+1;
+}
+
+// Share
+function sharePost(){
+  var toast=document.getElementById('shareToast');
+  toast.classList.add('show');
+  setTimeout(function(){toast.classList.remove('show')},2000);
+}
+
+// Profile Modal
+function openProfile(){
+  document.getElementById('profileModal').classList.add('open');
+}
+function closeProfile(){
+  document.getElementById('profileModal').classList.remove('open');
+}
+function saveProfile(){
+  var name=document.getElementById('profileName').value;
+  document.getElementById('headerName').textContent=name;
+  closeProfile();
+}
+
+// Chat Data
+var chatData={
+  alex:{name:'Alex Chen',color:'#3b82f6',messages:[
+    {text:'Hey! How are you?',sent:false,time:'10:30 AM'},
+    {text:'I am good, thanks! Working on the new feature.',sent:true,time:'10:32 AM'},
+    {text:'Nice! Which feature are you working on?',sent:false,time:'10:33 AM'},
+    {text:'The chat system — making it more like real messaging apps',sent:true,time:'10:35 AM'},
+    {text:'That sounds awesome! Can\'t wait to see it',sent:false,time:'10:36 AM'},
+    {text:'Thanks! It\'s coming along well',sent:true,time:'10:38 AM'},
+    {text:'Sounds great! Let\'s do it',sent:false,time:'10:40 AM'}
+  ]},
+  sarah:{name:'Sarah Kim',color:'#ec4899',messages:[
+    {text:'Hi there! 👋',sent:false,time:'9:15 AM'},
+    {text:'Hello Sarah! How\'s the design coming along?',sent:true,time:'9:20 AM'},
+    {text:'Really well! Just finishing up the colour palette',sent:false,time:'9:22 AM'},
+    {text:'The designs look amazing!',sent:false,time:'9:25 AM'}
+  ]},
+  mike:{name:'Mike Rivera',color:'#22c55e',messages:[
+    {text:'Hey, quick question',sent:false,time:'Yesterday'},
+    {text:'Sure, what is it?',sent:true,time:'Yesterday'},
+    {text:'Meeting at 3pm tomorrow?',sent:false,time:'Yesterday'},
+    {text:'Works for me! I\'ll be there',sent:true,time:'Yesterday'},
+    {text:'Perfect, see you then! 👍',sent:false,time:'Yesterday'}
+  ]},
+  team:{name:'Team Channel',color:'#8b5cf6',messages:[
+    {text:'Welcome to the team channel! 🎉',sent:false,time:'Monday'},
+    {text:'Thanks for setting this up!',sent:true,time:'Monday'},
+    {text:'Lisa: Great work everyone on the release!',sent:false,time:'Tuesday'},
+    {text:'Mike: The performance improvements are live!',sent:false,time:'Wednesday'},
+    {text:'Sarah: The new UI looks fantastic 🔥',sent:false,time:'Thursday'},
+    {text:'Alex: Let\'s sync up tomorrow morning',sent:false,time:'Today'}
+  ]}
+};
+
+var currentChat=null;
+
+function openChat(id,name,color){
+  currentChat=id;
+  document.getElementById('chatList').style.display='none';
+  document.getElementById('chatRoom').classList.add('active');
+  document.getElementById('chatRoomName').textContent=name;
+  document.getElementById('chatRoomAvatar').textContent=name[0];
+  document.getElementById('chatRoomAvatar').style.background='linear-gradient(135deg,'+color+','+color+'cc)';
+  var msgs=document.getElementById('chatMessages');
+  msgs.innerHTML='';
+  chatData[id].messages.forEach(function(m){
+    var div=document.createElement('div');
+    div.className='message '+(m.sent?'sent':'received');
+    div.innerHTML=m.text+'<div class="message-time">'+m.time+'</div>';
+    msgs.appendChild(div);
+  });
+  msgs.scrollTop=msgs.scrollHeight;
+}
+
+function closeChat(){
+  document.getElementById('chatList').style.display='flex';
+  document.getElementById('chatRoom').classList.remove('active');
+  currentChat=null;
+}
+
+function sendMessage(){
+  var input=document.getElementById('chatInput');
+  var text=input.value.trim();
+  if(!text||!currentChat)return;
+  var now=new Date();
+  var time=now.getHours()+':'+(now.getMinutes()<10?'0':'')+now.getMinutes();
+  chatData[currentChat].messages.push({text:text,sent:true,time:time});
+  var msgs=document.getElementById('chatMessages');
+  var div=document.createElement('div');
+  div.className='message sent';
+  div.innerHTML=text+'<div class="message-time">'+time+'</div>';
+  msgs.appendChild(div);
+  input.value='';
+  msgs.scrollTop=msgs.scrollHeight;
+  setTimeout(function(){
+    var replies=['Got it! 👍','Sounds good!','Let me check on that.','Thanks for letting me know!','On it! 🚀','Awesome!','I\'ll get back to you on this.','Perfect, thanks!'];
+    var replyTime=new Date();
+    var rt=replyTime.getHours()+':'+(replyTime.getMinutes()<10?'0':'')+replyTime.getMinutes();
+    var reply=document.createElement('div');
+    reply.className='message received';
+    reply.innerHTML=replies[Math.floor(Math.random()*replies.length)]+'<div class="message-time">'+rt+'</div>';
+    msgs.appendChild(reply);
+    msgs.scrollTop=msgs.scrollHeight;
+    chatData[currentChat].messages.push({text:reply.textContent.split('\n')[0],sent:false,time:rt});
+  },800+Math.random()*1200);
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>3D Models — Omer Bin Asif</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@700;800;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+:root{
+  --bg:#0a0a0f;--surface:#14141e;--surface-2:#1c1c2a;--text:#e8e8f0;
+  --text-secondary:#9898b0;--text-muted:#686880;--border:#2a2a3e;
+  --nav-bg:rgba(10,10,15,0.95);--nav-border:rgba(42,42,62,0.5);
+  --font-mono:'SF Mono','Fira Code','Cascadia Code',monospace;
+  --accent:#e74c3c;--accent-light:#f06050;
+}
+body{font-family:var(--font-mono);background:var(--bg);color:var(--text);min-height:100vh}
+
+/* nav */
+.top-nav{position:fixed;top:0;left:0;right:0;z-index:100;height:48px;display:flex;align-items:center;background:var(--nav-bg);backdrop-filter:blur(24px) saturate(180%);border-bottom:1px solid var(--nav-border)}
+.nav-inner{width:100%;display:flex;align-items:center;justify-content:space-between;padding:0 24px}
+.nav-brand{display:flex;align-items:center;gap:8px;text-decoration:none;color:var(--text)}
+.nav-avatar{width:28px;height:28px;border-radius:4px;background:var(--surface-2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;color:var(--text-muted)}
+.nav-name{font-size:12px;font-weight:500;letter-spacing:.02em;text-transform:uppercase}
+.nav-links{display:flex;align-items:center;gap:2px}
+.nav-link{padding:4px 10px;border-radius:4px;text-decoration:none;color:var(--text-muted);font-size:11px;transition:all .2s}
+.nav-link:hover{color:var(--text);background:var(--surface-2)}
+.nav-link.active{color:var(--accent);background:var(--surface-2)}
+.nav-actions{display:flex;align-items:center;gap:6px}
+.nav-cta{padding:5px 12px;border-radius:4px;background:transparent;color:var(--accent);border:1px solid var(--border);text-decoration:none;font-size:10px;text-transform:uppercase;letter-spacing:.05em;transition:all .2s}
+.nav-cta:hover{background:var(--surface-2);border-color:var(--accent)}
+
+/* page */
+.page{padding-top:48px;display:flex;flex-direction:column;min-height:100vh}
+
+/* info bar */
+.info-bar{padding:8px 24px;border-bottom:1px solid var(--border);background:var(--surface);display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;flex-shrink:0}
+.info-title{font-size:13px;font-weight:600;color:var(--text)}
+.info-note{font-size:11px;color:var(--text-muted);display:flex;align-items:center;gap:6px}
+.info-note strong{color:var(--accent)}
+
+/* model tabs */
+.model-tabs{display:flex;align-items:center;gap:4px;padding:8px 24px;border-bottom:1px solid var(--border);background:var(--bg);overflow-x:auto;scrollbar-width:none;flex-shrink:0}
+.model-tabs::-webkit-scrollbar{display:none}
+.model-tab{flex-shrink:0;padding:6px 16px;border-radius:4px;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-family:var(--font-mono);font-size:11px;cursor:pointer;transition:all .18s;white-space:nowrap}
+.model-tab:hover{color:var(--text);border-color:var(--text-muted)}
+.model-tab.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+/* 3d viewer */
+.viewer-wrap{position:relative;height:60vh;min-height:320px;background:var(--bg)}
+#viewerCanvas{display:block;width:100%;height:100%}
+.overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;pointer-events:none}
+.overlay.hidden{display:none}
+.loader-ring{width:36px;height:36px;border-radius:50%;border:2px solid var(--border);border-top-color:var(--accent);animation:spin .75s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.overlay-text{font-size:12px;color:var(--text-muted)}
+.controls-hint{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);font-size:10px;color:var(--text-muted);background:rgba(10,10,15,0.7);padding:5px 14px;border-radius:20px;pointer-events:none;border:1px solid var(--border);white-space:nowrap;backdrop-filter:blur(8px)}
+
+/* section divider */
+.section-header{padding:20px 24px 16px;border-top:1px solid var(--border)}
+.section-label{font-size:11px;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:.15em;display:flex;align-items:center;gap:10px}
+.section-label::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* video grid */
+.video-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px;padding:0 24px 40px}
+.video-card{background:var(--surface);border:1px solid var(--border);border-radius:8px;overflow:hidden;transition:border-color .2s}
+.video-card:hover{border-color:var(--accent)}
+.video-card video{display:block;width:100%;aspect-ratio:16/9;background:#000;object-fit:contain}
+.video-name{padding:8px 12px;font-size:11px;color:var(--text-muted);border-top:1px solid var(--border)}
+</style>
+</head>
+<body>
+
+<nav class="top-nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-brand"><div class="nav-avatar">OB</div><span class="nav-name">Omer Bin Asif</span></a>
+    <div class="nav-links">
+      <a href="index.html" class="nav-link">Home</a>
+      <a href="projects.html" class="nav-link active">Work</a>
+      <a href="skills.html" class="nav-link">Skills</a>
+      <a href="journey.html" class="nav-link">Journey</a>
+      <a href="resume.html" class="nav-link">CV</a>
+      <a href="contact.html" class="nav-link">Contact</a>
+    </div>
+    <div class="nav-actions"><a href="contact.html" class="nav-cta">Let's Talk</a></div>
+  </div>
+</nav>
+
+<div class="page">
+  <div class="info-bar">
+    <span class="info-title">3D Models</span>
+    <span class="info-note"><strong>Note:</strong> Textures did not export correctly — will be fixed in a later update.</span>
+  </div>
+
+  <div class="model-tabs" id="modelTabs"></div>
+
+  <div class="viewer-wrap" id="viewerWrap">
+    <canvas id="viewerCanvas"></canvas>
+    <div class="overlay" id="overlayIdle"><span class="overlay-text">Select a model above</span></div>
+    <div class="overlay hidden" id="overlayLoading"><div class="loader-ring"></div><span class="overlay-text" id="loadingText">Loading...</span></div>
+    <div class="controls-hint" id="controlsHint" style="display:none">Drag to rotate &nbsp;·&nbsp; Scroll to zoom &nbsp;·&nbsp; Right-click to pan</div>
+  </div>
+
+  <div class="section-header">
+    <div class="section-label">Videos</div>
+  </div>
+
+  <div class="video-grid">
+    <div class="video-card"><video src="3D Models/Gun.mkv" controls preload="metadata"></video><div class="video-name">Gun</div></div>
+    <div class="video-card"><video src="3D Models/Mustache.mkv" controls preload="metadata"></video><div class="video-name">Mustache</div></div>
+    <div class="video-card"><video src="3D Models/Alien.mkv" controls preload="metadata"></video><div class="video-name">Alien</div></div>
+    <div class="video-card"><video src="3D Models/Goblin.mkv" controls preload="metadata"></video><div class="video-name">Goblin</div></div>
+    <div class="video-card"><video src="3D Models/3 Eyes.mkv" controls preload="metadata"></video><div class="video-name">3 Eyes</div></div>
+    <div class="video-card"><video src="3D Models/Beard.mkv" controls preload="metadata"></video><div class="video-name">Beard</div></div>
+    <div class="video-card"><video src="3D Models/Devil.mkv" controls preload="metadata"></video><div class="video-name">Devil</div></div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script>
+var MODELS=[
+  {name:'GUN',        file:'3D Models/GUN.glb'},
+  {name:'CAR',        file:'3D Models/CAR.glb'},
+  {name:'Platform',   file:'3D Models/Platform.glb'},
+  {name:'Mustache',   file:'3D Models/Mustache.glb'},
+  {name:'3 Eyes',     file:'3D Models/3 eyes.glb'},
+  {name:'Alien',      file:'3D Models/Alien.glb'},
+  {name:'Goblin',     file:'3D Models/Goblin.glb'},
+  {name:'Dog Person', file:'3D Models/Dog Person.glb'}
+];
+
+var tabsEl=document.getElementById('modelTabs');
+var tabEls=[];
+MODELS.forEach(function(m,i){
+  var btn=document.createElement('button');
+  btn.className='model-tab';
+  btn.textContent=m.name;
+  btn.addEventListener('click',function(){selectModel(i);});
+  tabsEl.appendChild(btn);
+  tabEls.push(btn);
+});
+
+var scene,camera,renderer,controls,currentModel,animId;
+var wrap=document.getElementById('viewerWrap');
+var canvas=document.getElementById('viewerCanvas');
+var overlayIdle=document.getElementById('overlayIdle');
+var overlayLoading=document.getElementById('overlayLoading');
+var loadingText=document.getElementById('loadingText');
+var controlsHint=document.getElementById('controlsHint');
+var threeReady=false;
+var activeIdx=-1;
+
+function initThree(){
+  if(threeReady)return;
+  threeReady=true;
+  scene=new THREE.Scene();
+  scene.background=new THREE.Color(0x0a0a0f);
+  scene.fog=new THREE.Fog(0x0a0a0f,40,80);
+
+  camera=new THREE.PerspectiveCamera(50,wrap.clientWidth/wrap.clientHeight,0.01,500);
+  camera.position.set(0,1.2,3.5);
+
+  renderer=new THREE.WebGLRenderer({canvas:canvas,antialias:true});
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+  renderer.setSize(wrap.clientWidth,wrap.clientHeight);
+  renderer.outputEncoding=THREE.sRGBEncoding;
+  renderer.toneMapping=THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure=1.2;
+  renderer.shadowMap.enabled=true;
+  renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+
+  scene.add(new THREE.AmbientLight(0xffffff,0.6));
+  var key=new THREE.DirectionalLight(0xffffff,1.2);
+  key.position.set(5,10,7);key.castShadow=true;scene.add(key);
+  scene.add(new THREE.DirectionalLight(0xe74c3c,0.25)).position.set(-5,2,-5);
+  scene.add(new THREE.DirectionalLight(0x4488ff,0.18)).position.set(0,-4,5);
+  scene.add(new THREE.GridHelper(12,24,0x2a2a3e,0x16161f));
+
+  controls=new THREE.OrbitControls(camera,renderer.domElement);
+  controls.enableDamping=true;controls.dampingFactor=0.07;
+  controls.autoRotate=true;controls.autoRotateSpeed=1.4;
+  controls.minDistance=0.1;controls.maxDistance=80;
+
+  window.addEventListener('resize',onResize);
+  (function loop(){animId=requestAnimationFrame(loop);controls.update();renderer.render(scene,camera);})();
+}
+
+function onResize(){
+  if(!renderer)return;
+  camera.aspect=wrap.clientWidth/wrap.clientHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(wrap.clientWidth,wrap.clientHeight);
+}
+
+function clearModel(){
+  if(!currentModel)return;
+  scene.remove(currentModel);
+  currentModel.traverse(function(o){
+    if(o.geometry)o.geometry.dispose();
+    if(o.material)(Array.isArray(o.material)?o.material:[o.material]).forEach(function(m){m.dispose();});
+  });
+  currentModel=null;
+}
+
+function selectModel(idx){
+  if(idx===activeIdx)return;
+  activeIdx=idx;
+  tabEls.forEach(function(t,i){t.className='model-tab'+(i===idx?' active':'');});
+  overlayIdle.classList.add('hidden');
+  overlayLoading.classList.remove('hidden');
+  controlsHint.style.display='none';
+  loadingText.textContent='Loading '+MODELS[idx].name+'...';
+  initThree();
+  var loader=new THREE.GLTFLoader();
+  loader.load(MODELS[idx].file,function(gltf){
+    clearModel();
+    var model=gltf.scene;
+    var box=new THREE.Box3().setFromObject(model);
+    var center=box.getCenter(new THREE.Vector3());
+    var size=box.getSize(new THREE.Vector3());
+    var s=2/Math.max(size.x,size.y,size.z,0.001);
+    model.scale.setScalar(s);
+    model.position.sub(center.multiplyScalar(s));
+    scene.add(model);currentModel=model;
+    camera.position.set(0,1.2,3.5);
+    controls.target.set(0,0,0);controls.update();
+    overlayLoading.classList.add('hidden');
+    controlsHint.style.display='block';
+  },function(xhr){
+    if(xhr.total)loadingText.textContent='Loading '+Math.round(xhr.loaded/xhr.total*100)+'%';
+  },function(err){
+    console.error(err);
+    loadingText.textContent='Failed to load — make sure the page is served over HTTP';
+  });
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Projects — Omer Bin Asif</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0a0a;--surface:#111111;--surface-2:#1a1a1a;--surface-3:#242424;--text:#d0d0d0;--text-secondary:#999999;--text-muted:#666666;--border:#222222;--border-light:#2a2a2a;--accent:#b0b0b0;--accent-hover:#cccccc;--nav-bg:rgba(10,10,10,0.85);--nav-border:rgba(34,34,34,0.5);--shadow:0 25px 80px rgba(0,0,0,0.5);--font-mono:'SF Mono','Fira Code','Cascadia Code',monospace}
+body{font-family:var(--font-mono);background:var(--bg);color:var(--text);min-height:100vh}
+.top-nav{position:fixed;top:0;left:0;right:0;z-index:100;background:var(--nav-bg);backdrop-filter:blur(24px) saturate(180%);-webkit-backdrop-filter:blur(24px) saturate(180%);border-bottom:1px solid var(--nav-border)}
+.nav-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:14px 32px}
+.nav-brand{display:flex;align-items:center;gap:8px;text-decoration:none;color:var(--text)}
+.nav-avatar{width:32px;height:32px;border-radius:4px;background:var(--surface-2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;color:var(--text-muted);font-family:var(--font-mono)}
+.nav-name{font-size:13px;font-weight:500;letter-spacing:.02em;text-transform:uppercase}
+.nav-links{display:flex;align-items:center;gap:2px}
+.nav-link{padding:5px 12px;border-radius:4px;text-decoration:none;color:var(--text-muted);font-size:12px;font-weight:400;transition:all .2s;font-family:var(--font-mono)}
+.nav-link:hover{color:var(--text);background:var(--surface-2)}
+.nav-link.active{color:var(--accent);background:var(--surface-2)}
+.nav-actions{display:flex;align-items:center;gap:6px}
+.nav-cta{padding:6px 14px;border-radius:4px;background:transparent;color:var(--accent);border:1px solid var(--border);text-decoration:none;font-size:11px;font-weight:400;transition:all .2s;font-family:var(--font-mono);text-transform:uppercase;letter-spacing:.05em}
+.nav-cta:hover{background:var(--surface-2);border-color:var(--accent)}
+@media(max-width:768px){.nav-links{display:none}.nav-inner{padding:12px 20px}}
+.page{max-width:1100px;margin:0 auto;padding:100px 32px 60px}
+.page-label{font-size:11px;font-weight:400;color:var(--text-muted);text-transform:uppercase;letter-spacing:.15em;margin-bottom:6px}
+.page-title{font-size:clamp(22px,4vw,36px);font-weight:600;letter-spacing:-.01em;margin-bottom:24px;text-transform:uppercase}
+.page-title .accent{color:var(--accent)}
+.filters{display:flex;gap:6px;margin-bottom:24px;flex-wrap:wrap}
+.filter-btn{padding:6px 14px;border-radius:4px;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-family:var(--font-mono);font-size:12px;font-weight:400;cursor:pointer;transition:all .2s}
+.filter-btn:hover{border-color:var(--border-light);color:var(--text)}
+.filter-btn.active{background:var(--surface-2);color:var(--accent);border-color:var(--accent)}
+.projects-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+@media(max-width:700px){.projects-grid{grid-template-columns:1fr}}
+.project-card{display:flex;gap:16px;padding:16px;border-radius:6px;background:var(--surface);border:1px solid var(--border);cursor:pointer;text-decoration:none;color:var(--text);transition:all .2s;position:relative;overflow:hidden}
+.project-card:hover{border-color:var(--border-light);background:var(--surface-2)}
+.project-card-xray{position:absolute;inset:0;z-index:0;pointer-events:none;border-radius:6px;overflow:hidden;background-size:cover;background-position:center;clip-path:circle(0% at 50% 50%)}
+.project-card > *{position:relative;z-index:1}
+.project-thumb{width:64px;height:64px;border-radius:4px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:22px;border:1px solid var(--border);background:var(--surface-3)}
+.project-info{flex:1;min-width:0}
+.project-category{font-size:10px;font-weight:400;text-transform:uppercase;letter-spacing:.1em;margin-bottom:3px;color:var(--text-muted)}
+.project-name{font-size:16px;font-weight:500;margin-bottom:4px}
+.project-desc{font-size:12px;color:var(--text-secondary);line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.project-meta{font-size:10px;color:var(--text-muted);margin-top:6px}
+.cat-brand{color:var(--accent)}.cat-ecommerce{color:var(--accent)}.cat-digital{color:var(--accent)}.cat-systems{color:var(--accent)}
+.footer{max-width:1100px;margin:0 auto;padding:28px 32px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.footer-text{font-size:11px;color:var(--text-muted)}
+.footer-links{display:flex;gap:10px}
+.footer-link{font-size:11px;color:var(--text-muted);text-decoration:none;transition:color .2s}
+.footer-link:hover{color:var(--accent)}
+</style>
+</head>
+<body>
+<nav class="top-nav"><div class="nav-inner"><a href="index.html" class="nav-brand"><div class="nav-avatar">OB</div><span class="nav-name">Omer Bin Asif</span></a><div class="nav-links"><a href="index.html" class="nav-link">Home</a><a href="projects.html" class="nav-link active">Work</a><a href="skills.html" class="nav-link">Skills</a><a href="journey.html" class="nav-link">Journey</a><a href="resume.html" class="nav-link">CV</a><a href="contact.html" class="nav-link">Contact</a></div><div class="nav-actions"><a href="contact.html" class="nav-cta">Let's Talk</a></div></div></nav>
+<div class="page">
+  <div class="page-label">Portfolio</div>
+  <h1 class="page-title">The craft of <span class="accent">engineering</span></h1>
+  <div class="filters"><button class="filter-btn active" data-filter="all">All</button><button class="filter-btn" data-filter="brand">Brand</button><button class="filter-btn" data-filter="digital">Digital</button><button class="filter-btn" data-filter="ecommerce">E-Commerce</button><button class="filter-btn" data-filter="systems">Systems</button><button class="filter-btn" data-filter="creative">Creative</button></div>
+  <div class="projects-grid">
+    <a href="project-artemis.html" class="project-card" data-category="digital brand"><div class="project-card-xray"></div><div class="project-thumb thumb-cyan">🤖</div><div class="project-info"><div class="project-category cat-brand">Mobile App</div><div class="project-name">Project Artemis</div><div class="project-desc">A mobile app that actually works. Has a chat, charts, and settings. I'm as surprised as you are.</div><div class="project-meta">Mobile App • 2025</div></div></a>
+    <a href="project-flux.html" class="project-card" data-category="ecommerce digital"><div class="project-card-xray"></div><div class="project-thumb thumb-orange">🔐</div><div class="project-info"><div class="project-category cat-ecommerce">E-Commerce</div><div class="project-name">Flux</div><div class="project-desc">Login system that remembers you. Big Brother vibes, but make it fashionable.</div><div class="project-meta">Auth System • 2025</div></div></a>
+
+    <a href="project-atlas.html" class="project-card" data-category="digital systems"><div class="project-card-xray"></div><div class="project-thumb thumb-blue">🧠</div><div class="project-info"><div class="project-category cat-systems">AI / ML</div><div class="project-name">Atlas Prediction</div><div class="project-desc">Teaches computers to guess what you're thinking. Creepy? Maybe. Cool? Definitely.</div><div class="project-meta">Language Model • 2024</div></div></a>
+    <a href="project-cipher.html" class="project-card" data-category="digital systems"><div class="project-card-xray"></div><div class="project-thumb thumb-green">🔐</div><div class="project-info"><div class="project-category cat-systems">Security</div><div class="project-name">Cipher</div><div class="project-desc">4 levels of 'good luck hacking this'. Spoiler: you can't. I tested it.</div><div class="project-meta">Cryptography • 2024</div></div></a>
+    <a href="project-echo.html" class="project-card" data-category="brand digital"><div class="project-card-xray"></div><div class="project-thumb thumb-purple">✏️</div><div class="project-info"><div class="project-category cat-brand">Character Design</div><div class="project-name">Echo Gallery</div><div class="project-desc">Drawing people who don't exist. It's called art, look it up.</div><div class="project-meta">Illustration • 2023-2024</div></div></a>
+    <a href="project-hydra.html" class="project-card" data-category="digital systems"><div class="project-card-xray"></div><div class="project-thumb thumb-indigo">🤖</div><div class="project-info"><div class="project-category cat-systems">AI / Chatbot</div><div class="project-name">Hydra AI</div><div class="project-desc">An AI that doesn't want to take over the world. Yet. Ask it anything (except about nuclear codes).</div><div class="project-meta">AI Assistant • 2025</div></div></a>
+    <a href="project-pulse.html" class="project-card" data-category="digital systems"><div class="project-card-xray"></div><div class="project-thumb thumb-emerald">📊</div><div class="project-info"><div class="project-category cat-systems">Habit Tracker</div><div class="project-name">Pulse Tracker</div><div class="project-desc">Tracks your habits so you don't have to. Will judge you silently for skipping leg day.</div><div class="project-meta">Mobile App • 2025</div></div></a>
+    <a href="project-xray.html" class="project-card" data-category="digital creative"><div class="project-card-xray"></div><div class="project-thumb thumb-amber">🔬</div><div class="project-info"><div class="project-category cat-creative">Creative Code</div><div class="project-name">X-Ray Reveal</div><div class="project-desc">Hover to peel back layers. Trail mask and CSS radial reveal — two ways to see what's beneath.</div><div class="project-meta">Canvas Effects • 2025</div></div></a>
+    <a href="project-cards.html" class="project-card" data-category="brand creative"><div class="project-card-xray"></div><div class="project-thumb thumb-slate">♠️</div><div class="project-info"><div class="project-category cat-brand">Graphic Design</div><div class="project-name">NNIИ Cards</div><div class="project-desc">Custom playing card deck with original occult-eye artwork, geometric patterns, and a matching tuck box.</div><div class="project-meta">Card Design • 2022</div></div></a>
+    <a href="project-games.html" class="project-card" data-category="digital creative"><div class="project-card-xray"></div><div class="project-thumb thumb-rose">🎮</div><div class="project-info"><div class="project-category cat-digital">Interactive</div><div class="project-name">Arcade</div><div class="project-desc">6 games, golden spiral navigation, Urdu Wordle. Because portfolios need a fun side.</div><div class="project-meta">Mini Games • 2026</div></div></a>
+    <a href="project-mars.html" class="project-card" data-category="digital creative"><div class="project-card-xray"></div><div class="project-thumb thumb-red">🎲</div><div class="project-info"><div class="project-category cat-digital">3D Design</div><div class="project-name">3D Models</div><div class="project-desc">10 original models — Alien, Goblin, Dog Person, Lost City and more. Rotate and zoom in real-time.</div><div class="project-meta">Three.js • 2026</div></div></a>
+  </div>
+</div>
+<footer class="footer"><span class="footer-text">© 2026 Omer Bin Asif</span><div class="footer-links"><a href="index.html" class="footer-link">Home</a><a href="resume.html" class="footer-link">CV</a><a href="contact.html" class="footer-link">Contact</a></div></footer>
+<script>
+var html=document.documentElement;
+var filterBtns=document.querySelectorAll('.filter-btn');var cards=document.querySelectorAll('.project-card');filterBtns.forEach(function(btn){btn.addEventListener('click',function(){filterBtns.forEach(function(b){b.classList.remove('active')});this.classList.add('active');var filter=this.getAttribute('data-filter');cards.forEach(function(card){if(filter==='all'){card.style.display='flex'}else{var cats=card.getAttribute('data-category')||'';card.style.display=cats.indexOf(filter)>-1?'flex':'none'}})})});
+
+// Cursor-following X-Ray effect with circular lens
+document.querySelectorAll('.project-card-xray').forEach(function(xray){
+    xray.style.backgroundImage='url("XRAY CSS image/Dark mode.png")';
+  });
+
+document.querySelectorAll('.project-card').forEach(function(card){
+  var xray=card.querySelector('.project-card-xray');
+  if(!xray)return;
+  card.addEventListener('mouseenter',function(e){
+    var rect=card.getBoundingClientRect();
+    var x=((e.clientX-rect.left)/rect.width)*100;
+    var y=((e.clientY-rect.top)/rect.height)*100;
+    xray.style.setProperty('--mx',x+'%');
+    xray.style.setProperty('--my',y+'%');
+    xray.style.transition='clip-path .5s cubic-bezier(.34,1.56,.64,1)';
+    xray.style.clipPath='circle(35% at var(--mx,50%) var(--my,50%))';
+  });
+  card.addEventListener('mousemove',function(e){
+    var rect=card.getBoundingClientRect();
+    xray.style.transition='none';
+    xray.style.setProperty('--mx',((e.clientX-rect.left)/rect.width*100)+'%');
+    xray.style.setProperty('--my',((e.clientY-rect.top)/rect.height*100)+'%');
+  });
+  card.addEventListener('mouseleave',function(){
+    xray.style.transition='clip-path .5s cubic-bezier(.34,1.56,.64,1)';
+    xray.style.clipPath='circle(0% at 50% 50%)';
+    setTimeout(function(){xray.style.transition='';xray.style.clipPath=''},500);
+  });
+});
+</script>
+</body>
+</html>

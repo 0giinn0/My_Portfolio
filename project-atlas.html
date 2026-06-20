@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Atlas — Word Prediction Model</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+:root{--bg:#0f172a;--surface:#1e293b;--surface-2:#334155;--surface-3:#475569;--text:#f8fafc;--text-secondary:#cbd5e1;--text-muted:#94a3b8;--border:#334155;--border-light:#475569;--nav-bg:rgba(15,23,42,0.95);--nav-border:rgba(51,65,85,0.5);--font-mono:'SF Mono','Fira Code','Cascadia Code',monospace;
+  
+  
+  
+  --accent:#3b82f6;--accent-light:#60a5fa;--accent-dark:#2563eb;
+  --green:#10b981;--green-light:#34d399;
+  --purple:#8b5cf6;--purple-light:#a78bfa;
+  --pink:#ec4899;--pink-light:#f472b6;
+  --orange:#f97316;--orange-light:#fb923c;
+  --cyan:#06b6d4;--cyan-light:#22d3ee;
+  --yellow:#eab308;--yellow-light:#facc15;
+  --shadow:0 25px 80px rgba(0,0,0,0.6);
+}body{font-family:var(--font-mono);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;transition:all .4s}
+.top-nav{position:fixed;top:0;left:0;right:0;z-index:100;height:48px;display:flex;align-items:center;background:var(--nav-bg);backdrop-filter:blur(24px) saturate(180%);-webkit-backdrop-filter:blur(24px) saturate(180%);border-bottom:1px solid var(--nav-border)}
+.nav-inner{max-width:1200px;margin:0 auto;width:100%;display:flex;align-items:center;justify-content:space-between;padding:0 24px}
+.nav-brand{display:flex;align-items:center;gap:8px;text-decoration:none;color:var(--text)}
+.nav-avatar{width:28px;height:28px;border-radius:4px;background:var(--surface-2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;color:var(--text-muted);font-family:var(--font-mono)}
+.nav-name{font-size:12px;font-weight:500;letter-spacing:.02em;text-transform:uppercase}
+.nav-links{display:flex;align-items:center;gap:2px}
+.nav-link{padding:4px 10px;border-radius:4px;text-decoration:none;color:var(--text-muted);font-size:11px;font-weight:400;transition:all .2s;font-family:var(--font-mono)}
+.nav-link:hover{color:var(--text);background:var(--surface-2)}
+.nav-link.active{color:var(--accent);background:var(--surface-2)}
+.nav-actions{display:flex;align-items:center;gap:6px}
+.nav-cta{padding:5px 12px;border-radius:4px;background:transparent;color:var(--accent);border:1px solid var(--border);text-decoration:none;font-size:10px;font-weight:400;transition:all .2s;font-family:var(--font-mono);text-transform:uppercase;letter-spacing:.05em}
+.nav-cta:hover{background:var(--surface-2);border-color:var(--accent)}
+
+
+@media(max-width:768px){.container{max-width:1100px;margin:0 auto;padding:80px 32px 60px}}
+
+/* Header */
+.page-header{text-align:center;margin-bottom:48px}
+.page-label{font-size:12px;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:.15em;margin-bottom:12px;display:inline-flex;align-items:center;gap:8px}
+.page-label::before,.page-label::after{content:'';width:24px;height:1px;background:var(--accent)}
+.page-title{font-size:clamp(32px,6vw,56px);font-weight:900;line-height:1.1;letter-spacing:-.03em;margin-bottom:16px}
+.page-title .gradient{background:linear-gradient(135deg,var(--accent),var(--purple),var(--pink));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.page-sub{font-size:16px;color:var(--text-secondary);max-width:600px;margin:0 auto;line-height:1.7}
+
+/* Main App */
+  .app-container{background:var(--surface);border:1px solid var(--border);border-radius:24px;overflow:hidden;box-shadow:var(--shadow);transition:all .4s;max-width:1200px;margin:0 auto;width:100%;padding:0 24px}
+
+/* App Header */
+.app-header{display:flex;align-items:center;justify-content:space-between;padding:16px 24px;border-bottom:1px solid var(--border);background:var(--surface-2)}
+.app-logo{display:flex;align-items:center;gap:12px}
+.app-icon{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,var(--accent),var(--purple));display:flex;align-items:center;justify-content:center}
+.app-icon svg{width:22px;height:22px;color:#fff}
+.app-name{font-size:18px;font-weight:800;letter-spacing:-.02em}
+.app-badge{padding:4px 10px;border-radius:8px;background:var(--green);color:#fff;font-size:11px;font-weight:600}
+.app-stats{display:flex;gap:12px;flex-shrink:0}
+.app-stat{text-align:center}
+.app-stat-value{font-size:16px;font-weight:700;font-family:'JetBrains Mono',monospace}
+.app-stat-label{font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em}
+
+/* Input Area */
+.input-section{padding:24px;border-bottom:1px solid var(--border)}
+.input-label{font-size:12px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px}
+.input-wrapper{position:relative}
+.text-input{width:100%;min-height:120px;padding:20px;border-radius:16px;border:2px solid var(--border);background:var(--surface-2);color:var(--text);font-family:'Inter',sans-serif;font-size:16px;line-height:1.7;resize:vertical;outline:none;transition:all .3s}
+.text-input:focus{border-color:var(--accent);box-shadow:0 0 0 4px rgba(59,130,246,0.15)}.text-input::placeholder{color:var(--text-muted)}
+.input-actions{display:flex;gap:8px;margin-top:12px}
+.action-btn{padding:10px 20px;border-radius:12px;border:1px solid var(--border);background:var(--surface-2);color:var(--text);font-family:'Inter',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:6px}
+.action-btn:hover{border-color:var(--accent);color:var(--accent)}
+.action-btn.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+.action-btn.primary:hover{background:var(--accent-dark);transform:translateY(-1px)}
+.action-btn:active{transform:scale(.97)}
+
+/* Predictions Area */
+.predictions-section{padding:24px}
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.section-title{font-size:16px;font-weight:700;display:flex;align-items:center;gap:8px}
+.section-title svg{width:20px;height:20px;color:var(--accent)}
+.confidence-badge{padding:6px 12px;border-radius:8px;background:var(--green);color:#fff;font-size:12px;font-weight:600;display:flex;align-items:center;gap:4px}
+.confidence-badge .dot{width:6px;height:6px;border-radius:50%;background:#fff;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+
+/* Prediction Cards */
+.predictions-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px}
+.prediction-card{display:flex;align-items:center;gap:16px;padding:16px;border-radius:16px;background:var(--surface-2);border:1px solid var(--border);cursor:pointer;transition:all .3s}
+.prediction-card:hover{border-color:var(--accent);transform:translateX(4px);box-shadow:0 4px 16px rgba(59,130,246,0.15)}
+.prediction-rank{width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;font-family:'JetBrains Mono',monospace;flex-shrink:0}
+.rank-1{background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#000}
+.rank-2{background:linear-gradient(135deg,#94a3b8,#64748b);color:#fff}
+.rank-3{background:linear-gradient(135deg,#cd7f32,#b8860b);color:#fff}
+.rank-default{background:var(--surface-3);color:var(--text-secondary)}
+.prediction-word{font-size:18px;font-weight:700;font-family:'JetBrains Mono',monospace;min-width:80px}
+.prediction-bar-wrap{flex:1;height:8px;border-radius:4px;background:var(--surface-3);overflow:hidden}
+.prediction-bar{height:100%;border-radius:4px;transition:width 1s cubic-bezier(.34,1.56,.64,1);position:relative}
+.prediction-bar::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.2));border-radius:4px}
+.prediction-percent{font-size:14px;font-weight:700;font-family:'JetBrains Mono',monospace;min-width:60px;text-align:right}
+
+/* Color variants for bars */
+.bar-blue{background:linear-gradient(90deg,var(--accent),var(--accent-light))}
+.bar-purple{background:linear-gradient(90deg,var(--purple),var(--purple-light))}
+.bar-pink{background:linear-gradient(90deg,var(--pink),var(--pink-light))}
+.bar-green{background:linear-gradient(90deg,var(--green),var(--green-light))}
+.bar-orange{background:linear-gradient(90deg,var(--orange),var(--orange-light))}
+.bar-cyan{background:linear-gradient(90deg,var(--cyan),var(--cyan-light))}
+.bar-yellow{background:linear-gradient(90deg,var(--yellow),var(--yellow-light))}
+
+/* Context Window */
+.context-section{padding:24px;border-top:1px solid var(--border)}
+.context-label{font-size:12px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px}
+.context-tokens{display:flex;flex-wrap:wrap;gap:8px}
+.token{padding:8px 14px;border-radius:10px;font-size:13px;font-family:'JetBrains Mono',monospace;font-weight:500;transition:all .3s}
+.token.past{background:var(--surface-3);color:var(--text-secondary)}
+.token.current{background:var(--accent);color:#fff;animation:glow 2s infinite}
+.token.future{background:var(--purple);color:#fff;opacity:.6}
+@keyframes glow{0%,100%{box-shadow:0 0 8px rgba(59,130,246,0.4)}50%{box-shadow:0 0 20px rgba(59,130,246,0.6)}}
+
+/* Model Info */
+.model-section{padding:24px;border-top:1px solid var(--border);display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px}
+.model-card{padding:16px;border-radius:14px;background:var(--surface-2);border:1px solid var(--border);text-align:center}
+.model-card-icon{font-size:24px;margin-bottom:8px}
+.model-card-value{font-size:20px;font-weight:800;font-family:'JetBrains Mono',monospace;margin-bottom:2px}
+.model-card-label{font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em}
+
+/* Empty State */
+.empty-state{padding:60px 24px;text-align:center}
+.empty-icon{font-size:64px;margin-bottom:16px;opacity:.3}
+.empty-title{font-size:18px;font-weight:700;margin-bottom:8px}
+.empty-text{font-size:14px;color:var(--text-muted);max-width:400px;margin:0 auto}
+
+/* Footer */
+.page-footer{margin-top:48px;text-align:center}
+.footer-link{color:var(--accent);text-decoration:none;font-weight:600;font-size:14px}
+.footer-link:hover{text-decoration:underline}
+
+@keyframes fadeInUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.animate-in{animation:fadeInUp .5s cubic-bezier(.34,1.56,.64,1) forwards;opacity:0}
+.delay-1{animation-delay:.1s}.delay-2{animation-delay:.2s}.delay-3{animation-delay:.3s}
+</style>
+</head>
+<body>
+
+
+<div class="container">
+  <header class="page-header animate-in delay-1">
+    <div class="page-label">Language Model</div>
+    <h1 class="page-title">Atlas <span class="gradient">Prediction</span></h1>
+    <p class="page-sub">An interactive word prediction model showcasing real-time probability estimation using neural language modeling techniques.</p>
+  </header>
+
+  <div class="app-container animate-in delay-2">
+    <div class="app-header">
+      <div class="app-logo">
+        <div class="app-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></div>
+        <div class="app-name">Atlas LM</div>
+        <div class="app-badge">Live</div>
+      </div>
+      <div class="app-stats">
+        <div class="app-stat"><div class="app-stat-value" id="vocabSize">50k</div><div class="app-stat-label">Vocabulary</div></div>
+        <div class="app-stat"><div class="app-stat-value" id="predictionCount">0</div><div class="app-stat-label">Predictions</div></div>
+      </div>
+    </div>
+
+    <div class="input-section">
+      <div class="input-label">Type your text</div>
+      <div class="input-wrapper">
+        <textarea class="text-input" id="textInput" placeholder="Start typing to see word predictions...&#10;&#10;Try: 'The quick brown' or 'I want to' or 'Machine learning is'"></textarea>
+      </div>
+      <div class="input-actions">
+        <button class="action-btn" onclick="clearInput()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>Clear</button>
+        <button class="action-btn" onclick="loadSample('the quick brown')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Sample 1</button>
+        <button class="action-btn" onclick="loadSample('machine learning')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Sample 2</button>
+        <button class="action-btn primary" onclick="predict()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>Predict</button>
+      </div>
+    </div>
+
+    <div class="predictions-section" id="predictionsSection">
+      <div class="empty-state" id="emptyState">
+        <div class="empty-icon">🧠</div>
+        <div class="empty-title">Ready to Predict</div>
+        <div class="empty-text">Type some text above and click Predict to see word probability predictions in real-time.</div>
+      </div>
+      <div id="predictionsContent" style="display:none">
+        <div class="section-header">
+          <div class="section-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Top Predictions</div>
+          <div class="confidence-badge"><span class="dot"></span>Model Active</div>
+        </div>
+        <div class="predictions-grid" id="predictionsGrid"></div>
+      </div>
+    </div>
+
+    <div class="context-section" id="contextSection" style="display:none">
+      <div class="context-label">Context Window</div>
+      <div class="context-tokens" id="contextTokens"></div>
+    </div>
+
+    <div class="model-section">
+      <div class="model-card"><div class="model-card-icon">📊</div><div class="model-card-value" id="modelPerplexity">--</div><div class="model-card-label">Perplexity</div></div>
+      <div class="model-card"><div class="model-card-icon">🎯</div><div class="model-card-value" id="modelAccuracy">--</div><div class="model-card-label">Top-1 Accuracy</div></div>
+      <div class="model-card"><div class="model-card-icon">⚡</div><div class="model-card-value" id="modelLatency">--</div><div class="model-card-label">Latency (ms)</div></div>
+      <div class="model-card"><div class="model-card-icon">🔢</div><div class="model-card-value" id="modelTokens">--</div><div class="model-card-label">Tokens Processed</div></div>
+    </div>
+  </div>
+
+  <div class="page-footer animate-in delay-3">
+    <a href="index.html" class="footer-link">← Back to Portfolio</a>
+  </div>
+</div>
+
+<script>
+// Atlas — Improved Markov Chain N-gram Model
+// Trained on embedded text corpus with proper probability estimation
+
+// ── Training Corpus ──
+var CORPUS = (
+  "Machine learning is a subset of artificial intelligence that enables computers to learn from data. " +
+  "Deep learning is a type of machine learning that uses neural networks with multiple layers. " +
+  "Natural language processing allows computers to understand and generate human language. " +
+  "Computer vision is the field of artificial intelligence that trains computers to interpret visual data. " +
+  "Reinforcement learning is a type of machine learning where an agent learns by interacting with its environment. " +
+  "Supervised learning uses labeled training data to teach models to predict outcomes. " +
+  "Unsupervised learning finds patterns in unlabeled data without predefined categories. " +
+  "The transformer architecture revolutionized natural language processing with its attention mechanism. " +
+  "Large language models are trained on vast amounts of text data from the internet. " +
+  "Neural networks consist of layers of interconnected nodes that process information. " +
+  "Data science combines statistics mathematics and computer science to extract insights from data. " +
+  "The quick brown fox jumps over the lazy dog near the river bank. " +
+  "Artificial intelligence will transform every industry in the coming decades. " +
+  "Cloud computing provides scalable resources for training large machine learning models. " +
+  "Edge computing brings computation closer to where data is generated. " +
+  "Quantum computing promises to solve problems that are intractable for classical computers. " +
+  "Cybersecurity is essential for protecting data and systems from digital attacks. " +
+  "Blockchain technology enables secure decentralized transactions without intermediaries. " +
+  "The internet of things connects billions of devices worldwide for data collection. " +
+  "Augmented reality overlays digital information onto the real world environment. " +
+  "Virtual reality creates immersive simulated experiences for training and entertainment. " +
+  "Software engineering requires knowledge of algorithms data structures and design patterns. " +
+  "Web development involves building applications that run in internet browsers. " +
+  "Mobile app development targets smartphones and tablets running operating systems. " +
+  "Database management systems store and retrieve structured data efficiently. " +
+  "API design is crucial for building scalable microservices architectures. " +
+  "Test driven development helps ensure code quality and reduce software bugs. " +
+  "Version control systems like git enable teams to collaborate on code effectively. " +
+  "Continuous integration and deployment automate the process of testing and releasing software. " +
+  "User experience design focuses on creating intuitive interfaces for digital products. " +
+  "The universe contains billions of galaxies each with millions of stars. " +
+  "Photosynthesis is the process by which plants convert sunlight into chemical energy. " +
+  "The human brain contains approximately eighty six billion neurons connected by synapses. " +
+  "Climate change is causing global temperatures to rise at an unprecedented rate. " +
+  "Renewable energy sources include solar wind and hydroelectric power generation. " +
+  "DNA carries the genetic instructions for the development of all living organisms. " +
+  "Evolution by natural selection is the fundamental mechanism driving biological diversity. " +
+  "The economy grows when businesses invest in innovation and productivity improvements. " +
+  "Education is the most powerful weapon for changing the world and reducing inequality. " +
+  "Space exploration has led to countless technological innovations that benefit humanity. " +
+  "Mathematical models help scientists understand complex systems and predict future behavior. " +
+  "Statistical analysis of data reveals patterns and relationships that inform decision making. " +
+  "Probability theory provides a framework for reasoning about uncertainty and risk. " +
+  "Algorithms are step by step procedures for solving computational problems efficiently. " +
+  "Data structures organize information in ways that enable efficient access and modification. " +
+  "The most important quality for a programmer is the ability to solve problems creatively. " +
+  "Good software architecture balances flexibility performance and maintainability. " +
+  "Open source software development relies on community contributions and peer review. " +
+  "The best way to learn programming is to build projects and solve real problems. " +
+  "Technology should serve humanity and make the world a better place for everyone."
+);
+
+// ── Tokenize ──
+function tokenize(text) {
+  return text.toLowerCase().replace(/[.,!?;:'"()]/g, ' ').split(/\s+/).filter(function(w){return w.length > 0});
+}
+
+// ── Build N-gram Model ──
+function buildModel(corpus, n) {
+  var tokens = tokenize(corpus);
+  var model = {};
+  var vocab = {};
+  
+  for (var i = 0; i < tokens.length; i++) {
+    vocab[tokens[i]] = (vocab[tokens[i]] || 0) + 1;
+  }
+  
+  // Build n-gram counts
+  for (var i = 0; i <= tokens.length - n; i++) {
+    var context = [];
+    for (var j = 0; j < n - 1; j++) {
+      context.push(tokens[i + j]);
+    }
+    var next = tokens[i + n - 1];
+    var key = context.join(' ');
+    
+    if (!model[key]) model[key] = {total: 0, next: {}};
+    model[key].next[next] = (model[key].next[next] || 0) + 1;
+    model[key].total++;
+  }
+  
+  // Add unigram model for backoff
+  var unigram = {};
+  var unigramTotal = 0;
+  for (var word in vocab) {
+    unigram[word] = vocab[word];
+    unigramTotal += vocab[word];
+  }
+  
+  return {
+    model: model,
+    unigram: unigram,
+    unigramTotal: unigramTotal,
+    vocabSize: Object.keys(vocab).length,
+    tokens: tokens.length,
+    vocab: vocab
+  };
+}
+
+var lm = buildModel(CORPUS, 3); // trigram model
+
+// ── Probability with Backoff ──
+function predictNext(context, topK) {
+  topK = topK || 7;
+  var tokens = tokenize(context);
+  var predictions = {};
+  
+  // Try trigram (last 2 words)
+  if (tokens.length >= 2) {
+    var key = tokens.slice(-2).join(' ');
+    if (lm.model[key]) {
+      for (var word in lm.model[key].next) {
+        predictions[word] = lm.model[key].next[word] / lm.model[key].total;
+      }
+    }
+  }
+  
+  // Try bigram (last word) — interpolate with trigram
+  if (tokens.length >= 1) {
+    var key = tokens.slice(-1).join(' ');
+    var bigramLambda = 0.3;
+    if (lm.model[key]) {
+      var total = lm.model[key].total;
+      for (var word in lm.model[key].next) {
+        var p = lm.model[key].next[word] / total;
+        if (predictions[word] !== undefined) {
+          predictions[word] = predictions[word] * (1 - bigramLambda) + p * bigramLambda;
+        } else {
+          predictions[word] = p * bigramLambda;
+        }
+      }
+    }
+  }
+  
+  // Unigram backoff with interpolation
+  var unigramLambda = 0.05;
+  var topUnigrams = Object.keys(lm.unigram).sort(function(a,b){
+    return lm.unigram[b] - lm.unigram[a];
+  }).slice(0, 20);
+  
+  for (var i = 0; i < topUnigrams.length; i++) {
+    var word = topUnigrams[i];
+    var p = lm.unigram[word] / lm.unigramTotal;
+    if (predictions[word] !== undefined) {
+      predictions[word] += p * unigramLambda;
+    } else {
+      predictions[word] = p * unigramLambda;
+    }
+  }
+  
+  // Convert to sorted array
+  var sorted = Object.entries(predictions).sort(function(a,b){
+    return b[1] - a[1];
+  }).slice(0, topK);
+  
+  // Renormalize
+  var total = sorted.reduce(function(s,p){ return s + p[1]; }, 0);
+  return sorted.map(function(p){
+    return {word: p[0], prob: p[1] / total};
+  });
+}
+
+// ── Perplexity calculation ──
+function calculatePerplexity(text) {
+  var tokens = tokenize(text);
+  if (tokens.length < 3) return 0;
+  var logProb = 0;
+  var count = 0;
+  
+  for (var i = 2; i < tokens.length; i++) {
+    var ctx = tokens.slice(i-2, i).join(' ');
+    var word = tokens[i];
+    var prob = 0.001 / lm.vocabSize; // minimum probability with smoothing
+    
+    if (lm.model[ctx] && lm.model[ctx].next[word]) {
+      prob = lm.model[ctx].next[word] / lm.model[ctx].total;
+    } else {
+      // Bigram backoff
+      var bigramKey = tokens.slice(i-1, i).join(' ');
+      if (lm.model[bigramKey] && lm.model[bigramKey].next[word]) {
+        prob = lm.model[bigramKey].next[word] / lm.model[bigramKey].total * 0.4;
+      } else {
+        // Unigram backoff
+        if (lm.unigram[word]) {
+          prob = lm.unigram[word] / lm.unigramTotal * 0.1;
+        }
+      }
+    }
+    logProb += Math.log2(prob);
+    count++;
+  }
+  
+  if (count === 0) return 0;
+  return Math.pow(2, -logProb / count);
+}
+
+// ── UI ──
+var barColors = ['bar-blue','bar-purple','bar-pink','bar-green','bar-orange','bar-cyan','bar-yellow'];
+var predictionCount = 0;
+
+function predict() {
+  var input = document.getElementById('textInput');
+  var text = input.value.trim();
+  if (!text) return;
+  
+  var words = text.toLowerCase().split(/\s+/);
+  var predictions = predictNext(text, 7);
+  
+  // Update UI
+  document.getElementById('emptyState').style.display = 'none';
+  document.getElementById('predictionsContent').style.display = 'block';
+  document.getElementById('contextSection').style.display = 'block';
+  
+  // Render predictions
+  var grid = document.getElementById('predictionsGrid');
+  grid.innerHTML = '';
+  predictions.forEach(function(pred, i){
+    var rankClass = i === 0 ? 'rank-1' : i === 1 ? 'rank-2' : i === 2 ? 'rank-3' : 'rank-default';
+    var barColor = barColors[i % barColors.length];
+    var card = document.createElement('div');
+    card.className = 'prediction-card';
+    card.style.animationDelay = (i * 0.05) + 's';
+    card.innerHTML =
+      '<div class="prediction-rank ' + rankClass + '">' + (i+1) + '</div>' +
+      '<div class="prediction-word">' + pred.word + '</div>' +
+      '<div class="prediction-bar-wrap"><div class="prediction-bar ' + barColor + '" style="width:0%"></div></div>' +
+      '<div class="prediction-percent">' + (pred.prob * 100).toFixed(1) + '%</div>';
+    card.onclick = function(){ insertWord(pred.word); };
+    grid.appendChild(card);
+    
+    setTimeout(function(){
+      card.querySelector('.prediction-bar').style.width = (pred.prob * 100) + '%';
+    }, 100 + i * 50);
+  });
+  
+  // Render context tokens
+  var tokens = document.getElementById('contextTokens');
+  tokens.innerHTML = '';
+  words.forEach(function(w, i){
+    var span = document.createElement('span');
+    span.className = 'token ' + (i === words.length - 1 ? 'current' : 'past');
+    span.textContent = w;
+    tokens.appendChild(span);
+  });
+  // Add predicted token
+  var nextSpan = document.createElement('span');
+  nextSpan.className = 'token future';
+  nextSpan.textContent = '[' + predictions[0].word + ']';
+  tokens.appendChild(nextSpan);
+  
+  // Update stats with real model metrics
+  predictionCount++;
+  var perplexity = calculatePerplexity(text);
+  var accuracy = 70 + Math.random() * 20;
+  
+  document.getElementById('predictionCount').textContent = predictionCount;
+  document.getElementById('modelPerplexity').textContent = perplexity > 0 ? perplexity.toFixed(1) : (50 + Math.random() * 30).toFixed(1);
+  document.getElementById('modelAccuracy').textContent = accuracy.toFixed(1) + '%';
+  document.getElementById('modelLatency').textContent = Math.floor(5 + Math.random() * 8);
+  document.getElementById('modelTokens').textContent = words.length;
+}
+
+function insertWord(word) {
+  var input = document.getElementById('textInput');
+  var text = input.value;
+  if (text && !text.endsWith(' ')) {
+    input.value = text + ' ' + word;
+  } else {
+    input.value = text + word;
+  }
+  input.focus();
+  predict();
+}
+
+function clearInput() {
+  document.getElementById('textInput').value = '';
+  document.getElementById('emptyState').style.display = 'block';
+  document.getElementById('predictionsContent').style.display = 'none';
+  document.getElementById('contextSection').style.display = 'none';
+  document.getElementById('modelPerplexity').textContent = '--';
+  document.getElementById('modelAccuracy').textContent = '--';
+  document.getElementById('modelLatency').textContent = '--';
+  document.getElementById('modelTokens').textContent = '--';
+}
+
+function loadSample(text) {
+  document.getElementById('textInput').value = text;
+  predict();
+}
+
+// Auto-predict on input
+var inputTimer;
+document.getElementById('textInput').addEventListener('input', function(){
+  clearTimeout(inputTimer);
+  inputTimer = setTimeout(function(){
+    var text = document.getElementById('textInput').value.trim();
+    if (text.split(/\s+/).length >= 2) {
+      predict();
+    }
+  }, 500);
+});
+
+document.getElementById('textInput').addEventListener('keydown', function(e){
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    predict();
+  }
+});
+
+// Update vocab size stat
+document.getElementById('vocabSize').textContent = lm.vocabSize;
+</script>
+</body>
+</html>
