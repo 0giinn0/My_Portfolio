@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Project X-Ray — Reveal Effects</title>
+<title>Project X-Ray — Layer Reveal</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-:root{--bg:#0a0a0a;--surface:#111111;--surface-2:#1a1a1a;--surface-3:#242424;--text:#d0d0d0;--text-secondary:#999999;--text-muted:#666666;--border:#222222;--border-light:#2a2a2a;--nav-bg:rgba(10,10,10,0.85);--nav-border:rgba(34,34,34,0.5);--font-mono:'SF Mono','Fira Code','Cascadia Code',monospace;--accent:#f59e0b;--amber:#f59e0b;--amber-light:#fbbf24;--green:#22c55e;--blue:#3b82f6;--coral:#ff6b6b;--purple:#8b5cf6}
+:root{--bg:#0a0a0a;--surface:#111111;--surface-2:#1a1a1a;--surface-3:#242424;--text:#d0d0d0;--text-secondary:#999999;--text-muted:#666666;--border:#222222;--border-light:#2a2a2a;--nav-bg:rgba(10,10,10,0.85);--nav-border:rgba(34,34,34,0.5);--font-mono:'SF Mono','Fira Code','Cascadia Code',monospace;--accent:#f59e0b;--amber:#f59e0b;--amber-light:#fbbf24}
 body{font-family:var(--font-mono);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
 
 .top-nav{position:fixed;top:0;left:0;right:0;z-index:100;height:48px;display:flex;align-items:center;background:var(--nav-bg);backdrop-filter:blur(24px) saturate(180%);-webkit-backdrop-filter:blur(24px) saturate(180%);border-bottom:1px solid var(--nav-border)}
@@ -24,44 +24,38 @@ body{font-family:var(--font-mono);background:var(--bg);color:var(--text);min-hei
 .nav-actions{display:flex;align-items:center;gap:6px}
 .nav-cta{padding:5px 12px;border-radius:4px;background:transparent;color:var(--amber);border:1px solid var(--border);text-decoration:none;font-size:10px;font-weight:400;transition:all .2s;font-family:var(--font-mono);text-transform:uppercase;letter-spacing:.05em}
 .nav-cta:hover{background:var(--surface-2);border-color:var(--amber)}
-.container{max-width:1100px;margin:0 auto;padding:80px 32px 40px}
 
+.page{max-width:1100px;margin:0 auto;padding:100px 32px 60px}
 .page-label{font-size:12px;font-weight:600;color:var(--amber);text-transform:uppercase;letter-spacing:.2em;margin-bottom:12px;display:flex;align-items:center;gap:12px}
 .page-label::before{content:'';width:32px;height:1px;background:var(--amber)}
 .page-title{font-size:clamp(28px,5vw,42px);font-weight:900;letter-spacing:-.02em;margin-bottom:8px}
 .page-title .accent{color:var(--amber)}
 .page-sub{font-size:16px;color:var(--text-secondary);max-width:600px;line-height:1.7;margin-bottom:40px}
 
-/* Demo sections */
-.page{max-width:1100px;margin:0 auto;padding:100px 32px 60px}
-.demo-stack{display:flex;flex-direction:column;gap:48px;margin-bottom:48px}
-.demo-block{max-width:640px}
-.demo-block .demo-label{font-size:13px;font-weight:600;color:var(--amber);margin-bottom:12px;display:flex;align-items:center;gap:10px}
-.demo-block .demo-label::after{content:'';flex:1;height:1px;background:var(--border)}
-.demo-desc{font-size:12px;color:var(--text-muted);margin-bottom:14px;line-height:1.6}
+/* X-Ray stage */
+.xray-outer{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:20px;overflow:hidden}
+.xray-stage{position:relative;width:100%;height:480px;border-radius:6px;overflow:hidden;cursor:crosshair;background:#000}
+.xray-layer{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;transition:opacity .15s ease-out;pointer-events:none}
+.xray-layer.hidden{opacity:0}
+.xray-hint{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.25);pointer-events:none;white-space:nowrap;transition:opacity .4s;z-index:10}
 
-/* X-ray shared */
-.xray-outer{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:20px;overflow:hidden}
-.xray-stage{position:relative;width:100%;height:420px;border-radius:4px;overflow:hidden;cursor:crosshair}
-.layer-base,.layer-reveal,.layer-mask{position:absolute;inset:0;width:100%;height:100%}
-.layer-mask{pointer-events:none}
-.xray-label{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.2);pointer-events:none;white-space:nowrap;transition:opacity .4s}
+/* Layer controls */
+.layer-controls{display:flex;flex-direction:column;gap:10px;margin-top:16px}
+.layer-control{display:flex;align-items:center;gap:14px;padding:12px 16px;border-radius:6px;background:var(--surface-2);border:1px solid var(--border);transition:border-color .2s}
+.layer-control:hover{border-color:var(--border-light)}
+.layer-toggle{position:relative;width:44px;height:24px;flex-shrink:0;cursor:pointer}
+.layer-toggle input{opacity:0;width:0;height:0;position:absolute}
+.layer-toggle-slider{position:absolute;inset:0;background:var(--surface-3);border-radius:12px;transition:background .3s;border:1px solid var(--border)}
+.layer-toggle-slider::before{content:'';position:absolute;width:18px;height:18px;left:2px;top:2px;background:var(--text-muted);border-radius:50%;transition:transform .3s,background .3s}
+.layer-toggle input:checked+.layer-toggle-slider{background:rgba(245,158,11,0.2);border-color:var(--amber)}
+.layer-toggle input:checked+.layer-toggle-slider::before{transform:translateX(20px);background:var(--amber)}
+.layer-info{flex:1;min-width:0}
+.layer-name{font-size:13px;font-weight:600;color:var(--text);margin-bottom:2px}
+.layer-desc{font-size:11px;color:var(--text-muted)}
+.layer-mode{font-size:10px;color:var(--amber);text-transform:uppercase;letter-spacing:.1em;padding:4px 10px;border-radius:4px;background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.2);white-space:nowrap}
+.layer-mode.off{color:var(--text-muted);background:var(--surface-3);border-color:var(--border)}
 
-.presets{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
-.preset-btn{font-size:11px;letter-spacing:.1em;text-transform:uppercase;padding:6px 14px;border-radius:4px;border:1px solid var(--border);background:transparent;color:var(--text-muted);cursor:pointer;transition:border-color .2s,color .2s;font-family:var(--font-mono)}
-.preset-btn:hover{border-color:#555;color:var(--text-secondary)}
-.preset-btn.active{border-color:var(--amber);color:var(--amber)}
-
-.xray-controls{display:flex;align-items:center;gap:20px;margin-top:14px;flex-wrap:wrap}
-.ctrl{display:flex;align-items:center;gap:10px;flex:1;min-width:140px}
-.ctrl label{font-size:11px;color:var(--text-muted);letter-spacing:.12em;text-transform:uppercase;white-space:nowrap}
-.ctrl input[type=range]{flex:1;accent-color:var(--amber)}
-.ctrl span{font-size:11px;color:var(--text-muted);min-width:36px;text-align:right}
-
-/* Hover reveal specific */
-.layer-reveal-hover{pointer-events:none;transition:mask-image .05s,-webkit-mask-image .05s}
-
-/* Info */
+/* Info sections */
 .info-section{margin-bottom:32px}
 .info-label{font-size:12px;font-weight:600;color:var(--amber);text-transform:uppercase;letter-spacing:.2em;margin-bottom:12px;display:flex;align-items:center;gap:12px}
 .info-label::before{content:'';width:32px;height:1px;background:var(--amber)}
@@ -83,7 +77,6 @@ body{font-family:var(--font-mono);background:var(--bg);color:var(--text);min-hei
 .back-link{display:inline-flex;align-items:center;gap:8px;font-size:13px;color:var(--text-muted);text-decoration:none;transition:color .2s;margin-top:40px;padding-top:24px;border-top:1px solid var(--border)}
 .back-link:hover{color:var(--amber)}
 
-/* Footer */
 .footer{max-width:1100px;margin:60px auto 0;padding:28px 32px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
 .footer-text{font-size:11px;color:var(--text-muted)}
 .footer-links{display:flex;gap:10px}
@@ -92,163 +85,91 @@ body{font-family:var(--font-mono);background:var(--bg);color:var(--text);min-hei
 
 @keyframes fadeInUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 .animate-in{animation:fadeInUp .4s cubic-bezier(.34,1.56,.64,1) forwards;opacity:0}
-.delay-1{animation-delay:.1s}.delay-2{animation-delay:.12s}.delay-3{animation-delay:.16s}.delay-4{animation-delay:.2s}
+.delay-1{animation-delay:.1s}.delay-2{animation-delay:.16s}.delay-3{animation-delay:.22s}
+
+@media(max-width:600px){.xray-stage{height:320px}.layer-control{flex-wrap:wrap}}
 </style>
 </head>
 <body>
-<nav class="top-nav">
-  <div class="nav-inner">
-    <a href="index.html" class="nav-brand"><div class="nav-avatar">OB</div><span class="nav-name">Omer Bin Asif</span></a>
-    <div class="nav-links">
-      <a href="index.html" class="nav-link">Home</a>
-      <a href="projects.html" class="nav-link active">Work</a>
-      <a href="skills.html" class="nav-link">Skills</a>
-      <a href="journey.html" class="nav-link">Journey</a>
-      <a href="resume.html" class="nav-link">CV</a>
-      <a href="contact.html" class="nav-link">Contact</a>
-    </div>
-    <div class="nav-actions">
-      <a href="contact.html" class="nav-cta">Let's Talk</a>
-    </div>
-  </div>
-</nav>
+<nav class="top-nav"><div class="nav-inner"><a href="index.html" class="nav-brand"><div class="nav-avatar">OB</div><span class="nav-name">Omer Bin Asif</span></a><div class="nav-links"><a href="index.html" class="nav-link">Home</a><a href="projects.html" class="nav-link active">Work</a><a href="skills.html" class="nav-link">Skills</a><a href="journey.html" class="nav-link">Journey</a><a href="resume.html" class="nav-link">CV</a><a href="contact.html" class="nav-link">Contact</a></div><div class="nav-actions"><a href="contact.html" class="nav-cta">Let's Talk</a></div></div></nav>
 
 <div class="page">
   <header class="page-header animate-in delay-1">
     <div class="page-label">Creative Experiment</div>
     <h1 class="page-title">Project <span class="accent">X-Ray</span></h1>
-    <p class="page-sub">Two reveal effects — hover to peel back layers and expose the hidden structure beneath the surface.</p>
+    <p class="page-sub">Four anatomical layers stacked from background to skin. Toggle each layer on or off — enabled layers fade out on hover to reveal what's beneath.</p>
   </header>
 
-  <!-- DEMO 1: Trail Mask -->
-  <div class="demo-stack animate-in delay-2">
-    <div class="demo-block">
-      <div class="demo-label">01 — Trail Mask</div>
-      <div class="demo-desc">A fading trail that acts as a dynamic CSS mask. The reveal persists and fades naturally over time.</div>
-      <div class="xray-outer">
-        <div class="presets" id="presets-trail"></div>
-        <div class="xray-stage" id="stage-trail">
-          <canvas class="layer-base" id="base-trail"></canvas>
-          <canvas class="layer-reveal" id="reveal-trail"></canvas>
-          <canvas class="layer-mask" id="maskcanvas"></canvas>
-          <div class="xray-label" id="hint-trail">move cursor to reveal</div>
-        </div>
-        <div class="xray-controls">
-          <div class="ctrl">
-            <label>brush size</label>
-            <input type="range" min="10" max="120" value="38" step="1" id="radius-trail">
-            <span id="radius-trail-out">38px</span>
-          </div>
-          <div class="ctrl">
-            <label>trail fade</label>
-            <input type="range" min="20" max="120" value="55" step="1" id="traillen">
-            <span id="trail-out">55</span>
-          </div>
-        </div>
-      </div>
+  <div class="xray-outer animate-in delay-2">
+    <div class="xray-stage" id="xrayStage">
+      <img class="xray-layer" id="layer-0" src="XRAY images/Background_Dots.png" alt="Background Dots">
+      <img class="xray-layer" id="layer-1" src="XRAY images/Bottom_Skeleton.png" alt="Skeleton">
+      <img class="xray-layer" id="layer-2" src="XRAY images/Middle_Muscle_Fibres.png" alt="Muscle Fibres">
+      <img class="xray-layer" id="layer-3" src="XRAY images/Top_Skin_Tissue.png" alt="Skin Tissue">
+      <div class="xray-hint" id="xrayHint">hover to reveal layers</div>
     </div>
 
-    <!-- DEMO 2: Hover Reveal -->
-    <div class="demo-block">
-      <div class="demo-label">02 — Hover Reveal</div>
-      <div class="demo-desc">A simple CSS radial-gradient mask that follows the cursor in real-time. No trail — just instant reveal.</div>
-      <div class="xray-outer">
-        <div class="presets" id="presets-hover"></div>
-        <div class="xray-stage" id="stage-hover">
-          <canvas class="layer-base" id="base-hover"></canvas>
-          <canvas class="layer-reveal layer-reveal-hover" id="reveal-hover"></canvas>
-          <div class="xray-label" id="hint-hover">move cursor to reveal</div>
-        </div>
-        <div class="xray-controls">
-          <div class="ctrl">
-            <label>radius</label>
-            <input type="range" min="40" max="260" value="120" step="1" id="radius-hover">
-            <span id="radius-hover-out">120px</span>
-          </div>
-        </div>
+    <div class="layer-controls" id="layerControls">
+      <div class="layer-control">
+        <label class="layer-toggle"><input type="checkbox" checked data-layer="3"><span class="layer-toggle-slider"></span></label>
+        <div class="layer-info"><div class="layer-name">Top — Skin Tissue</div><div class="layer-desc">Outermost layer, cut out on hover to reveal below</div></div>
+        <div class="layer-mode" id="mode-3">Hover to reveal</div>
+      </div>
+      <div class="layer-control">
+        <label class="layer-toggle"><input type="checkbox" checked data-layer="2"><span class="layer-toggle-slider"></span></label>
+        <div class="layer-info"><div class="layer-name">Middle — Muscle Fibres</div><div class="layer-desc">Beneath the skin, cut out on hover to reveal below</div></div>
+        <div class="layer-mode" id="mode-2">Hover to reveal</div>
+      </div>
+      <div class="layer-control">
+        <label class="layer-toggle"><input type="checkbox" checked data-layer="1"><span class="layer-toggle-slider"></span></label>
+        <div class="layer-info"><div class="layer-name">Bottom — Skeleton</div><div class="layer-desc">Structural framework, cut out on hover to reveal below</div></div>
+        <div class="layer-mode" id="mode-1">Hover to reveal</div>
+      </div>
+      <div class="layer-control">
+        <label class="layer-toggle"><input type="checkbox" disabled data-layer="0"><span class="layer-toggle-slider"></span></label>
+        <div class="layer-info"><div class="layer-name">Background — Dots</div><div class="layer-desc">Base layer, always visible</div></div>
+        <div class="layer-mode off">Always on</div>
       </div>
     </div>
   </div>
 
-  <!-- Info -->
-  <div class="project-details animate-in delay-3">
+  <div class="project-details animate-in delay-3" style="margin-top:40px">
     <div class="info-section">
       <div class="info-label">Concept</div>
       <div class="info-text">
-        <p><strong>X-Ray</strong> explores two canvas-based reveal techniques. Both use stacked canvases with CSS masking to expose a hidden layer beneath a visible surface — one with a persistent trail, one with instant cursor-following.</p>
+        <p><strong>X-Ray</strong> uses four anatomically inspired image layers — background, skeleton, muscle fibres, and skin — stacked from bottom to top. Each layer (except the background) has a toggle switch. When a layer is <strong>toggled on</strong>, it's visible normally but <strong>fades out on hover</strong> to reveal what's beneath. When <strong>toggled off</strong>, it stays hidden regardless of hover.</p>
+        <p>This creates a progressive dissection effect: enable layers above the one you want to see, then hover to peel them back.</p>
       </div>
     </div>
 
     <div class="info-section">
-      <div class="info-label">Trail Mask — How It Works</div>
+      <div class="info-label">How It Works</div>
       <div class="info-text">
-        <p>Three stacked canvases: a <strong>base layer</strong>, a <strong>reveal layer</strong>, and an offscreen <strong>mask canvas</strong>. The mask canvas draws radial gradients along the cursor trail — newer points are more opaque. This canvas is converted to a <strong>data URL</strong> and applied as a CSS <strong>mask-image</strong> on the reveal layer in real-time.</p>
-      </div>
-    </div>
-
-    <div class="info-section">
-      <div class="info-label">Hover Reveal — How It Works</div>
-      <div class="info-text">
-        <p>Simpler approach: two canvases stacked. The reveal layer uses a pure CSS <strong>radial-gradient mask</strong> with <code>var(--mx)</code> / <code>var(--my)</code> custom properties updated on mousemove. The gradient's circle radius is controlled by a slider. No JavaScript mask compositing — just CSS variables driving a mask-image.</p>
-      </div>
-    </div>
-
-    <div class="info-section">
-      <div class="info-label">Use Cases</div>
-      <div class="info-text">
-        <p><strong>Portfolio hero sections</strong> — replace static images with an interactive reveal that invites exploration. Visitors naturally want to "peek" behind the surface, increasing engagement time.</p>
-        <p><strong>Product showcases</strong> — show a product's exterior on the base layer and its internal components, wireframes, or technical specs on the reveal layer. Customers can X-ray through the surface to understand what's inside.</p>
-        <p><strong>Data visualization</strong> — layer raw data beneath a cleaned-up chart. Analysts can hover to drill down from summary to detail without navigating away.</p>
-        <p><strong>Educational content</strong> — anatomy, architecture, engineering diagrams. The trail mask lets students explore at their own pace, revealing layers progressively rather than all at once.</p>
-        <p><strong>Before/after comparisons</strong> — show the "after" as the base and the "before" as the reveal. The cursor becomes a lens that lets users compare states in the same viewport.</p>
-        <p><strong>Game UI / storytelling</strong> — hide clues, maps, or narrative elements beneath a surface layer. Players discover content by moving through the scene, creating a sense of agency and discovery.</p>
-      </div>
-    </div>
-
-    <div class="info-section">
-      <div class="info-label">Implementation Notes</div>
-      <div class="info-text">
-        <p><strong>Performance</strong> — the Trail Mask converts the mask canvas to a data URL every frame. For production, consider using <code>canvas.toBlob()</code> with <code>URL.createObjectURL()</code> instead of <code>toDataURL()</code> to avoid base64 encoding overhead. The Hover Reveal is essentially free — it's a single CSS property update per frame.</p>
-        <p><strong>Mobile</strong> — both effects work on touch devices. On mobile, the trail mask responds to touchmove events and the hover reveal follows finger position. Consider increasing brush radius for touch input since finger precision is lower than mouse.</p>
-        <p><strong>Accessibility</strong> — the effects are decorative. The base layer content should still be readable without interaction. Add a <code>prefers-reduced-motion</code> check to disable the trail animation for users who are sensitive to motion.</p>
+        <p>Four <code>&lt;img&gt;</code> elements are absolutely positioned and stacked by <code>z-index</code>. Each layer tracks two states: <strong>enabled</strong> (toggle on/off) and <strong>hovering</strong> (mouse over the stage).</p>
+        <p>An enabled layer is visible by default and fades to <code>opacity:0</code> when the cursor enters the stage. A disabled layer stays at <code>opacity:0</code>. The background layer is always on — it's the base you reveal down to.</p>
+        <p>Opacity transitions use CSS <code>transition:opacity .15s ease-out</code> for smooth fades. No canvas, no masking, no JavaScript compositing — just stacked images and CSS opacity.</p>
       </div>
     </div>
 
     <div class="info-section">
       <div class="info-label">Features</div>
       <div class="features">
-        <div class="feature">
-          <div class="feature-icon">✦</div>
-          <div class="feature-text"><strong>5 shared presets</strong> — dark/gold, grid/neon, noise/red, concrete/blueprint, sand/circuit — each with distinct surface and reveal palettes</div>
-        </div>
-        <div class="feature">
-          <div class="feature-icon">✦</div>
-          <div class="feature-text"><strong>Trail Mask</strong> — dynamic canvas-to-DataURL mask with quadratic opacity falloff and adjustable brush/trail length</div>
-        </div>
-        <div class="feature">
-          <div class="feature-icon">✦</div>
-          <div class="feature-text"><strong>Hover Reveal</strong> — pure CSS radial-gradient mask driven by custom properties, instant and lightweight</div>
-        </div>
-        <div class="feature">
-          <div class="feature-icon">✦</div>
-          <div class="feature-text"><strong>Smooth interpolation</strong> — lerp-based cursor smoothing for fluid trail drawing at any speed</div>
-        </div>
-        <div class="feature">
-          <div class="feature-icon">✦</div>
-          <div class="feature-text"><strong>Adjustable parameters</strong> — brush size, trail length, and radius controls for custom reveal behavior</div>
-        </div>
+        <div class="feature"><div class="feature-icon">✦</div><div class="feature-text"><strong>4 anatomical layers</strong> — Background Dots, Skeleton, Muscle Fibres, Skin Tissue</div></div>
+        <div class="feature"><div class="feature-icon">✦</div><div class="feature-text"><strong>Per-layer toggle switches</strong> — enable/disable each layer independently</div></div>
+        <div class="feature"><div class="feature-icon">✦</div><div class="feature-text"><strong>Hover-to-reveal</strong> — enabled layers fade out on hover, showing what's beneath</div></div>
+        <div class="feature"><div class="feature-icon">✦</div><div class="feature-text"><strong>Smooth CSS transitions</strong> — 150ms ease-out opacity fades, no JS animation loops</div></div>
+        <div class="feature"><div class="feature-icon">✦</div><div class="feature-text"><strong>Background locked</strong> — base layer is always visible, the foundation you reveal down to</div></div>
       </div>
     </div>
 
     <div class="info-section">
       <div class="info-label">Tech Stack</div>
       <div class="tech-stack">
-        <span class="tech-tag highlight">Canvas 2D</span>
-        <span class="tech-tag highlight">CSS Mask</span>
-        <span class="tech-tag highlight">CSS Custom Properties</span>
-        <span class="tech-tag">Radial Gradients</span>
-        <span class="tech-tag">Data URL Compositing</span>
-        <span class="tech-tag">requestAnimationFrame</span>
+        <span class="tech-tag highlight">CSS Opacity Transitions</span>
+        <span class="tech-tag highlight">Toggle Switches</span>
+        <span class="tech-tag">Stacked IMG Layers</span>
+        <span class="tech-tag">z-index Layering</span>
+        <span class="tech-tag">MouseEvent Listeners</span>
       </div>
     </div>
 
@@ -256,310 +177,75 @@ body{font-family:var(--font-mono);background:var(--bg);color:var(--text);min-hei
   </div>
 </div>
 
-<footer class="footer">
-  <span class="footer-text">© 2026 Omer Bin Asif</span>
-  <div class="footer-links">
-    <a href="index.html" class="footer-link">Home</a>
-    <a href="resume.html" class="footer-link">CV</a>
-    <a href="contact.html" class="footer-link">Contact</a>
-  </div>
-</footer>
+<footer class="footer"><span class="footer-text">© 2026 Omer Bin Asif</span><div class="footer-links"><a href="index.html" class="footer-link">Home</a><a href="resume.html" class="footer-link">CV</a><a href="contact.html" class="footer-link">Contact</a></div></footer>
 
 <script>
-// ─── Shared presets ───
-const presets = [
-  {
-    name: "dark / gold",
-    base: (ctx, w, h) => {
-      ctx.fillStyle="#111008"; ctx.fillRect(0,0,w,h);
-      for(let i=0;i<60;i++){
-        ctx.beginPath(); ctx.arc(Math.random()*w,Math.random()*h,Math.random()*1.5+0.5,0,Math.PI*2);
-        ctx.fillStyle=`rgba(255,220,80,${Math.random()*0.12+0.03})`; ctx.fill();
-      }
-      ctx.font="500 72px monospace"; ctx.fillStyle="rgba(255,220,80,0.06)";
-      ctx.textAlign="center"; ctx.fillText("BENEATH",w/2,h/2+26);
-    },
-    reveal: (ctx, w, h) => {
-      ctx.fillStyle="#0a0800"; ctx.fillRect(0,0,w,h);
-      for(let i=0;i<200;i++){
-        ctx.beginPath(); ctx.arc(Math.random()*w,Math.random()*h,Math.random()*2+0.5,0,Math.PI*2);
-        ctx.fillStyle=`rgba(255,200,40,${Math.random()*0.7+0.1})`; ctx.fill();
-      }
-      ctx.font="500 72px monospace"; ctx.fillStyle="rgba(255,200,40,0.6)";
-      ctx.textAlign="center"; ctx.fillText("BENEATH",w/2,h/2+26);
-    }
-  },
-  {
-    name: "grid / neon",
-    base: (ctx, w, h) => {
-      ctx.fillStyle="#0a0a0a"; ctx.fillRect(0,0,w,h);
-      ctx.strokeStyle="rgba(255,255,255,0.06)"; ctx.lineWidth=1;
-      for(let x=0;x<w;x+=40){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,h);ctx.stroke();}
-      for(let y=0;y<h;y+=40){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke();}
-      ctx.font="500 72px monospace"; ctx.fillStyle="rgba(255,255,255,0.07)";
-      ctx.textAlign="center"; ctx.fillText("SURFACE",w/2,h/2+26);
-    },
-    reveal: (ctx, w, h) => {
-      ctx.fillStyle="#050510"; ctx.fillRect(0,0,w,h);
-      ctx.strokeStyle="rgba(100,200,255,0.5)"; ctx.lineWidth=1.5;
-      for(let x=0;x<w;x+=40){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,h);ctx.stroke();}
-      for(let y=0;y<h;y+=40){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke();}
-      ctx.font="500 72px monospace"; ctx.fillStyle="rgba(80,180,255,0.5)";
-      ctx.textAlign="center"; ctx.fillText("SURFACE",w/2,h/2+26);
-      ctx.fillStyle="rgba(80,180,255,0.12)"; ctx.fillRect(0,0,w,h);
-    }
-  },
-  {
-    name: "noise / red",
-    base: (ctx, w, h) => {
-      ctx.fillStyle="#0f0a0a"; ctx.fillRect(0,0,w,h);
-      for(let y=0;y<h;y+=3){ ctx.fillStyle=`rgba(255,255,255,${Math.random()*0.02})`; ctx.fillRect(0,y,w,1); }
-      ctx.font="bold 80px serif"; ctx.fillStyle="rgba(255,60,60,0.07)";
-      ctx.textAlign="center"; ctx.fillText("STRUCTURE",w/2,h/2+28);
-    },
-    reveal: (ctx, w, h) => {
-      ctx.fillStyle="#200808"; ctx.fillRect(0,0,w,h);
-      const idata=ctx.createImageData(w,h);
-      for(let i=0;i<idata.data.length;i+=4){
-        const v=Math.random()*40;
-        idata.data[i]=180+v; idata.data[i+1]=v/4; idata.data[i+2]=v/4; idata.data[i+3]=Math.random()*60+10;
-      }
-      ctx.putImageData(idata,0,0);
-      ctx.font="bold 80px serif"; ctx.fillStyle="rgba(255,60,60,0.85)";
-      ctx.textAlign="center"; ctx.fillText("STRUCTURE",w/2,h/2+28);
-    }
-  },
-  {
-    name: "concrete / blueprint",
-    base: (ctx, w, h) => {
-      ctx.fillStyle="#1a1a1a"; ctx.fillRect(0,0,w,h);
-      const idata=ctx.createImageData(w,h);
-      for(let i=0;i<idata.data.length;i+=4){
-        const v=100+Math.random()*30;
-        idata.data[i]=v; idata.data[i+1]=v; idata.data[i+2]=v; idata.data[i+3]=18;
-      }
-      ctx.putImageData(idata,0,0);
-      ctx.strokeStyle="rgba(255,255,255,0.04)"; ctx.lineWidth=1;
-      for(let i=0;i<h;i+=6){ctx.beginPath();ctx.moveTo(0,i);ctx.lineTo(w,i);ctx.stroke();}
-    },
-    reveal: (ctx, w, h) => {
-      ctx.fillStyle="#061420"; ctx.fillRect(0,0,w,h);
-      ctx.strokeStyle="rgba(40,120,255,0.25)"; ctx.lineWidth=0.5;
-      for(let x=0;x<w;x+=20){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,h);ctx.stroke();}
-      for(let y=0;y<h;y+=20){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke();}
-      ctx.strokeStyle="rgba(40,120,255,0.8)"; ctx.lineWidth=1;
-      const cx=w/2,cy=h/2;
-      ctx.strokeRect(cx-120,cy-60,240,120);
-      ctx.beginPath();ctx.moveTo(cx-160,cy);ctx.lineTo(cx+160,cy);ctx.stroke();
-      ctx.beginPath();ctx.moveTo(cx,cy-100);ctx.lineTo(cx,cy+100);ctx.stroke();
-      ctx.beginPath();ctx.arc(cx,cy,80,0,Math.PI*2);ctx.stroke();
-      ctx.font="11px monospace"; ctx.fillStyle="rgba(40,140,255,0.7)";
-      ctx.fillText("\u2205 160",cx+86,cy-6); ctx.fillText("240",cx-112,cy-68);
-    }
-  },
-  {
-    name: "sand / circuit",
-    base: (ctx, w, h) => {
-      ctx.fillStyle="#1c1610"; ctx.fillRect(0,0,w,h);
-      const idata=ctx.createImageData(w,h);
-      for(let i=0;i<idata.data.length;i+=4){
-        const v=Math.random()*25;
-        idata.data[i]=180+v; idata.data[i+1]=150+v; idata.data[i+2]=100+v; idata.data[i+3]=22;
-      }
-      ctx.putImageData(idata,0,0);
-    },
-    reveal: (ctx, w, h) => {
-      ctx.fillStyle="#0a0f08"; ctx.fillRect(0,0,w,h);
-      ctx.strokeStyle="rgba(80,255,120,0.7)"; ctx.lineWidth=1.5;
-      [[[80,100],[80,200],[200,200]],[[200,200],[200,300],[400,300]],
-       [[400,300],[400,180],[560,180]],[[300,100],[300,200],[500,200],[500,320],[580,320]],
-       [[120,320],[250,320],[250,160],[440,160]]].forEach(p=>{
-        ctx.beginPath(); p.forEach(([x,y],i)=>i===0?ctx.moveTo(x,y):ctx.lineTo(x,y)); ctx.stroke();
-      });
-      [[80,100],[200,200],[400,300],[300,100],[440,160],[580,320],[120,320]].forEach(([x,y])=>{
-        ctx.beginPath();ctx.arc(x,y,4,0,Math.PI*2);ctx.fillStyle="#80ff90";ctx.fill();
-      });
-    }
-  }
-];
-
-// ─── DEMO 1: Trail Mask ───
 (function(){
-  const stage = document.getElementById("stage-trail");
-  const baseCanvas = document.getElementById("base-trail");
-  const revealCanvas = document.getElementById("reveal-trail");
-  const maskCanvas = document.getElementById("maskcanvas");
-  const hint = document.getElementById("hint-trail");
-  const presetsEl = document.getElementById("presets-trail");
+  var stage = document.getElementById('xrayStage');
+  var hint = document.getElementById('xrayHint');
+  var hovering = false;
+  var mx = -999, my = -999;
+  var radius = 100;
 
-  let W, H, currentPreset = 0;
-  let brushRadius = 38, maxTrail = 55;
-  let trail = [];
-  let mouseX = -999, mouseY = -999;
-  let inside = false;
-  let smoothX = -999, smoothY = -999;
-
-  function resize() {
-    W = stage.offsetWidth; H = stage.offsetHeight;
-    baseCanvas.width = revealCanvas.width = maskCanvas.width = W;
-    baseCanvas.height = revealCanvas.height = maskCanvas.height = H;
-    drawScenes();
-  }
-
-  function drawScenes() {
-    const p = presets[currentPreset];
-    p.base(baseCanvas.getContext("2d"), W, H);
-    p.reveal(revealCanvas.getContext("2d"), W, H);
-  }
-
-  function setPreset(i) {
-    currentPreset = i;
-    presetsEl.querySelectorAll(".preset-btn").forEach((b,j)=>b.classList.toggle("active",j===i));
-    drawScenes();
-  }
-
-  presets.forEach((p,i)=>{
-    const btn = document.createElement("button");
-    btn.className = "preset-btn"+(i===0?" active":"");
-    btn.textContent = p.name;
-    btn.onclick = ()=>setPreset(i);
-    presetsEl.appendChild(btn);
-  });
-
-  stage.addEventListener("mousemove", e => {
-    const r = stage.getBoundingClientRect();
-    mouseX = e.clientX - r.left;
-    mouseY = e.clientY - r.top;
-    inside = true;
-    hint.style.opacity = "0";
-  });
-
-  stage.addEventListener("mouseleave", () => { inside = false; hint.style.opacity = "1"; });
-
-  document.getElementById("radius-trail").addEventListener("input", e => {
-    brushRadius = parseInt(e.target.value);
-    document.getElementById("radius-trail-out").textContent = brushRadius+"px";
-  });
-  document.getElementById("traillen").addEventListener("input", e => {
-    maxTrail = parseInt(e.target.value);
-    document.getElementById("trail-out").textContent = maxTrail;
-  });
-
-  function lerp(a, b, t) { return a + (b-a)*t; }
-
-  function buildMaskURL() {
-    const mctx = maskCanvas.getContext("2d");
-    mctx.clearRect(0, 0, W, H);
-    for (let i = 0; i < trail.length; i++) {
-      const t = i / (trail.length - 1 || 1);
-      const alpha = t * t;
-      const r = brushRadius * (0.4 + t * 0.6);
-      const grd = mctx.createRadialGradient(trail[i].x, trail[i].y, 0, trail[i].x, trail[i].y, r);
-      grd.addColorStop(0,   `rgba(0,0,0,${(alpha).toFixed(3)})`);
-      grd.addColorStop(0.5, `rgba(0,0,0,${(alpha * 0.6).toFixed(3)})`);
-      grd.addColorStop(1,   "rgba(0,0,0,0)");
-      mctx.fillStyle = grd;
-      mctx.beginPath();
-      mctx.arc(trail[i].x, trail[i].y, r, 0, Math.PI*2);
-      mctx.fill();
+  function applyMasks(){
+    var topEnabled = -1;
+    for(var i=3;i>=1;i--){
+      var c = document.querySelector('[data-layer="'+i+'"]');
+      if(c && c.checked){ topEnabled = i; break; }
     }
-    const url = maskCanvas.toDataURL();
-    revealCanvas.style.webkitMaskImage = `url(${url})`;
-    revealCanvas.style.maskImage = `url(${url})`;
-    revealCanvas.style.webkitMaskSize = `${W}px ${H}px`;
-    revealCanvas.style.maskSize = `${W}px ${H}px`;
-    revealCanvas.style.webkitMaskRepeat = "no-repeat";
-    revealCanvas.style.maskRepeat = "no-repeat";
-  }
-
-  function animate() {
-    requestAnimationFrame(animate);
-    if (inside) {
-      smoothX = smoothX < -900 ? mouseX : lerp(smoothX, mouseX, 0.18);
-      smoothY = smoothY < -900 ? mouseY : lerp(smoothY, mouseY, 0.18);
-      trail.push({ x: smoothX, y: smoothY });
-    }
-    if (trail.length > maxTrail) trail.splice(0, trail.length - maxTrail);
-    if (trail.length > 0) {
-      buildMaskURL();
-    } else {
-      revealCanvas.style.webkitMaskImage = "none";
-      revealCanvas.style.maskImage = "none";
-    }
-    if (!inside) {
-      trail.splice(0, Math.ceil(trail.length * 0.06) + 1);
-      if (trail.length === 0) { smoothX = -999; smoothY = -999; }
+    for(var i=1;i<=3;i++){
+      var el = document.getElementById('layer-'+i);
+      var cb = document.querySelector('[data-layer="'+i+'"]');
+      if(!el||!cb) continue;
+      if(!cb.checked){
+        el.style.opacity = '0';
+        el.style.webkitMaskImage = 'none';
+        el.style.maskImage = 'none';
+      } else if(i === topEnabled && hovering){
+        var grads = 'radial-gradient(circle '+radius+'px at '+mx+'px '+my+'px, transparent 0%, transparent 40%, black 100%)';
+        el.style.opacity = '1';
+        el.style.webkitMaskImage = grads;
+        el.style.maskImage = grads;
+      } else {
+        el.style.opacity = '1';
+        el.style.webkitMaskImage = 'none';
+        el.style.maskImage = 'none';
+      }
     }
   }
 
-  resize();
-  window.addEventListener("resize", resize);
-  animate();
-})();
-
-// ─── DEMO 2: Hover Reveal ───
-(function(){
-  const stage = document.getElementById("stage-hover");
-  const baseCanvas = document.getElementById("base-hover");
-  const revealCanvas = document.getElementById("reveal-hover");
-  const hint = document.getElementById("hint-hover");
-  const presetsEl = document.getElementById("presets-hover");
-
-  let W, H, currentPreset = 0, radius = 120;
-
-  function resize() {
-    W = stage.offsetWidth; H = stage.offsetHeight;
-    baseCanvas.width = revealCanvas.width = W;
-    baseCanvas.height = revealCanvas.height = H;
-    draw();
+  function updateModeLabels(){
+    for(var i=1;i<=3;i++){
+      var cb = document.querySelector('[data-layer="'+i+'"]');
+      var mode = document.getElementById('mode-'+i);
+      if(!cb||!mode) continue;
+      if(!cb.checked){
+        mode.textContent = 'Off';
+        mode.classList.add('off');
+      } else {
+        mode.textContent = 'Hover to reveal';
+        mode.classList.remove('off');
+      }
+    }
   }
 
-  function draw() {
-    const p = presets[currentPreset];
-    p.base(baseCanvas.getContext("2d"), W, H);
-    p.reveal(revealCanvas.getContext("2d"), W, H);
-  }
+  stage.addEventListener('mouseenter', function(){ hovering = true; hint.style.opacity = '0'; applyMasks(); });
+  stage.addEventListener('mouseleave', function(){ hovering = false; hint.style.opacity = '1'; applyMasks(); });
 
-  function setPreset(i) {
-    currentPreset = i;
-    presetsEl.querySelectorAll(".preset-btn").forEach((b,j)=>b.classList.toggle("active",j===i));
-    draw();
-  }
-
-  presets.forEach((p,i)=>{
-    const btn = document.createElement("button");
-    btn.className = "preset-btn"+(i===0?" active":"");
-    btn.textContent = p.name;
-    btn.onclick = ()=>setPreset(i);
-    presetsEl.appendChild(btn);
+  stage.addEventListener('mousemove', function(e){
+    var r = stage.getBoundingClientRect();
+    mx = e.clientX - r.left;
+    my = e.clientY - r.top;
+    applyMasks();
   });
 
-  stage.addEventListener("mousemove", e => {
-    const r = stage.getBoundingClientRect();
-    const mx = e.clientX - r.left;
-    const my = e.clientY - r.top;
-    revealCanvas.style.setProperty("--mx", mx+"px");
-    revealCanvas.style.setProperty("--my", my+"px");
-    revealCanvas.style.webkitMaskImage = `radial-gradient(circle ${radius}px at ${mx}px ${my}px, black 30%, transparent 100%)`;
-    revealCanvas.style.maskImage = `radial-gradient(circle ${radius}px at ${mx}px ${my}px, black 30%, transparent 100%)`;
-    hint.style.opacity = "0";
+  document.querySelectorAll('[data-layer]').forEach(function(cb){
+    cb.addEventListener('change', function(){ updateModeLabels(); applyMasks(); });
   });
 
-  stage.addEventListener("mouseleave", () => {
-    revealCanvas.style.webkitMaskImage = `radial-gradient(circle ${radius}px at -200px -200px, black 30%, transparent 100%)`;
-    revealCanvas.style.maskImage = `radial-gradient(circle ${radius}px at -200px -200px, black 30%, transparent 100%)`;
-    hint.style.opacity = "1";
-  });
-
-  document.getElementById("radius-hover").addEventListener("input", e => {
-    radius = parseInt(e.target.value);
-    document.getElementById("radius-hover-out").textContent = radius+"px";
-  });
-
-  resize();
-  window.addEventListener("resize", resize);
+  updateModeLabels();
+  applyMasks();
 })();
 </script>
-
 </body>
 </html>

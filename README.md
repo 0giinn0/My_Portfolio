@@ -25,6 +25,8 @@ This is a bunch of HTML files held together by CSS, JavaScript, and sheer willpo
 
 ## The Projects (a.k.a. "Stuff I Made")
 
+### Portfolio Projects
+
 | Project | File | One-Liner |
 |---------|------|-----------|
 | **Project Artemis** | `project-artemis.html` | A mobile app that actually works. Has a chat, charts, and settings. I'm as surprised as you are. |
@@ -33,14 +35,21 @@ This is a bunch of HTML files held together by CSS, JavaScript, and sheer willpo
 | **Cipher** | `project-cipher.html` | 4 levels of "good luck hacking this." Spoiler: you can't. I tested it. |
 | **Echo Gallery** | `project-echo.html` | Drawing people who don't exist. It's called art, look it up. |
 | **Hydra AI** | `project-hydra.html` | An AI that doesn't want to take over the world. Yet. Ask it anything (except about nuclear codes). |
-| **Pulse Tracker** | `project-pulse.html` | Tracks your habits so you don't have to. Will judge you silently for skipping leg day. |
-| **X-Ray Reveal** | `project-xray.html` | Hover to peel back layers. Trail mask and CSS radial reveal — two ways to see what's beneath. Very invasive. Very cool. |
-| **NNIИ Cards** | `project-cards.html` | Custom playing card deck with original occult-eye artwork. You can play with them too. Yes, really. |
-| **Arcade** | `project-games.html` | 6 games, golden spiral navigation, Urdu Wordle. Because portfolios should have a fun side. |
-| **Solitaire** | `project-solitaire.html` | Solitaire. In a portfolio. I regret nothing. |
-| **Echo Gallery** | `project-echo.html` | 80+ character illustrations and 20 animated GIFs. Drawing people who don't exist. It's called art, look it up. |
 | **Pulse Tracker** | `project-pulse.html` | Habit tracker mobile app. Will judge you silently for skipping leg day. |
-| **3D Models** | `project-mars.html` | 8 interactive 3D models in the browser + 7 MKV videos. Rotate, zoom, spin. Textures pending. Don't ask. |
+| **X-Ray Reveal** | `project-xray.html` | Hover to peel back layers. Trail mask and CSS radial reveal — two ways to see what's beneath. |
+| **NNIИ Cards** | `project-cards.html` | Custom playing card deck with original occult-eye artwork. You can play with them too. |
+| **Arcade** | `project-games.html` | 8 games, golden spiral navigation, Urdu Wordle. Because portfolios should have a fun side. |
+| **3D Models** | `project-mars.html` | 10 interactive 3D models in the browser. Rotate, zoom, spin. Three.js powered. |
+
+### GitHub Projects
+
+| Project | Link | One-Liner |
+|---------|------|-----------|
+| **Giinn** | [github.com/0giinn0/giinn](https://github.com/0giinn0/giinn) | AI-powered developer CLI with multi-agent builds, RAG memory, fine-tuning, 3D previews, and mobile APK builds. |
+| **Aud.io** | [github.com/0giinn0/Aud.io](https://github.com/0giinn0/Aud.io) | Flutter music player with golden spiral navigation, bento box UI, 7 themes. Node.js server with yt-dlp. |
+| **PhreeDee** | [github.com/0giinn0/Pfree_Dee](https://github.com/0giinn0/Pfree_Dee) | Local AI-powered 3D mesh generation — converts images into 3D models using Hunyuan3D on your GPU. |
+| **AR Deko** | [github.com/0giinn0/Placement_AR](https://github.com/0giinn0/Placement_AR) | AR room redecorator — place furniture in your real space before buying. React + Three.js + WebXR. |
+| **Rou Tein** | [github.com/0giinn0/Rou_Tein](https://github.com/0giinn0/Rou_Tein) | Habit tracking application — build consistency, track streaks, and stay on top of your goals. In development. |
 
 ---
 
@@ -50,9 +59,6 @@ This is a bunch of HTML files held together by CSS, JavaScript, and sheer willpo
 |------|-----------|-------------------|
 | `xray_trail_mask.html` | Trail mask reveal effect | Yes. Move your mouse around. You'll get it. |
 | `xray_hover_effect.html` | Hover reveal effect | Also yes. Same vibe, different flavor. |
-| `globe.html` | Old globe experiment | Nah, `journey.html` does it better now. This is the B-side. |
-| `countries-110m.json` | World topology data | Only if you're a nerd. Which, honestly, you are if you're reading this. |
-| `habit-ref.jpg` | Reference image for Pulse | It's a JPG. What do you want from me? |
 
 ---
 
@@ -60,10 +66,9 @@ This is a bunch of HTML files held together by CSS, JavaScript, and sheer willpo
 
 | Folder | Contains | vibe |
 |--------|----------|------|
-| `3D Models/` | GLB files + MKV videos | Very three-dimensional. Textures TBD. |
+| `3D Models/` | GLB files | Very three-dimensional. |
 | `Drawings/` | 80+ PNGs + 20 GIFs | Pencil go brrr |
 | `Cards/` | Playing card images | Occult vibes, 52 cards, one tuck box |
-| `pulse_app/` | Flutter source + web build | The habit tracker, but make it mobile |
 | `XRAY CSS image/` | Dark/light mode overlays | For the project card x-ray thing. You saw it. You liked it. |
 
 ---
@@ -147,9 +152,8 @@ Things this uses:
 ├── skills.html                 # The "I know stuff" room
 ├── resume.html                 # The "please hire me" room
 ├── contact.html                # The "talk to me" room
-├── minimal_loading_screen_v5.html  # The dramatic entrance
 ├── project-artemis.html        # Individual project rooms
-├── project-atlas.html          # (there are 8 of them)
+├── project-atlas.html          # (there are a bunch of them)
 ├── project-cipher.html         # (I'm not listing all of them)
 ├── project-echo.html           # (you get the idea)
 ├── project-flux.html
@@ -158,16 +162,10 @@ Things this uses:
 ├── project-xray.html
 ├── project-cards.html
 ├── project-games.html
-├── project-solitaire.html
 ├── project-mars.html           # 3D model viewer (Three.js)
-├── xray_trail_mask.html        # The weird experiments corner
-├── xray_hover_effect.html      # (also weird)
-├── globe.html                  # (retired, but still alive)
-├── countries-110m.json         # The globe's cheat sheet
-├── 3D Models/                  # GLBs + MKV videos. Very spiky.
+├── 3D Models/                  # GLBs. Very spiky.
 ├── Drawings/                   # 80+ PNGs + 20 GIFs. Very inky.
 ├── Cards/                      # Playing card images. Very shuffly.
-├── pulse_app/                  # Flutter source + web build. Very mobile.
 ├── XRAY CSS image/             # The x-ray overlays
 └── README.md                   # This file. You're reading it. Hi.
 ```
