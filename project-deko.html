@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AR Deko — Room Redecorator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0a0a;--surface:#111111;--surface-2:#1a1a1a;--surface-3:#242424;--text:#d0d0d0;--text-secondary:#999999;--text-muted:#666666;--border:#222222;--border-light:#2a2a2a;--nav-bg:rgba(10,10,10,0.85);--nav-border:rgba(34,34,34,0.5);--font-mono:'SF Mono','Fira Code','Cascadia Code',monospace;--accent:#3b82f6;--accent-light:#60a5fa;--accent-dark:#2563eb}
+body{font-family:var(--font-mono);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+.top-nav{position:fixed;top:0;left:0;right:0;z-index:100;height:48px;display:flex;align-items:center;background:var(--nav-bg);backdrop-filter:blur(24px) saturate(180%);-webkit-backdrop-filter:blur(24px) saturate(180%);border-bottom:1px solid var(--nav-border)}
+.nav-inner{max-width:1200px;margin:0 auto;width:100%;display:flex;align-items:center;justify-content:space-between;padding:0 24px}
+.nav-brand{display:flex;align-items:center;gap:8px;text-decoration:none;color:var(--text)}
+.nav-avatar{width:28px;height:28px;border-radius:4px;background:var(--surface-2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;color:var(--text-muted);font-family:var(--font-mono)}
+.nav-name{font-size:12px;font-weight:500;letter-spacing:.02em;text-transform:uppercase}
+.nav-links{display:flex;align-items:center;gap:2px}
+.nav-link{padding:4px 10px;border-radius:4px;text-decoration:none;color:var(--text-muted);font-size:11px;font-weight:400;transition:all .2s;font-family:var(--font-mono)}
+.nav-link:hover{color:var(--text);background:var(--surface-2)}
+.nav-link.active{color:var(--accent);background:var(--surface-2)}
+.nav-actions{display:flex;align-items:center;gap:6px}
+.nav-cta{padding:5px 12px;border-radius:4px;background:transparent;color:var(--accent);border:1px solid var(--border);text-decoration:none;font-size:10px;font-weight:400;transition:all .2s;font-family:var(--font-mono);text-transform:uppercase;letter-spacing:.05em}
+.nav-cta:hover{background:var(--surface-2);border-color:var(--accent)}
+@media(max-width:768px){.nav-links{display:none}.nav-inner{padding:12px 20px}}
+
+.container{max-width:1100px;margin:0 auto;padding:80px 32px 40px}
+.page-label{font-size:12px;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:.2em;margin-bottom:12px;display:flex;align-items:center;gap:12px}
+.page-label::before{content:'';width:32px;height:1px;background:var(--accent)}
+.page-title{font-size:clamp(28px,5vw,48px);font-weight:900;letter-spacing:-.03em;margin-bottom:8px}
+.page-title .accent{color:var(--accent)}
+.page-sub{font-size:16px;color:var(--text-secondary);max-width:700px;line-height:1.8;margin-bottom:40px}
+
+.hero-banner{width:100%;aspect-ratio:16/7;background:linear-gradient(135deg,var(--surface) 0%,#0a1528 50%,var(--surface-2) 100%);border:1px solid var(--border);border-radius:12px;margin-bottom:40px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.hero-banner::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 60% 40%,rgba(59,130,246,.08) 0%,transparent 60%)}
+.hero-banner .hero-text{position:relative;z-index:1;text-align:center}
+.hero-banner .hero-text h2{font-size:clamp(20px,3vw,32px);font-weight:800;margin-bottom:8px}
+.hero-banner .hero-text p{font-size:14px;color:var(--text-secondary)}
+
+.platform-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:32px}
+@media(max-width:768px){.platform-row{grid-template-columns:1fr}}
+.platform-card{padding:20px;border-radius:8px;background:var(--surface);border:1px solid var(--border);text-align:center}
+.platform-card .platform-icon{font-size:32px;margin-bottom:8px}
+.platform-card .platform-name{font-size:14px;font-weight:600;margin-bottom:4px}
+.platform-card .platform-desc{font-size:11px;color:var(--text-muted)}
+
+.section{margin-bottom:40px}
+.section-label{font-size:11px;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:.15em;margin-bottom:16px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+.section p{font-size:14px;color:var(--text-secondary);line-height:1.8;margin-bottom:12px}
+.section p .snark{color:var(--text-muted);font-style:italic}
+
+.feature-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;margin-bottom:16px}
+.feature-card{padding:20px;border-radius:8px;background:var(--surface);border:1px solid var(--border);transition:all .2s}
+.feature-card:hover{border-color:var(--accent);background:var(--surface-2)}
+.feature-card h3{font-size:14px;font-weight:600;margin-bottom:6px;color:var(--text)}
+.feature-card p{font-size:12px;color:var(--text-secondary);line-height:1.6}
+
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:32px}
+.stat-card{padding:20px;border-radius:8px;background:var(--surface);border:1px solid var(--border);text-align:center}
+.stat-card .stat-num{font-size:28px;font-weight:800;color:var(--accent);margin-bottom:4px}
+.stat-card .stat-label{font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.1em}
+
+.code-block{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:20px;margin-bottom:16px;overflow-x:auto}
+.code-block code{font-family:var(--font-mono);font-size:13px;color:var(--accent-light);line-height:1.7}
+.code-block .comment{color:var(--text-muted)}
+.code-block .command{color:var(--text)}
+
+.tech-stack{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+.tech-tag{padding:6px 14px;border-radius:4px;background:var(--surface);border:1px solid var(--border);font-size:12px;color:var(--text-secondary)}
+.tech-tag:hover{border-color:var(--accent);color:var(--text)}
+
+.repo-cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:32px;margin-bottom:40px}
+.btn{padding:12px 24px;border-radius:6px;font-family:var(--font-mono);font-size:12px;font-weight:500;cursor:pointer;transition:all .2s;text-decoration:none;display:inline-flex;align-items:center;gap:8px;border:1px solid var(--border);text-transform:uppercase;letter-spacing:.05em}
+.btn-primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+.btn-primary:hover{background:var(--accent-dark);transform:translateY(-1px)}
+.btn-secondary{background:transparent;color:var(--text-muted);border-color:var(--border)}
+.btn-secondary:hover{color:var(--text);border-color:var(--border-light)}
+
+.footer{max-width:1100px;margin:0 auto;padding:28px 32px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.footer-text{font-size:11px;color:var(--text-muted)}
+.footer-links{display:flex;gap:10px}
+.footer-link{font-size:11px;color:var(--text-muted);text-decoration:none;transition:color .2s}
+.footer-link:hover{color:var(--accent)}
+</style>
+</head>
+<body>
+<nav class="top-nav"><div class="nav-inner"><a href="index.html" class="nav-brand"><div class="nav-avatar">OB</div><span class="nav-name">Omer Bin Asif</span></a><div class="nav-links"><a href="index.html" class="nav-link">Home</a><a href="projects.html" class="nav-link active">Work</a><a href="skills.html" class="nav-link">Skills</a><a href="journey.html" class="nav-link">Journey</a><a href="resume.html" class="nav-link">CV</a><a href="contact.html" class="nav-link">Contact</a></div><div class="nav-actions"><a href="contact.html" class="nav-cta">Let's Talk</a></div></div></nav>
+
+<div class="container">
+  <div class="page-label">GitHub Project</div>
+  <h1 class="page-title">AR <span class="accent">Deko</span></h1>
+  <p class="page-sub">Place furniture in your real space before buying. Because "imagining how it looks" hasn't worked since you were 5.</p>
+
+  <div class="hero-banner">
+    <div class="hero-text">
+      <h2>📱 Point. Tap. Decorate.</h2>
+      <p>WebXR meets interior design. Your phone camera becomes a furniture showroom. IKEA is sweating.</p>
+    </div>
+  </div>
+
+  <div class="platform-row">
+    <div class="platform-card">
+      <div class="platform-icon">🤖</div>
+      <div class="platform-name">Android</div>
+      <div class="platform-desc">Full AR with WebXR + hit-test API. Tap surfaces to place furniture. The real deal.</div>
+    </div>
+    <div class="platform-card">
+      <div class="platform-icon">🍎</div>
+      <div class="platform-name">iOS</div>
+      <div class="platform-desc">Camera-based AR with estimated depth. Apple didn't give us ARKit access, so we improvised.</div>
+    </div>
+    <div class="platform-card">
+      <div class="platform-icon">🖥️</div>
+      <div class="platform-name">Desktop</div>
+      <div class="platform-desc">3D viewer with mouse controls. For when you want to plan your room from the comfort of your desk.</div>
+    </div>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-card"><div class="stat-num">20+</div><div class="stat-label">3D Models</div></div>
+    <div class="stat-card"><div class="stat-num">PWA</div><div class="stat-label">Installable</div></div>
+    <div class="stat-card"><div class="stat-num">0</div><div class="stat-label">App Store Required</div></div>
+    <div class="stat-card"><div class="stat-num">3</div><div class="stat-label">Platforms</div></div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">What It Does</div>
+    <p>AR Deko is a web-based AR room redecorator. Point your phone at a flat surface, tap to place furniture, drag to move, rotate and scale. Browse a catalog of 20+ 3D models across categories (seating, tables, storage, lighting, decor). Measure distances in AR. Save and load room layouts. Upload custom 3D models. Change colors and materials. It's a full interior design toolkit that runs in your browser.</p>
+    <p class="snark">"Why not just use IKEA's AR app?" — Because IKEA's app only shows IKEA furniture. This shows whatever you want. Also, we don't try to sell you a meatball at the end. Though that could be a future feature.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Features</div>
+    <div class="feature-grid">
+      <div class="feature-card">
+        <h3>🎯 AR Furniture Placement</h3>
+        <p>Tap detected surfaces to place furniture. Real-world scale with accurate measurements. Support for multiple categories — sofas, chairs, tables, lamps, plants. Your floor is the canvas.</p>
+      </div>
+      <div class="feature-card">
+        <h3>🔄 Object Manipulation</h3>
+        <p>Drag to move. Pinch to rotate. Two-finger tap to scale. Change colors and materials on the fly. It's like playing The Sims, except the furniture is actually in your room.</p>
+      </div>
+      <div class="feature-card">
+        <h3>📐 Measurement Tools</h3>
+        <p>Place measurement points, calculate distances between points, support for metric and imperial. Because "will this couch fit?" is a question you should answer before buying, not after.</p>
+      </div>
+      <div class="feature-card">
+        <h3>💾 Save & Load</h3>
+        <p>Save room layouts locally. Load previously saved arrangements. Export/import as JSON. Because you don't want to re-place 15 items every time you open the app.</p>
+      </div>
+      <div class="feature-card">
+        <h3>📤 Custom Model Upload</h3>
+        <p>Upload your own 3D models. Record video of real objects and generate 3D models using cloud photogrammetry. Because the 20 built-in models might not include that weird lamp your aunt gave you.</p>
+      </div>
+      <div class="feature-card">
+        <h3>📲 PWA Installable</h3>
+        <p>Add to home screen on any platform. No app store needed. No review process. No waiting 3 days for Apple to approve your furniture app. Just tap, install, done.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Quick Start</div>
+    <div class="code-block"><code><span class="comment"># Clone</span>
+<span class="command">git clone https://github.com/0giinn0/Placement_AR.git</span>
+<span class="command">cd Placement_AR</span>
+
+<span class="comment"># Install</span>
+<span class="command">npm install</span>
+
+<span class="comment"># Dev server</span>
+<span class="command">npm run dev</span>
+
+<span class="comment"># Build for production</span>
+<span class="command">npm run build</span></code></div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Tech Stack</div>
+    <div class="tech-stack">
+      <span class="tech-tag">React</span>
+      <span class="tech-tag">TypeScript</span>
+      <span class="tech-tag">Three.js</span>
+      <span class="tech-tag">React Three Fiber</span>
+      <span class="tech-tag">@react-three/xr</span>
+      <span class="tech-tag">@react-three/drei</span>
+      <span class="tech-tag">WebXR</span>
+      <span class="tech-tag">Vite</span>
+      <span class="tech-tag">Tailwind CSS</span>
+      <span class="tech-tag">PWA</span>
+    </div>
+  </div>
+
+  <div class="repo-cta">
+    <a href="https://github.com/0giinn0/Placement_AR" target="_blank" class="btn btn-primary">View on GitHub →</a>
+    <a href="projects.html" class="btn btn-secondary">← Back to Work</a>
+  </div>
+</div>
+
+<footer class="footer"><span class="footer-text">© 2026 Omer Bin Asif</span><div class="footer-links"><a href="index.html" class="footer-link">Home</a><a href="projects.html" class="footer-link">Work</a><a href="contact.html" class="footer-link">Contact</a></div></footer>
+</body>
+</html>
