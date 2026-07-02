@@ -7,365 +7,106 @@
 <style>
   *{margin:0;padding:0;box-sizing:border-box}
   html,body{height:100%;width:100%;overflow:hidden}
-  body{background:#000}
-  @media (prefers-color-scheme:light){body{background:#fafaf6}}
+  body{background:#0a0a0a}
   #globe{position:fixed;inset:0}
-  canvas{display:block;width:100%!important;height:100%!important}
 </style>
 </head>
 <body>
 <div id="globe"></div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/topojson-client@3"></script>
+<script src="https://cdn.jsdelivr.net/npm/globe.gl"></script>
 <script>
 (function(){
   'use strict';
 
-  // ─── Config ───
-  var visitedCountryIds = [528, 156, 276, 392];
-  var autoRotateSpeed = 0.003;
-  var initialRotationY = Math.PI;   // 180° flip
-  var initialRotationX = 0;
+  var container = document.getElementById('globe');
+  if (!container) return;
 
-  function isLightTheme() {
-    return !!(window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches);
-  }
+  var VISITED_IDS = [586, 784, 276, 442, 528, 512, 634];
 
-  (function(){
-    var container = document.getElementById('globe');
-    if (!container || typeof THREE === 'undefined') return;
+  var CITIES = [
+    { lat: 33.6844, lng: 73.0479, label: 'Islamabad', color: '#f59e0b' },
+    { lat: 24.8607, lng: 67.0011, label: 'Karachi', color: '#f59e0b' },
+    { lat: 24.4539, lng: 54.3773, label: 'Abu Dhabi', color: '#10b981' },
+    { lat: 25.2048, lng: 55.2708, label: 'Dubai', color: '#10b981' },
+    { lat: 50.7374, lng: 7.0982, label: 'Bonn', color: '#3b82f6' },
+    { lat: 52.5200, lng: 13.4050, label: 'Berlin', color: '#3b82f6' },
+    { lat: 49.6117, lng: 6.1319, label: 'Luxembourg', color: '#8b5cf6' },
+    { lat: 52.3676, lng: 4.9041, label: 'Amsterdam', color: '#60a5fa' },
+    { lat: 23.5880, lng: 58.3829, label: 'Muscat', color: '#f97316' },
+    { lat: 25.2854, lng: 51.5310, label: 'Doha', color: '#10b981' }
+  ];
 
-    function latLonToVec3(lat,lon,r){
-      var phi=(90-lat)*Math.PI/180, theta=(lon+180)*Math.PI/180;
-      return new THREE.Vector3(-r*Math.sin(phi)*Math.cos(theta),r*Math.cos(phi),r*Math.sin(phi)*Math.sin(theta));
-    }
+  var ARCS = [
+    { startLat: 33.6844, startLng: 73.0479, endLat: 24.4539, endLng: 54.3773, color: '#f59e0b' },
+    { startLat: 24.4539, startLng: 54.3773, endLat: 25.2048, endLng: 55.2708, color: '#10b981' },
+    { startLat: 25.2048, startLng: 55.2708, endLat: 50.7374, endLng: 7.0982, color: '#3b82f6' },
+    { startLat: 50.7374, startLng: 7.0982, endLat: 49.6117, endLng: 6.1319, color: '#8b5cf6' },
+    { startLat: 50.7374, startLng: 7.0982, endLat: 52.3676, endLng: 4.9041, color: '#60a5fa' },
+    { startLat: 25.2048, startLng: 55.2708, endLat: 23.5880, endLng: 58.3829, color: '#f97316' },
+    { startLat: 25.2048, startLng: 55.2708, endLat: 25.2854, endLng: 51.5310, color: '#10b981' }
+  ];
 
-    // Gore configuration: 12 vertical strips, each 30° wide
-    var GORE_COUNT     = 12;
-    var GORE_WIDTH_DEG = 360 / GORE_COUNT;
-    var GORE_TEX_W     = 128;
-    var GORE_TEX_H     = 512;
-    var RADIUS         = 1;
-    var LON_SEG        = 4;
-    var LAT_SEG        = 64;
+  fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json')
+    .then(function(r) { return r.json(); })
+    .then(function(top) {
+      var countries = topojson.feature(top, top.objects.countries).features;
 
-    var countryFeatures = null;
+      var globe = new Globe(container)
+        .width(container.clientWidth)
+        .height(container.clientHeight)
+        .backgroundColor('#0a0a0a')
+        .globeImageUrl('https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-dark.jpg')
+        .showGraticules(true)
+        .showAtmosphere(true)
+        .atmosphereColor('#f59e0b')
+        .atmosphereAltitude(0.15)
+        .polygonsData(countries)
+        .polygonCapColor(function(f) {
+          return VISITED_IDS.includes(Number(f.id)) ? 'rgba(245,158,11,0.85)' : 'rgba(58,58,74,0.5)';
+        })
+        .polygonSideColor(function() { return 'rgba(0,0,0,0.02)'; })
+        .polygonStrokeColor(function(f) {
+          return VISITED_IDS.includes(Number(f.id)) ? '#fbbf24' : '#4a4a5a';
+        })
+        .polygonAltitude(0.005)
+        .pointsData(CITIES)
+        .pointLat('lat')
+        .pointLng('lng')
+        .pointColor('color')
+        .pointAltitude(0.07)
+        .pointRadius(0.4)
+        .pointsMerge(true)
+        .labelsData(CITIES)
+        .labelLat('lat')
+        .labelLng('lng')
+        .labelText('label')
+        .labelColor('color')
+        .labelSize(0.45)
+        .labelDotRadius(0.2)
+        .labelDotOrientation(function() { return 'bottom'; })
+        .arcsData(ARCS)
+        .arcStartLat('startLat')
+        .arcStartLng('startLng')
+        .arcEndLat('endLat')
+        .arcEndLng('endLng')
+        .arcColor('color')
+        .arcAltitude(0.25)
+        .arcDashLength(0.35)
+        .arcDashGap(0.5)
+        .arcDashAnimateTime(2500);
 
-    // Build texture for a single gore. Each gore is a vertical strip showing
-    // only the land that falls within its longitude range.
-    function genGoreTexture(goreIndex, features) {
-      var c = document.createElement('canvas');
-      c.width = GORE_TEX_W;
-      c.height = GORE_TEX_H;
-      var cx = c.getContext('2d');
+      var controls = globe.controls();
+      controls.autoRotate = true;
+      controls.autoRotateSpeed = 0.8;
+      controls.enableZoom = false;
 
-      var light = isLightTheme();
-      cx.fillStyle = light ? '#e8e8ec' : '#0a0e1a';
-      cx.fillRect(0, 0, GORE_TEX_W, GORE_TEX_H);
-
-      if (!features) return c;
-
-      var goreStartLon = goreIndex * GORE_WIDTH_DEG - 180;
-
-      function project(lon, lat) {
-        while (lon < -180) lon += 360;
-        while (lon > 180) lon -= 360;
-        if (lon < goreStartLon || lon >= goreStartLon + GORE_WIDTH_DEG) return null;
-        var x = (lon - goreStartLon) / GORE_WIDTH_DEG * GORE_TEX_W;
-        var y = (90 - lat) / 180 * GORE_TEX_H;
-        return [x, y];
+      function resize() {
+        globe.width(container.clientWidth).height(container.clientHeight);
       }
-
-      function traceRing(ring) {
-        var pts = [];
-        for (var i = 0; i < ring.length; i++) {
-          var p = project(ring[i][0], ring[i][1]);
-          if (p) pts.push(p);
-        }
-        return pts;
-      }
-
-      function addSubpath(pts) {
-        if (pts.length < 3) return;
-        cx.moveTo(pts[0][0], pts[0][1]);
-        for (var k = 1; k < pts.length; k++) cx.lineTo(pts[k][0], pts[k][1]);
-        cx.closePath();
-      }
-
-      function drawFeature(feature, fillStyle, strokeStyle) {
-        var g = feature.geometry;
-        if (!g) return;
-        var polys = g.type === 'Polygon' ? [g.coordinates] : g.coordinates;
-        for (var p = 0; p < polys.length; p++) {
-          cx.beginPath();
-          addSubpath(traceRing(polys[p][0]));
-          for (var h = 1; h < polys[p].length; h++) {
-            addSubpath(traceRing(polys[p][h]));
-          }
-          cx.fillStyle = fillStyle;
-          cx.fill('evenodd');
-          if (strokeStyle) {
-            cx.strokeStyle = strokeStyle;
-            cx.lineWidth = 0.6;
-            cx.stroke();
-          }
-        }
-      }
-
-      var landFill  = light ? '#c8c8d0' : '#3a3a4a';
-      var visitFill = light ? '#d97706' : '#f59e0b';
-      var visitEdge = light ? '#92400e' : '#d97706';
-
-      for (var i = 0; i < features.length; i++) {
-        drawFeature(features[i], landFill, null);
-      }
-
-      var vis = {};
-      for (var i = 0; i < visitedCountryIds.length; i++) vis[visitedCountryIds[i]] = true;
-      for (var i = 0; i < features.length; i++) {
-        if (!vis[features[i].id]) continue;
-        drawFeature(features[i], visitFill, visitEdge);
-      }
-
-      return c;
-    }
-
-    // Build geometry for one gore: a vertical strip on the sphere
-    function buildGoreGeometry(goreIndex) {
-      var goreStartLon = goreIndex * GORE_WIDTH_DEG - 180;
-      var positions = [];
-      var uvs = [];
-      var indices = [];
-
-      // Three.js CanvasTexture has flipY=true by default, so v=0 samples
-      // the BOTTOM of the canvas (south pole). We invert: v=1 at lat=90 (+Y).
-      for (var j = 0; j <= LAT_SEG; j++) {
-        var v = 1 - j / LAT_SEG;
-        var lat = -90 + (1 - v) * 180;
-        for (var i = 0; i <= LON_SEG; i++) {
-          var u = i / LON_SEG;
-          var lon = goreStartLon + u * GORE_WIDTH_DEG;
-          var pos = latLonToVec3(lat, lon, RADIUS);
-          positions.push(pos.x, pos.y, pos.z);
-          uvs.push(u, v);
-        }
-      }
-
-      for (var j = 0; j < LAT_SEG; j++) {
-        for (var i = 0; i < LON_SEG; i++) {
-          var a = j * (LON_SEG + 1) + i;
-          var b = a + 1;
-          var c = a + (LON_SEG + 1);
-          var d = c + 1;
-          indices.push(a, c, b);
-          indices.push(b, c, d);
-        }
-      }
-
-      var geo = new THREE.BufferGeometry();
-      geo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
-      geo.setAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2));
-      geo.setIndex(indices);
-      geo.computeVertexNormals();
-      return geo;
-    }
-
-    // Lat/lon grid as line segments
-    function buildGridGeometry() {
-      var positions = [];
-      var R_GRID = RADIUS * 1.002;
-      function pushSeg(p1, p2) {
-        positions.push(p1.x, p1.y, p1.z, p2.x, p2.y, p2.z);
-      }
-
-      var lats = [
-        { lat: 0 },
-        { lat: 23.5 },
-        { lat: -23.5 },
-        { lat: 66.5 },
-        { lat: -66.5 }
-      ];
-      for (var l = 0; l < lats.length; l++) {
-        var lat = lats[l].lat;
-        for (var lon = -180; lon < 180; lon += 2) {
-          pushSeg(
-            latLonToVec3(lat, lon, R_GRID),
-            latLonToVec3(lat, lon + 2, R_GRID)
-          );
-        }
-      }
-
-      for (var lonDeg = 0; lonDeg < 360; lonDeg += 30) {
-        var lon = lonDeg - 180;
-        for (var lat = -90; lat < 90; lat += 2) {
-          pushSeg(
-            latLonToVec3(lat, lon, R_GRID),
-            latLonToVec3(lat + 2, lon, R_GRID)
-          );
-        }
-      }
-
-      var geo = new THREE.BufferGeometry();
-      geo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
-      return geo;
-    }
-
-    // Scene
-    var scene = new THREE.Scene();
-    var camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
-    camera.position.z = 3.2;
-
-    var renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.setClearColor(0x000000, 0);
-    renderer.domElement.style.cursor = 'grab';
-    container.appendChild(renderer.domElement);
-
-    function resizeGlobe() {
-      var w = window.innerWidth, h = window.innerHeight;
-      renderer.setSize(w, h, false);
-      camera.aspect = w / h;
-      camera.updateProjectionMatrix();
-    }
-    resizeGlobe();
-    window.addEventListener('resize', resizeGlobe);
-
-    var ambient = new THREE.AmbientLight(0xffffff, 0.6);
-    scene.add(ambient);
-    var dir = new THREE.DirectionalLight(0xffffff, 0.4);
-    dir.position.set(5, 5, 5);
-    scene.add(dir);
-
-    var globeGroup = new THREE.Group();
-    globeGroup.rotation.y = initialRotationY;   // 180° flip
-    globeGroup.rotation.x = initialRotationX;
-    scene.add(globeGroup);
-
-    // Build 12 gore meshes
-    var goreMeshes = [];
-    for (var g = 0; g < GORE_COUNT; g++) {
-      var tex = new THREE.CanvasTexture(genGoreTexture(g, null));
-      tex.magFilter = THREE.LinearFilter;
-      tex.minFilter = THREE.LinearMipMapLinearFilter;
-      var mat = new THREE.MeshPhongMaterial({
-        map: tex,
-        color: 0xffffff,
-        emissive: 0x1a1a1a,
-        emissiveIntensity: 0.15,
-        transparent: true,
-        opacity: 0.95,
-        shininess: 8,
-        side: THREE.DoubleSide
-      });
-      var mesh = new THREE.Mesh(buildGoreGeometry(g), mat);
-      globeGroup.add(mesh);
-      goreMeshes.push({ mesh: mesh, tex: tex, index: g });
-    }
-
-    // Grid lines
-    var gridMat = new THREE.LineBasicMaterial({
-      color: isLightTheme() ? 0x000000 : 0xffffff,
-      transparent: true,
-      opacity: isLightTheme() ? 0.28 : 0.35
-    });
-    var gridLines = new THREE.LineSegments(buildGridGeometry(), gridMat);
-    globeGroup.add(gridLines);
-
-    // Atmosphere glow
-    var atmMat = new THREE.MeshBasicMaterial({
-      color: isLightTheme() ? 0xb45309 : 0xf59e0b,
-      transparent: true,
-      opacity: 0.05,
-      side: THREE.BackSide
-    });
-    globeGroup.add(new THREE.Mesh(new THREE.SphereGeometry(1.05, 32, 32), atmMat));
-
-    // Theme observer (prefers-color-scheme → regenerate textures + grid color)
-    function applyTheme() {
-      var light = isLightTheme();
-      gridMat.color.setHex(light ? 0x000000 : 0xffffff);
-      gridMat.opacity = light ? 0.28 : 0.35;
-      gridMat.needsUpdate = true;
-      atmMat.color.setHex(light ? 0xb45309 : 0xf59e0b);
-      if (countryFeatures) {
-        goreMeshes.forEach(function (gm) {
-          var c = genGoreTexture(gm.index, countryFeatures);
-          gm.tex.image = c;
-          gm.tex.needsUpdate = true;
-        });
-      }
-    }
-    if (window.matchMedia) {
-      var mq = window.matchMedia('(prefers-color-scheme: light)');
-      if (mq.addEventListener) mq.addEventListener('change', applyTheme);
-      else if (mq.addListener) mq.addListener(applyTheme);
-    }
-
-    // Load world data
-    fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json')
-      .then(function (r) { return r.json(); })
-      .then(function (top) {
-        var features = topojson.feature(top, top.objects.countries).features;
-        countryFeatures = features;
-        goreMeshes.forEach(function (gm) {
-          var c = genGoreTexture(gm.index, features);
-          gm.tex.image = c;
-          gm.tex.needsUpdate = true;
-        });
-      })
-      .catch(function (e) { console.warn('World data load failed:', e); });
-
-    // Drag/rotate
-    var isDragging = false;
-    var prevMouse = { x: 0, y: 0 };
-    var autoRotate = true;
-    var autoRotateTimer = null;
-
-    function onPointerDown(e) {
-      isDragging = true;
-      autoRotate = false;
-      clearTimeout(autoRotateTimer);
-      var p = e.touches ? e.touches[0] : e;
-      prevMouse = { x: p.clientX, y: p.clientY };
-    }
-    function onPointerMove(e) {
-      if (!isDragging) return;
-      var p = e.touches ? e.touches[0] : e;
-      var dx = p.clientX - prevMouse.x;
-      var dy = p.clientY - prevMouse.y;
-      globeGroup.rotation.y += dx * 0.008;
-      globeGroup.rotation.x += dy * 0.008;
-      globeGroup.rotation.x = Math.max(-0.8, Math.min(0.8, globeGroup.rotation.x));
-      prevMouse = { x: p.clientX, y: p.clientY };
-    }
-    function onPointerUp() {
-      if (isDragging) {
-        isDragging = false;
-        autoRotateTimer = setTimeout(function () { autoRotate = true; }, 3000);
-      }
-    }
-    renderer.domElement.addEventListener('mousedown', onPointerDown);
-    renderer.domElement.addEventListener('mousemove', onPointerMove);
-    renderer.domElement.addEventListener('mouseup', onPointerUp);
-    renderer.domElement.addEventListener('mouseleave', function () { isDragging = false; });
-    renderer.domElement.addEventListener('touchstart', onPointerDown, { passive: true });
-    renderer.domElement.addEventListener('touchmove', onPointerMove, { passive: true });
-    renderer.domElement.addEventListener('touchend', onPointerUp);
-    renderer.domElement.addEventListener('contextmenu', function (e) { e.preventDefault(); });
-
-    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      autoRotate = false;
-    }
-
-    function animate() {
-      requestAnimationFrame(animate);
-      if (autoRotate) globeGroup.rotation.y += autoRotateSpeed;
-      renderer.render(scene, camera);
-    }
-    animate();
-
-    window.addEventListener('beforeunload', function () { renderer.dispose(); });
-  })();
+      window.addEventListener('resize', resize);
+    })
+    .catch(function(e) { console.warn('Globe data load failed:', e); });
 })();
 </script>
 </body>

@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hex Grid — Interactive 3D Effect</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0a0a;--surface:#111111;--surface-2:#1a1a1a;--surface-3:#242424;--text:#d0d0d0;--text-secondary:#999999;--text-muted:#666666;--border:#222222;--border-light:#2a2a2a;--nav-bg:rgba(10,10,10,0.85);--nav-border:rgba(34,34,34,0.5);--font-mono:'SF Mono','Fira Code','Cascadia Code',monospace;--accent:#a855f7;--accent-light:#c084fc;--accent-dark:#9333ea}
+body{font-family:var(--font-mono);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+.top-nav{position:fixed;top:0;left:0;right:0;z-index:100;height:48px;display:flex;align-items:center;background:var(--nav-bg);backdrop-filter:blur(24px) saturate(180%);-webkit-backdrop-filter:blur(24px) saturate(180%);border-bottom:1px solid var(--nav-border)}
+.nav-inner{max-width:1200px;margin:0 auto;width:100%;display:flex;align-items:center;justify-content:space-between;padding:0 24px}
+.nav-brand{display:flex;align-items:center;gap:8px;text-decoration:none;color:var(--text)}
+.nav-avatar{width:28px;height:28px;border-radius:4px;background:var(--surface-2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;color:var(--text-muted);font-family:var(--font-mono)}
+.nav-name{font-size:12px;font-weight:500;letter-spacing:.02em;text-transform:uppercase}
+.nav-links{display:flex;align-items:center;gap:2px}
+.nav-link{padding:4px 10px;border-radius:4px;text-decoration:none;color:var(--text-muted);font-size:11px;font-weight:400;transition:all .2s;font-family:var(--font-mono)}
+.nav-link:hover{color:var(--text);background:var(--surface-2)}
+.nav-link.active{color:var(--accent);background:var(--surface-2)}
+.nav-actions{display:flex;align-items:center;gap:6px}
+.nav-cta{padding:5px 12px;border-radius:4px;background:transparent;color:var(--accent);border:1px solid var(--border);text-decoration:none;font-size:10px;font-weight:400;transition:all .2s;font-family:var(--font-mono);text-transform:uppercase;letter-spacing:.05em}
+.nav-cta:hover{background:var(--surface-2);border-color:var(--accent)}
+@media(max-width:768px){.nav-links{display:none}.nav-inner{padding:12px 20px}}
+
+#canvas-container{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0}
+canvas{display:block}
+
+.overlay{position:relative;z-index:10;pointer-events:none}
+.overlay *{pointer-events:auto}
+.container{max-width:1100px;margin:0 auto;padding:80px 32px 40px}
+.page-label{font-size:12px;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:.2em;margin-bottom:12px;display:flex;align-items:center;gap:12px}
+.page-label::before{content:'';width:32px;height:1px;background:var(--accent)}
+.page-title{font-size:clamp(28px,5vw,48px);font-weight:900;letter-spacing:-.03em;margin-bottom:8px}
+.page-title .accent{color:var(--accent)}
+.page-sub{font-size:16px;color:var(--text-secondary);max-width:700px;line-height:1.8;margin-bottom:40px}
+
+.section{margin-bottom:40px}
+.section-label{font-size:11px;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:.15em;margin-bottom:16px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+.section p{font-size:14px;color:var(--text-secondary);line-height:1.8;margin-bottom:12px}
+.section p .snark{color:var(--text-muted);font-style:italic}
+
+.feature-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;margin-bottom:16px}
+.feature-card{padding:20px;border-radius:8px;background:var(--surface);border:1px solid var(--border);transition:all .2s}
+.feature-card:hover{border-color:var(--accent);background:var(--surface-2)}
+.feature-card h3{font-size:14px;font-weight:600;margin-bottom:6px;color:var(--text)}
+.feature-card p{font-size:12px;color:var(--text-secondary);line-height:1.6}
+
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:32px}
+.stat-card{padding:20px;border-radius:8px;background:var(--surface);border:1px solid var(--border);text-align:center}
+.stat-card .stat-num{font-size:28px;font-weight:800;color:var(--accent);margin-bottom:4px}
+.stat-card .stat-label{font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.1em}
+
+.tech-stack{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+.tech-tag{padding:6px 14px;border-radius:4px;background:var(--surface);border:1px solid var(--border);font-size:12px;color:var(--text-secondary)}
+.tech-tag:hover{border-color:var(--accent);color:var(--text)}
+
+.hint{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:50;padding:8px 16px;border-radius:6px;background:rgba(17,17,17,.9);border:1px solid var(--border);font-size:11px;color:var(--text-muted);font-family:var(--font-mono);backdrop-filter:blur(12px);transition:opacity .3s}
+.hint kbd{padding:2px 6px;border-radius:3px;background:var(--surface-3);border:1px solid var(--border-light);font-size:10px;color:var(--text);margin:0 2px}
+
+.repo-cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:32px;margin-bottom:40px}
+.btn{padding:12px 24px;border-radius:6px;font-family:var(--font-mono);font-size:12px;font-weight:500;cursor:pointer;transition:all .2s;text-decoration:none;display:inline-flex;align-items:center;gap:8px;border:1px solid var(--border);text-transform:uppercase;letter-spacing:.05em}
+.btn-primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+.btn-primary:hover{background:var(--accent-dark);transform:translateY(-1px)}
+.btn-secondary{background:transparent;color:var(--text-muted);border-color:var(--border)}
+.btn-secondary:hover{color:var(--text);border-color:var(--border-light)}
+
+.footer{max-width:1100px;margin:0 auto;padding:28px 32px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.footer-text{font-size:11px;color:var(--text-muted)}
+.footer-links{display:flex;gap:10px}
+.footer-link{font-size:11px;color:var(--text-muted);text-decoration:none;transition:color .2s}
+.footer-link:hover{color:var(--accent)}
+
+.dg.ac{z-index:1000 !important}
+</style>
+</head>
+<body>
+
+<div id="canvas-container"></div>
+
+<nav class="top-nav"><div class="nav-inner"><a href="index.html" class="nav-brand"><div class="nav-avatar">OB</div><span class="nav-name">Omer Bin Asif</span></a><div class="nav-links"><a href="index.html" class="nav-link">Home</a><a href="projects.html" class="nav-link active">Work</a><a href="skills.html" class="nav-link">Skills</a><a href="journey.html" class="nav-link">Journey</a><a href="resume.html" class="nav-link">CV</a><a href="contact.html" class="nav-link">Contact</a></div><div class="nav-actions"><a href="contact.html" class="nav-cta">Let's Talk</a></div></div></nav>
+
+<div class="overlay">
+<div class="container">
+  <div class="page-label">Creative Code</div>
+  <h1 class="page-title">Hex <span class="accent">Grid</span></h1>
+  <p class="page-sub">An interactive 3D grid that reacts to your cursor. Shapes extrude, bloom glows, and you can customize everything. Press <kbd>H</kbd> to open the control panel.</p>
+
+  <div class="stats-row">
+    <div class="stat-card"><div class="stat-num">6</div><div class="stat-label">Shapes</div></div>
+    <div class="stat-card"><div class="stat-num">60</div><div class="stat-label">FPS</div></div>
+    <div class="stat-card"><div class="stat-num">1</div><div class="stat-label">Draw Call</div></div>
+    <div class="stat-card"><div class="stat-num">&infin;</div><div class="stat-label">Customizations</div></div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">What It Does</div>
+    <p>A real-time 3D grid rendered with Three.js where shapes extrude and glow based on cursor proximity. Built with instanced rendering for performance — thousands of shapes in a single draw call. Bloom post-processing adds the neon glow. dat.gui powers the hidden control panel.</p>
+    <p class="snark">"Is this just a fancy mouse follower?" — Yes. But it's a fancy mouse follower with bloom, metalness, and clearcoat. That makes it art.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Features</div>
+    <div class="feature-grid">
+      <div class="feature-card">
+        <h3>🔷 Shape Switcher</h3>
+        <p>Switch between Hexagon, Square, Triangle, Circle, Octagon, and Diamond. The grid rebuilds automatically with the correct layout for each shape.</p>
+      </div>
+      <div class="feature-card">
+        <h3>🖱️ Cursor Interaction</h3>
+        <p>Shapes extrude upward when your cursor gets close. Spring-animated lerp for smooth, bouncy movement. Configurable cursor radius and extrusion height.</p>
+      </div>
+      <div class="feature-card">
+        <h3>✨ Bloom Post-Processing</h3>
+        <p>UnrealBloomPass adds neon glow to extruded shapes. Emissive materials on active shapes bloom into the scene.</p>
+      </div>
+      <div class="feature-card">
+        <h3>🎨 Full Customization</h3>
+        <p>Control grid size, shape size, gap, camera position, colors, materials, animation speed — all from the hidden dat.gui panel.</p>
+      </div>
+      <div class="feature-card">
+        <h3>⚡ Instanced Rendering</h3>
+        <p>Thousands of shapes rendered in a single draw call using THREE.InstancedMesh. 60fps even on modest hardware.</p>
+      </div>
+      <div class="feature-card">
+        <h3>🌈 Auto-Rainbow</h3>
+        <p>Toggle auto-rainbow mode and watch the colors cycle through the spectrum. Because sometimes you just want your grid to vibe.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Tech Stack</div>
+    <div class="tech-stack">
+      <span class="tech-tag">Three.js</span>
+      <span class="tech-tag">WebGL</span>
+      <span class="tech-tag">InstancedMesh</span>
+      <span class="tech-tag">EffectComposer</span>
+      <span class="tech-tag">UnrealBloomPass</span>
+      <span class="tech-tag">dat.gui</span>
+      <span class="tech-tag">Vanilla JS</span>
+    </div>
+  </div>
+
+  <div class="repo-cta">
+    <a href="projects.html" class="btn btn-secondary">&larr; Back to Work</a>
+  </div>
+</div>
+</div>
+
+<div class="hint">Press <kbd>H</kbd> to toggle controls</div>
+
+<footer class="footer" style="position:relative;z-index:10"><span class="footer-text">&copy; 2026 Omer Bin Asif</span><div class="footer-links"><a href="index.html" class="footer-link">Home</a><a href="projects.html" class="footer-link">Work</a><a href="contact.html" class="footer-link">Contact</a></div></footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.134.0/examples/js/postprocessing/EffectComposer.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.134.0/examples/js/postprocessing/RenderPass.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.134.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.134.0/examples/js/shaders/LuminosityHighPassShader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.134.0/examples/js/shaders/CopyShader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.134.0/examples/js/postprocessing/ShaderPass.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dat.gui@0.7.9/build/dat.gui.min.js"></script>
+<script>
+(function(){
+  var container=document.getElementById('canvas-container');
+  var W=window.innerWidth,H=window.innerHeight;
+
+  var scene=new THREE.Scene();
+  scene.background=new THREE.Color(0x050508);
+  scene.fog=new THREE.FogExp2(0x050508,0.012);
+
+  var camera=new THREE.PerspectiveCamera(50,W/H,0.1,1000);
+  camera.position.set(0,0,60);
+
+  var renderer=new THREE.WebGLRenderer({antialias:true});
+  renderer.setSize(W,H);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+  renderer.toneMapping=THREE.ReinhardToneMapping;
+  renderer.toneMappingExposure=1.2;
+  container.appendChild(renderer.domElement);
+
+  var ambient=new THREE.AmbientLight(0x222233,0.5);
+  scene.add(ambient);
+  var dirLight=new THREE.DirectionalLight(0xffffff,0.8);
+  dirLight.position.set(20,40,30);
+  scene.add(dirLight);
+  var pointLight=new THREE.PointLight(0x7c3aed,1.5,100);
+  pointLight.position.set(0,10,20);
+  scene.add(pointLight);
+
+  var composer=new THREE.EffectComposer(renderer);
+  composer.addPass(new THREE.RenderPass(scene,camera));
+  var bloomPass=new THREE.UnrealBloomPass(new THREE.Vector2(W,H),1.2,0.6,0.15);
+  composer.addPass(bloomPass);
+
+  var params={
+    shapeType:'Hexagon',gridSize:40,shapeSize:3,gap:0.25,offsetRows:true,
+    cameraZ:60,cameraFOV:50,cursorRadius:21.631,extrusionHeight:7.935,
+    lightIntensity:1,pulseSpeed:104.36,waveIntensity:0,springSpeed:0.05,
+    baseColor:'#0a0a0a',neonColor:'#ffffff',secondaryColor:'#5500ff',autoRainbow:false,
+    bloomStrength:1.16,metalness:0.8,clearcoat:1,coatRoughness:0.1
+  };
+
+  var gui=new dat.gui.GUI({width:280});
+  var fGrid=gui.addFolder('Grid');
+  fGrid.add(params,'shapeType',['Hexagon','Square','Triangle','Circle','Octagon','Diamond']).name('Shape Type').onChange(rebuildGrid);
+  fGrid.add(params,'gridSize',5,80,1).name('Grid Size').onChange(rebuildGrid);
+  fGrid.add(params,'shapeSize',0.5,10,0.1).name('Shape Size').onChange(rebuildGrid);
+  fGrid.add(params,'gap',0,2,0.01).name('Gap').onChange(rebuildGrid);
+  fGrid.add(params,'offsetRows').name('Offset Rows').onChange(rebuildGrid);
+  var fScene=gui.addFolder('Scene & Interaction');
+  fScene.add(params,'cameraZ',10,200,1).name('Camera Z').onChange(function(v){camera.position.z=v});
+  fScene.add(params,'cameraFOV',10,120,1).name('Camera FOV').onChange(function(v){camera.fov=v;camera.updateProjectionMatrix()});
+  fScene.add(params,'cursorRadius',1,60,0.1).name('Cursor Radius');
+  fScene.add(params,'extrusionHeight',0,30,0.1).name('Extrusion Height');
+  fScene.add(params,'lightIntensity',0,5,0.1).name('Light Intensity').onChange(function(v){dirLight.intensity=v});
+  fScene.add(params,'pulseSpeed',0,200,0.1).name('Pulse Speed');
+  fScene.add(params,'waveIntensity',0,5,0.1).name('Wave Intensity');
+  fScene.add(params,'springSpeed',0.001,0.3,0.001).name('Spring Speed');
+  var fColors=gui.addFolder('Colors');
+  fColors.addColor(params,'baseColor').name('Base Color').onChange(updateColors);
+  fColors.addColor(params,'neonColor').name('Neon Color').onChange(updateColors);
+  fColors.addColor(params,'secondaryColor').name('Secondary Color').onChange(updateColors);
+  fColors.add(params,'autoRainbow').name('Auto-Rainbow');
+  var fMat=gui.addFolder('Material & Reflections');
+  fMat.add(params,'bloomStrength',0,5,0.01).name('Bloom Strength').onChange(function(v){bloomPass.strength=v});
+  fMat.add(params,'metalness',0,1,0.01).name('Metalness').onChange(function(v){if(material)material.metalness=v});
+  fMat.add(params,'clearcoat',0,1,0.01).name('Clearcoat').onChange(function(v){if(material)material.clearcoat=v});
+  fMat.add(params,'coatRoughness',0,1,0.01).name('Coat Roughness').onChange(function(v){if(material)material.clearcoatRoughness=v});
+  gui.close();
+
+  var baseCol=new THREE.Color(params.baseColor);
+  var neonCol=new THREE.Color(params.neonColor);
+  var secCol=new THREE.Color(params.secondaryColor);
+
+  function updateColors(){
+    baseCol.set(params.baseColor);
+    neonCol.set(params.neonColor);
+    secCol.set(params.secondaryColor);
+  }
+
+  var material=new THREE.MeshPhysicalMaterial({
+    color:baseCol,metalness:params.metalness,roughness:0.3,
+    clearcoat:params.clearcoat,clearcoatRoughness:params.coatRoughness,
+    emissive:neonCol,emissiveIntensity:0
+  });
+
+  var gridGroup=new THREE.Group();
+  scene.add(gridGroup);
+
+  var instancedMesh=null;
+  var shapeData=[];
+  var dummy=new THREE.Object3D();
+  var mouse=new THREE.Vector2(-9999,-9999);
+  var mouseWorld=new THREE.Vector3(-9999,-9999,0);
+  var raycaster=new THREE.Raycaster();
+
+  function createShapeGeometry(type,size){
+    var s=size;
+    switch(type){
+      case 'Hexagon':
+        var shape=new THREE.Shape();
+        for(var i=0;i<6;i++){
+          var a=Math.PI/3*i-Math.PI/6;
+          var x=Math.cos(a)*s,y=Math.sin(a)*s;
+          if(i===0)shape.moveTo(x,y);else shape.lineTo(x,y);
+        }
+        shape.closePath();
+        return new THREE.ExtrudeGeometry(shape,{depth:1,bevelEnabled:false});
+      case 'Square':
+        return new THREE.BoxGeometry(s*1.6,s*1.6,s*0.4);
+      case 'Triangle':
+        var ts=new THREE.Shape();
+        for(var i=0;i<3;i++){
+          var a=Math.PI*2/3*i-Math.PI/2;
+          var x=Math.cos(a)*s,y=Math.sin(a)*s;
+          if(i===0)ts.moveTo(x,y);else ts.lineTo(x,y);
+        }
+        ts.closePath();
+        return new THREE.ExtrudeGeometry(ts,{depth:1,bevelEnabled:false});
+      case 'Circle':
+        return new THREE.CylinderGeometry(s,s,0.4,32);
+      case 'Octagon':
+        var os=new THREE.Shape();
+        for(var i=0;i<8;i++){
+          var a=Math.PI/4*i;
+          var x=Math.cos(a)*s,y=Math.sin(a)*s;
+          if(i===0)os.moveTo(x,y);else os.lineTo(x,y);
+        }
+        os.closePath();
+        return new THREE.ExtrudeGeometry(os,{depth:1,bevelEnabled:false});
+      case 'Diamond':
+        var ds=new THREE.Shape();
+        ds.moveTo(0,s*1.3);ds.lineTo(s*0.8,0);ds.lineTo(0,-s*1.3);ds.lineTo(-s*0.8,0);
+        ds.closePath();
+        return new THREE.ExtrudeGeometry(ds,{depth:1,bevelEnabled:false});
+      default:
+        return new THREE.BoxGeometry(s,s,s*0.4);
+    }
+  }
+
+  function getGridPositions(type,gridSize,shapeSize,gap,offset){
+    var positions=[];
+    var s=shapeSize;
+    switch(type){
+      case 'Hexagon':
+        var w=s*2+gap,h=s*Math.sqrt(3)+gap;
+        var cols=Math.ceil(gridSize/2);
+        for(var row=-gridSize;row<=gridSize;row++){
+          var off=(offset&&Math.abs(row)%2===1)?w*0.25:0;
+          for(var col=-cols;col<=cols;col++){
+            positions.push({x:col*w*0.5+off,y:row*h*0.5});
+          }
+        }
+        break;
+      case 'Square':
+        var sp=s*2+gap,cnt=Math.ceil(gridSize/2);
+        for(var r=-cnt;r<=cnt;r++)for(var c=-cnt;c<=cnt;c++)positions.push({x:c*sp,y:r*sp});
+        break;
+      case 'Triangle':
+        var sp=s*2.2+gap,cnt=Math.ceil(gridSize/2);
+        for(var r=-cnt;r<=cnt;r++){
+          var off=(offset&&Math.abs(r)%2===1)?sp*0.5:0;
+          for(var c=-cnt;c<=cnt;c++)positions.push({x:c*sp+off,y:r*sp*0.866});
+        }
+        break;
+      case 'Circle':
+        var sp=s*2.2+gap,cnt=Math.ceil(gridSize/2);
+        for(var r=-cnt;r<=cnt;r++){
+          var off=(offset&&Math.abs(r)%2===1)?sp*0.5:0;
+          for(var c=-cnt;c<=cnt;c++)positions.push({x:c*sp+off,y:r*sp});
+        }
+        break;
+      case 'Octagon':
+        var sp=s*2.4+gap,cnt=Math.ceil(gridSize/2);
+        for(var r=-cnt;r<=cnt;r++){
+          var off=(offset&&Math.abs(r)%2===1)?sp*0.5:0;
+          for(var c=-cnt;c<=cnt;c++)positions.push({x:c*sp+off,y:r*sp});
+        }
+        break;
+      case 'Diamond':
+        var sp=s*2.2+gap,cnt=Math.ceil(gridSize/2);
+        for(var r=-cnt;r<=cnt;r++)for(var c=-cnt;c<=cnt;c++)positions.push({x:c*sp+r*sp*0.5,y:r*sp*0.866});
+        break;
+    }
+    return positions;
+  }
+
+  function rebuildGrid(){
+    if(instancedMesh){gridGroup.remove(instancedMesh);instancedMesh.geometry.dispose();}
+    shapeData=[];
+    var geo=createShapeGeometry(params.shapeType,params.shapeSize);
+    var positions=getGridPositions(params.shapeType,params.gridSize,params.shapeSize,params.gap,params.offsetRows);
+    var count=positions.length;
+    instancedMesh=new THREE.InstancedMesh(geo,material,count);
+    instancedMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+    for(var i=0;i<count;i++){
+      dummy.position.set(positions[i].x,positions[i].y,0);
+      dummy.scale.set(1,1,1);dummy.updateMatrix();
+      instancedMesh.setMatrixAt(i,dummy.matrix);
+      shapeData.push({x:positions[i].x,y:positions[i].y,z:0,targetZ:0,velocity:0});
+    }
+    instancedMesh.instanceMatrix.needsUpdate=true;
+    gridGroup.add(instancedMesh);
+  }
+
+  rebuildGrid();
+
+  window.addEventListener('mousemove',function(e){
+    mouse.x=(e.clientX/W)*2-1;
+    mouse.y=-(e.clientY/H)*2+1;
+    raycaster.setFromCamera(mouse,camera);
+    var plane=new THREE.Plane(new THREE.Vector3(0,0,1),0);
+    var pt=new THREE.Vector3();
+    raycaster.ray.intersectPlane(plane,pt);
+    mouseWorld.copy(pt);
+  });
+
+  var clock=new THREE.Clock();
+  var hue=0;
+
+  function animate(){
+    requestAnimationFrame(animate);
+    var t=clock.getElapsedTime();
+    if(params.autoRainbow){
+      hue=(hue+0.002)%1;
+      neonCol.setHSL(hue,0.8,0.6);
+      secCol.setHSL((hue+0.3)%1,0.8,0.5);
+    }
+    var cr=params.cursorRadius,eh=params.extrusionHeight,sp=params.springSpeed,wi=params.waveIntensity,ps=params.pulseSpeed;
+    for(var i=0;i<shapeData.length;i++){
+      var d=shapeData[i];
+      var dx=d.x-mouseWorld.x,dy=d.y-mouseWorld.y;
+      var dist=Math.sqrt(dx*dx+dy*dy);
+      var inRadius=dist<cr;
+      var proximity=inRadius?1-dist/cr:0;
+      var pulse=Math.sin(t*ps*0.01)*wi*0.3;
+      d.targetZ=inRadius?eh*proximity+pulse:0;
+      d.velocity+=(d.targetZ-d.z)*sp;
+      d.velocity*=0.85;
+      d.z+=d.velocity;
+      dummy.position.set(d.x,d.y,d.z);
+      var s=1+d.z*0.02;
+      dummy.scale.set(s,s,1);dummy.updateMatrix();
+      instancedMesh.setMatrixAt(i,dummy.matrix);
+      var ei=inRadius?proximity:0;
+      var col=new THREE.Color();
+      col.copy(baseCol);
+      if(ei>0){var mix=new THREE.Color();mix.lerpColors(neonCol,secCol,proximity);col.lerp(mix,ei);}
+      instancedMesh.setColorAt(i,col);
+    }
+    instancedMesh.instanceMatrix.needsUpdate=true;
+    if(instancedMesh.instanceColor)instancedMesh.instanceColor.needsUpdate=true;
+    composer.render();
+  }
+  animate();
+
+  window.addEventListener('resize',function(){
+    W=window.innerWidth;H=window.innerHeight;
+    camera.aspect=W/H;camera.updateProjectionMatrix();
+    renderer.setSize(W,H);composer.setSize(W,H);
+  });
+
+  window.addEventListener('keydown',function(e){
+    if(e.key==='h'||e.key==='H'){
+      var dom=gui.domElement;
+      dom.style.display=dom.style.display==='none'?'block':'none';
+      var hint=document.querySelector('.hint');
+      if(hint)hint.style.display=dom.style.display==='none'?'block':'none';
+    }
+  });
+})();
+</script>
+</body>
+</html>

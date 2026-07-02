@@ -1,0 +1,47 @@
+Yes. I made a GLTF version of the particle effect here:
+
+[gltf-particle-effect.html](/Users/jennifer/Desktop/Portfolio/gltf-particle-effect.html)
+
+Also copied to:
+
+[public/gltf-particle-effect.html](/Users/jennifer/Desktop/Portfolio/public/gltf-particle-effect.html)
+
+Where to place your model:
+
+js
+const MODEL_SRC = "";
+
+
+Change it to something like:
+
+js
+const MODEL_SRC = "model.glb";
+
+
+or:
+
+js
+const MODEL_SRC = "models/character.gltf";
+
+
+How it works:
+- Loads a .glb / .gltf with GLTFLoader
+- Finds all meshes in the model
+- Samples points across the mesh surfaces with MeshSurfaceSampler
+- Turns those surface points into particles
+- Supports Static, Center, Free, and Fall
+- Supports color modes: Model, Pearl, Green, Blue, Warm, Mix
+
+Important: GLTF files usually will not load properly from file:// in Chrome. Run it with a local server:
+
+bash
+python3 -m http.server 4199
+
+
+Then open:
+
+text
+http://127.0.0.1:4199/gltf-particle-effect.html
+
+
+If MODEL_SRC is empty or fails, it shows a fallback 3D particle shape so you can still test the effect.

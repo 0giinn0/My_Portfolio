@@ -71,7 +71,8 @@ body{font-family:var(--font-mono);background:var(--bg);color:var(--text);min-hei
     <a href="project-cards.html" class="project-card" data-category="brand creative"><div class="project-card-xray"></div><div class="project-thumb thumb-slate">♠️</div><div class="project-info"><div class="project-category cat-brand">Graphic Design</div><div class="project-name">NNIИ Cards</div><div class="project-desc">Custom playing card deck with original occult-eye artwork, geometric patterns, and a matching tuck box.</div><div class="project-meta">Card Design • 2022</div></div></a>
     <a href="project-games.html" class="project-card" data-category="digital creative"><div class="project-card-xray"></div><div class="project-thumb thumb-rose">🎮</div><div class="project-info"><div class="project-category cat-digital">Interactive</div><div class="project-name">Arcade</div><div class="project-desc">6 games, golden spiral navigation, Urdu Wordle. Because portfolios need a fun side.</div><div class="project-meta">Mini Games • 2026</div></div></a>
     <a href="project-mars.html" class="project-card" data-category="digital creative"><div class="project-card-xray"></div><div class="project-thumb thumb-red">🎲</div><div class="project-info"><div class="project-category cat-digital">3D Design</div><div class="project-name">3D Models</div><div class="project-desc">10 original models — Alien, Goblin, Dog Person, Lost City and more. Rotate and zoom in real-time.</div><div class="project-meta">Three.js • 2026</div></div></a>
-    <a href="project-giinn.html" class="project-card" data-category="digital systems"><div class="project-card-xray"></div><div class="project-thumb thumb-cyan">⚡</div><div class="project-info"><div class="project-category cat-systems">AI / CLI</div><div class="project-name">Giinn</div><div class="project-desc">AI-powered developer CLI with multi-agent builds, RAG memory, fine-tuning, 3D previews, and mobile APK builds. Python + Typer + Rich with LLM adapters for OpenAI, Anthropic, Gemini, Ollama, OpenRouter.</div><div class="project-meta">Python • HTML • 2026</div></div></a>
+    <a href="project-hexgrid.html" class="project-card" data-category="digital creative"><div class="project-card-xray"></div><div class="project-thumb thumb-purple">🔷</div><div class="project-info"><div class="project-category cat-creative">Creative Code</div><div class="project-name">Hex Grid</div><div class="project-desc">Interactive 3D grid with bloom post-processing, 6 shape types, and cursor-following extrusion. dat.gui customization panel.</div><div class="project-meta">Three.js • WebGL • 2026</div></div></a>
+    <a href="project-omricode.html" class="project-card" data-category="digital systems"><div class="project-card-xray"></div><div class="project-thumb thumb-cyan">⚡</div><div class="project-info"><div class="project-category cat-systems">AI / IDE</div><div class="project-name">OmriCode</div><div class="project-desc">Fully local, unrestricted AI IDE — Electron desktop app with code editor, terminal, 3D viewer, AI chat, 12 personality profiles, and 9+ LLM providers. VS Code, Godot, and Blender plugins.</div><div class="project-meta">TypeScript • Electron • 2026</div></div></a>
     <a href="project-audio.html" class="project-card" data-category="digital creative"><div class="project-card-xray"></div><div class="project-thumb thumb-amber">🎵</div><div class="project-info"><div class="project-category cat-creative">Music App</div><div class="project-name">Aud.io</div><div class="project-desc">Music player that respects your eyeballs. Flutter frontend with golden spiral navigation, bento box UI, 7 themes. Node.js server with yt-dlp. Searches YouTube Music, SoundCloud, podcasts, local files.</div><div class="project-meta">Dart • JavaScript • 2026</div></div></a>
     <a href="project-freedee.html" class="project-card" data-category="digital systems"><div class="project-card-xray"></div><div class="project-thumb thumb-purple">🧊</div><div class="project-info"><div class="project-category cat-systems">AI / 3D</div><div class="project-name">PhreeDee</div><div class="project-desc">Local AI-powered 3D mesh generation — converts images into 3D models using Hunyuan3D on your GPU. Electron desktop app with visual workflow editor, mesh processing, extension system, and CLI for AI agents.</div><div class="project-meta">TypeScript • Python • C++ • 2026</div></div></a>
     <a href="project-deko.html" class="project-card" data-category="digital creative"><div class="project-card-xray"></div><div class="project-thumb thumb-blue">📱</div><div class="project-info"><div class="project-category cat-creative">AR / WebXR</div><div class="project-name">AR Deko</div><div class="project-desc">AR room redecorator — place furniture in your real space before buying. React + Three.js + WebXR with hit-test API. 20+ 3D models, measurement tools, custom model upload, save/load layouts. PWA installable.</div><div class="project-meta">TypeScript • CSS • 2026</div></div></a>
@@ -112,6 +113,134 @@ document.querySelectorAll('.project-card').forEach(function(card){
     setTimeout(function(){xray.style.transition='';xray.style.clipPath=''},500);
   });
 });
+
+// Draggable physics for project cards
+(function(){
+  var cards=document.querySelectorAll('.project-card');
+  var isDragging=false;
+  var dragCard=null;
+  var offsetX=0,offsetY=0;
+  var vx=0,vy=0;
+  var lastX=0,lastY=0;
+  var friction=0.92;
+  var snapSpeed=0.15;
+  var physicsActive=new Map();
+
+  cards.forEach(function(card){
+    var orig={x:0,y:0};
+    var phys={x:0,y:0,vx:0,vy:0,dragging:false,snapping:false};
+
+    function saveOriginal(){
+      var r=card.getBoundingClientRect();
+      orig.x=r.left;
+      orig.y=r.top;
+    }
+
+    card.addEventListener('mousedown',function(e){
+      if(e.button!==0)return;
+      saveOriginal();
+      var r=card.getBoundingClientRect();
+      offsetX=e.clientX-r.left;
+      offsetY=e.clientY-r.top;
+      phys.dragging=true;
+      phys.snapping=false;
+      phys.vx=0;
+      phys.vy=0;
+      lastX=e.clientX;
+      lastY=e.clientY;
+      isDragging=true;
+      dragCard=card;
+      card.style.transition='none';
+      card.style.zIndex='999';
+      card.style.cursor='grabbing';
+      card.style.position='relative';
+      e.preventDefault();
+    });
+
+    card.addEventListener('dblclick',function(){
+      phys.snapping=true;
+      phys.dragging=false;
+      phys.vx=0;
+      phys.vy=0;
+    });
+
+    physicsActive.set(card,{orig:orig,phys:phys});
+  });
+
+  document.addEventListener('mousemove',function(e){
+    if(!isDragging||!dragCard)return;
+    var p=physicsActive.get(dragCard);
+    if(!p||!p.phys.dragging)return;
+    var dx=e.clientX-lastX;
+    var dy=e.clientY-lastY;
+    p.phys.vx=dx;
+    p.phys.vy=dy;
+    lastX=e.clientX;
+    lastY=e.clientY;
+    var cur=dragCard.style.transform||'';
+    var tx=parseFloat(cur.match(/translateX\(([^)]+)px\)/)?.[1]||0)+dx;
+    var ty=parseFloat(cur.match(/translateY\(([^)]+)px\)/)?.[1]||0)+dy;
+    dragCard.style.transform='translateX('+tx+'px) translateY('+ty+'px) rotateX('+(-dy*0.5)+'deg) rotateY('+(dx*0.5)+'deg)';
+  });
+
+  document.addEventListener('mouseup',function(){
+    if(!dragCard)return;
+    var p=physicsActive.get(dragCard);
+    if(p){
+      p.phys.dragging=false;
+      p.phys.snapping=false;
+    }
+    dragCard.style.cursor='grab';
+    dragCard.style.zIndex='';
+    isDragging=false;
+    dragCard=null;
+  });
+
+  function physicsLoop(){
+    physicsActive.forEach(function(entry,card){
+      var p=entry.phys;
+      if(p.dragging)return;
+
+      var cur=card.style.transform||'';
+      var tx=parseFloat(cur.match(/translateX\(([^)]+)px\)/)?.[1]||0);
+      var ty=parseFloat(cur.match(/translateY\(([^)]+)px\)/)?.[1]||0);
+
+      if(p.snapping){
+        tx*=1-snapSpeed;
+        ty*=1-snapSpeed;
+        if(Math.abs(tx)<0.5&&Math.abs(ty)<0.5){
+          card.style.transform='';
+          card.style.transition='';
+          card.style.position='';
+          p.snapping=false;
+          return;
+        }
+      }else if(Math.abs(p.vx)>0.1||Math.abs(p.vy)>0.1){
+        tx+=p.vx;
+        ty+=p.vy;
+        p.vx*=friction;
+        p.vy*=friction;
+        var r=card.getBoundingClientRect();
+        if(r.left<0){tx-=r.left;p.vx*=-0.5;}
+        if(r.right>window.innerWidth){tx-=(r.right-window.innerWidth);p.vx*=-0.5;}
+        if(r.top<48){ty-=(r.top-48);p.vy*=-0.5;}
+        if(r.bottom>window.innerHeight){ty-=(r.bottom-window.innerHeight);p.vy*=-0.5;}
+      }
+
+      if(Math.abs(tx)>0.1||Math.abs(ty)>0.1){
+        var rotX=(-p.vy*0.3).toFixed(1);
+        var rotY=(p.vx*0.3).toFixed(1);
+        card.style.transform='translateX('+tx+'px) translateY('+ty+'px) rotateX('+rotX+'deg) rotateY('+rotY+'deg)';
+      }else if(!p.snapping){
+        card.style.transform='';
+        card.style.transition='';
+        card.style.position='';
+      }
+    });
+    requestAnimationFrame(physicsLoop);
+  }
+  physicsLoop();
+})();
 </script>
 </body>
 </html>

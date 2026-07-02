@@ -45,7 +45,7 @@ This is a bunch of HTML files held together by CSS, JavaScript, and sheer willpo
 
 | Project | Link | One-Liner |
 |---------|------|-----------|
-| **Giinn** | [github.com/0giinn0/giinn](https://github.com/0giinn0/giinn) | AI-powered developer CLI with multi-agent builds, RAG memory, fine-tuning, 3D previews, and mobile APK builds. |
+| **OmriCode** | [github.com/0giinn0/OmriCode](https://github.com/0giinn0/OmriCode) | Fully local, unrestricted AI IDE — Electron desktop app with code editor, terminal, 3D viewer, AI chat, 12 personality profiles, and 9+ LLM providers. |
 | **Aud.io** | [github.com/0giinn0/Aud.io](https://github.com/0giinn0/Aud.io) | Flutter music player with golden spiral navigation, bento box UI, 7 themes. Node.js server with yt-dlp. |
 | **PhreeDee** | [github.com/0giinn0/Pfree_Dee](https://github.com/0giinn0/Pfree_Dee) | Local AI-powered 3D mesh generation — converts images into 3D models using Hunyuan3D on your GPU. |
 | **AR Deko** | [github.com/0giinn0/Placement_AR](https://github.com/0giinn0/Placement_AR) | AR room redecorator — place furniture in your real space before buying. React + Three.js + WebXR. |
